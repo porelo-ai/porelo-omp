@@ -50,6 +50,9 @@ work goes; `sokar project default list` shows the name `-r` takes. Started insid
 `sokar task start` adds that checkout's repository by itself. A project of your own, with a
 `project.yml`, is for settings beyond that. A bare `--model` goes to the task's provider.
 
+`z-ai/glm-4.6` cannot send a message with Oh My Pi: the JSON a `write` call carries arrives cut off at its
+first `":`, and the model tries again until the task ends. `z-ai/glm-5.3-flash` sends it whole.
+
 ## What the task holds and reaches
 
 - **Not your credential.** The container gets a token that works for this task only, in
