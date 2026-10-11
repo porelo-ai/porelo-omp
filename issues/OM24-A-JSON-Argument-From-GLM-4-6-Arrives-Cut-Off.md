@@ -34,7 +34,11 @@ the same call carried the whole JSON, once. CI runs `z-ai/glm-5.3-flash` for tha
 - The cut is fixed where it happens, reported upstream, or `doc/` names the model as unable to send a
   message; a scenario with that model writing a JSON file is seen to fail before and pass after a fix.
 
+## Open questions
+
+- Whether a model this old is still worth the measurement, or `doc/` names it as unable to send a
+  message now.
+
 ## To be checked
 
-- Whether other models of the same family cut the same argument - mine, in the same measurement.
-- Whether a model this old is still worth the measurement, or `doc/` names it now - the operator's.
+- Whether other models of the same family cut the same argument - in the same measurement.

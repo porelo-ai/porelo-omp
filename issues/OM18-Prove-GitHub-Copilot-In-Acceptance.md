@@ -30,9 +30,12 @@ credential scenarios use an OpenRouter key, and CI fails when that key is missin
 - A scenario starts a task with `--provider github-copilot` and checks that the task's files,
   environment and logs hold no GitHub token; a token planted in the task is seen to fail it.
 
+## Open questions
+
+- Whose GitHub account holds the Copilot entitlement the CI token comes from, and whether its use in CI
+  is acceptable.
+
 ## To be checked
 
-- Whose GitHub account holds the Copilot entitlement the CI token comes from, and whether its use in
-  CI is acceptable - the operator's.
 - How a grant of kind `oauth-device` is stored without the device flow: whether `vault put` takes a
-  token for that kind - Agent Core's.
+  token for that kind - to ask Agent Core.

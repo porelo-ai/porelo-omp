@@ -35,5 +35,5 @@ review that should only read can today be held to that only by its prompt.
 
 ## To be checked
 
-- Whether [B101](https://github.com/sokar-ai/sokar/blob/main/issues/base/README.md#b101) also carries a thinking-level key, or that is a Sokar issue of its own - Agent Core's.
-- Which of omp's tools make "read and search plus one write" - mine, read from 18.4.1 when built.
+- Whether [B101](https://github.com/sokar-ai/sokar/blob/main/issues/base/README.md#b101) also carries a thinking-level key, or that is a Sokar issue of its own - to ask Agent Core.
+- Which of omp's tools make "read and search plus one write" - read from 18.4.1 when built.
