@@ -1,6 +1,6 @@
 # OM24 — A JSON argument from GLM-4.6 arrives cut off
 
-**Status:** later.
+**Status:** Analyzed.
 **Size:** S - a measurement with the raw stream and a line in `doc/`; a fix in omp or at the provider
 would be upstream's, not built here.
 

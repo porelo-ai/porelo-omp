@@ -1,25 +1,16 @@
 # Issues
 
-What is open in this repository, grouped by the MVP (`sokar-project` PJ17): **Now**
-serves one person, one machine, one agent, from install to a reviewed push; **Soon** follows right
-after it; **Later** is the rest. Within a group, ordered by what to do next rather than by number. The
-number is identity, not sequence.
+What is open in this repository, grouped by state in the order Review, Rework, Implementing, Backlog,
+Analyzed, Accepted, Idea, Estimated and Rejected; a group with nothing in it is left out. Within a
+group, the order is the priority. The number is identity, not sequence.
 
-## Now
-
-None open.
-
-## Soon
-
-Nothing open.
-
-## Later
+## Analyzed
 
 | # | Status | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|---|
-| [OM18](OM18-Prove-GitHub-Copilot-In-Acceptance.md) | open | M |  | the Copilot path proven in CI | 2 |
-| [OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | blocked | S | Sokar B101 | a thinking level and a read-only mode a start can ask for | 2 |
-| [OM24](OM24-A-JSON-Argument-From-GLM-4-6-Arrives-Cut-Off.md) | open | S |  | a JSON argument from GLM-4.6 arrives cut off | 2 |
+| [OM18](OM18-Prove-GitHub-Copilot-In-Acceptance.md) | Analyzed | M |  | the Copilot path proven in CI | 2 |
+| [OM24](OM24-A-JSON-Argument-From-GLM-4-6-Arrives-Cut-Off.md) | Analyzed | S |  | a JSON argument from GLM-4.6 arrives cut off | 2 |
+| [OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | Analyzed | S | sokar B101 | a thinking level and a read-only mode a start can ask for | 2 |
 
 ## What lives here and what in Sokar
 

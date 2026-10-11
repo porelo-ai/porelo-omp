@@ -1,6 +1,6 @@
 # OM18 — Prove GitHub Copilot in acceptance
 
-**Status:** later.
+**Status:** Analyzed.
 **Size:** M - one acceptance scenario and a CI secret, but storing a grant without a person may need a
 way into the vault Sokar does not offer today.
 
