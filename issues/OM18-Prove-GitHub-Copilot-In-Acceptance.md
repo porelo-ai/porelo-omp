@@ -1,6 +1,6 @@
 # OM18 — Prove GitHub Copilot in acceptance
 
-**Status:** Analyzed.
+**Status:** Analyzed; blocked by sokar (an issue to be opened: a grant's token stored without a person).
 **Size:** M - one acceptance scenario and a CI secret, but storing a grant without a person may need a
 way into the vault Sokar does not offer today.
 
@@ -17,7 +17,9 @@ credential scenarios use an OpenRouter key, and CI fails when that key is missin
 - **A CI secret** holding a GitHub token entitled to Copilot, passed to the acceptance legs beside
   `SOKAR_E2E_OPENROUTER_API_KEY` in `.github/workflows/build.yml`, and to the VM runs the same way.
 - **The kit stores it as the `github-copilot` provider's grant** (`oauth-device` in Sokar's
-  `providers/github-copilot.yaml`), the way a finished device sign-in would leave it, without a person.
+  `providers/github-copilot.yaml`), the way a finished device sign-in would leave it, without a person. Today
+  only `vault authorize` writes a grant's token, and `vault put` takes only the client's secret for that
+  kind, so this needs a way of Sokar's to store one.
 - **A scenario in `credential.feature`'s shape:** a task started with `--provider github-copilot`
   answers through the broker; its environment, its files under `/home/agent` and its logs hold no
   GitHub token. Skipped and said so when the secret is absent, as the OpenRouter scenarios are.
@@ -34,8 +36,3 @@ credential scenarios use an OpenRouter key, and CI fails when that key is missin
 
 - Whose GitHub account holds the Copilot entitlement the CI token comes from, and whether its use in CI
   is acceptable.
-
-## To be checked
-
-- How a grant of kind `oauth-device` is stored without the device flow: whether `vault put` takes a
-  token for that kind - to ask Agent Core.

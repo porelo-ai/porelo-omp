@@ -27,8 +27,9 @@ none, so the command refuses as for an agent that does not sign in.
 
 - **`src/main/resources/agent/omp.yaml`:** a `login.grants.github-copilot` block, read by Sokar's
   `AgentDefinitionReader`. Its `hosts` map `github.com`, `www.github.com` and `api.github.com` to the OpenCode
-  id and `"*"` to the Copilot CLI id. Its `owner` names both apps by host, as Oh My Pi's source does, "not
-  verified with GitHub".
+  id, with the OpenCode app as its `owner`, "as Oh My Pi's source names it, not verified with GitHub".
+- **An Enterprise host, if the operator wants it:** `"*"` maps to the Copilot CLI id, and Sokar keeps an
+  owner per host beside the ids (`AgentGrant`, Agent Core's, S), with the one string as the default.
 - **Red first:** `OmpAgentTest` reads the definition through the API and expects that grant, the ids by host
   and the owner; it fails on today's `omp.yaml`.
 - **The weekly update** (`.github/workflows/update.yml`) checks that the new pinned binary still names both ids
@@ -51,9 +52,3 @@ none, so the command refuses as for an agent that does not sign in.
 
 - For an Enterprise host Oh My Pi uses GitHub's own Copilot CLI app. Should Sokar grant through it as well,
   as Oh My Pi does without Sokar, or declare `github.com` alone?
-
-## To be checked
-
-- The owner is one string per provider (`AgentGrant.owner`, kept as the entry's `client_owner`), while Oh My Pi
-  has a different app per host: whether that string names both, or Sokar keeps an owner per host - to ask
-  Agent Core.
