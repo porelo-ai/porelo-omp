@@ -1,6 +1,6 @@
 # OM25 — Declare the app Copilot is granted through
 
-**Status:** Analyzed.
+**Status:** Estimated.
 **Size:** S - a `login.grants` block in `omp.yaml`, its test, a check in the weekly update and a paragraph
 in `doc/`; Sokar's side is built.
 

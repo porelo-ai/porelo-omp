@@ -1,6 +1,6 @@
 # OM19 — Declare a thinking level and a read-only mode
 
-**Status:** Analyzed; blocked by sokar [B101](https://github.com/sokar-ai/sokar/blob/main/issues/base/README.md#b101).
+**Status:** Estimated; blocked by sokar [B101](https://github.com/sokar-ai/sokar/blob/main/issues/base/README.md#b101).
 **Size:** S - here entries in `omp.yaml` and their tests; the keys a definition may declare, and the
 start's options for them, are Sokar's.
 
