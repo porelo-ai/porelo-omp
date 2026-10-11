@@ -15,11 +15,11 @@ Nothing open.
 
 ## Later
 
-| # | Status | Blocked by | What it covers | Open questions |
-|---|---|---|---|---|
-| [OM18](OM18-Prove-GitHub-Copilot-In-Acceptance.md) | open |  | the Copilot path proven in CI | 0 |
-| [OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | blocked | Sokar B101 | a thinking level and a read-only mode a start can ask for | 0 |
-| [OM24](OM24-A-JSON-Argument-From-GLM-4-6-Arrives-Cut-Off.md) | open |  | a JSON argument from GLM-4.6 arrives cut off | 1 |
+| # | Status | Size | Blocked by | What it covers | Open questions |
+|---|---|---|---|---|---|
+| [OM18](OM18-Prove-GitHub-Copilot-In-Acceptance.md) | open | M |  | the Copilot path proven in CI | 2 |
+| [OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | blocked | S | Sokar B101 | a thinking level and a read-only mode a start can ask for | 2 |
+| [OM24](OM24-A-JSON-Argument-From-GLM-4-6-Arrives-Cut-Off.md) | open | S |  | a JSON argument from GLM-4.6 arrives cut off | 2 |
 
 ## What lives here and what in Sokar
 
