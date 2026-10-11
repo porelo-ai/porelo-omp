@@ -1,6 +1,6 @@
 # OM19 — Declare a thinking level and a read-only mode
 
-**Status:** Analyzed; blocked by sokar B101.
+**Status:** Analyzed; blocked by sokar [B101](https://github.com/sokar-ai/sokar/blob/main/issues/base/README.md#b101).
 **Size:** S - here entries in `omp.yaml` and their tests; the keys a definition may declare, and the
 start's options for them, are Sokar's.
 
@@ -17,7 +17,7 @@ review that should only read can today be held to that only by its prompt.
 
 ## Plan
 
-- **After B101** has given a definition named modes and the start `--mode <name>`:
+- **After [B101](https://github.com/sokar-ai/sokar/blob/main/issues/base/README.md#b101)** has given a definition named modes and the start `--mode <name>`:
   `src/main/resources/agent/omp.yaml` declares `read-only` as `--tools=` with omp 18.4.1's reading and
   searching tools and its one write tool, the names read from `omp --help` and its tool list.
 - **The thinking level:** a `headless:` key beside `model_flag` naming `--thinking`, once Sokar's
@@ -35,5 +35,5 @@ review that should only read can today be held to that only by its prompt.
 
 ## To be checked
 
-- Whether B101 also carries a thinking-level key, or that is a Sokar issue of its own - Agent Core's.
+- Whether [B101](https://github.com/sokar-ai/sokar/blob/main/issues/base/README.md#b101) also carries a thinking-level key, or that is a Sokar issue of its own - Agent Core's.
 - Which of omp's tools make "read and search plus one write" - mine, read from 18.4.1 when built.

@@ -8,9 +8,9 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
-| [OM18](OM18-Prove-GitHub-Copilot-In-Acceptance.md) | M |  | the Copilot path proven in CI | 2 |
-| [OM24](OM24-A-JSON-Argument-From-GLM-4-6-Arrives-Cut-Off.md) | S |  | a JSON argument from GLM-4.6 arrives cut off | 2 |
-| [OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | S | sokar B101 | a thinking level and a read-only mode a start can ask for | 2 |
+| <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-In-Acceptance.md) | M |  | the Copilot path proven in CI | 2 |
+| <a id="om24"></a>[OM24](OM24-A-JSON-Argument-From-GLM-4-6-Arrives-Cut-Off.md) | S |  | a JSON argument from GLM-4.6 arrives cut off | 2 |
+| <a id="om19"></a>[OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | S | sokar [B101](https://github.com/sokar-ai/sokar/blob/main/issues/base/README.md#b101) | a thinking level and a read-only mode a start can ask for | 2 |
 
 ## What lives here and what in Sokar
 
