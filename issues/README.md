@@ -16,7 +16,12 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S |  | the Copilot path proven by hand before a release |
-| <a id="om24"></a>[OM24](OM24-A-JSON-Argument-From-GLM-4-6-Arrives-Cut-Off.md) | XS |  | a JSON argument from GLM-4.6 arrives cut off; `doc/` names the model |
+
+## Finished
+
+| # | Title | What was built |
+|---|---|---|
+| <a id="om24"></a>[OM24](README.md#om24) | A JSON argument from GLM-4.6 arrives cut off | `doc/index.md` names `z-ai/glm-4.6` as unable to send a message with Oh My Pi, and `z-ai/glm-5.3-flash` as one that can. |
 
 ## What lives here and what in Sokar
 
