@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Headings name this package's version; Oh My Pi's version is what the package installs and
 appears as an entry rather than a heading. One sentence per change - `git log` has the detail.
 
-## [Unreleased]
+## [0.5.0] - 2026-10-17
 
 ### Changed
 
