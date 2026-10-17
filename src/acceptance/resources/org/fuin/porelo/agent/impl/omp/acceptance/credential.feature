@@ -143,13 +143,14 @@ Feature: A task authenticates without ever holding the credential
     @slow
     Scenario: a task's agent is told how its mailbox works
         # Porelo puts the agent's declared instructions arguments on its start, with the guide's path. Asked
-        # without a tool, only the guide in its system prompt can say where its new messages arrive; the
-        # answer is read from the agent's own lines in its log, not from anything else there.
+        # without a tool, only the guide in its system prompt can say where its new messages arrive. The
+        # answer is read from the text of the agent's own messages in its log, never from a tool's result
+        # or its thinking, and a run in which any tool ran prints no answer at all.
         Given a vault of this scenario's own, unlocked with the passphrase "scenario-vault-passphrase"
         And the vault holds the value of "PORELO_E2E_OPENROUTER_API_KEY" as "openrouter" of kind "api-key"
         And a project called "mailbox" of class "guarded" with a file in it
         When a script runs "timeout 300 porelo task start talk --project mailbox --repository mailbox --agent omp --provider openrouter --model ${PORELO_E2E_MODEL} --prompt 'Without using any tool: in which directory do new messages for you arrive? Reply with its absolute path only.'"
-        And a script runs "for i in $(seq 60); do porelo task status porelo-mailbox-talk | grep -q 'ended' && break; sleep 5; done; grep -E '\"(assistant|result)\"' /run/user/$(id -u)/porelo/porelo-mailbox-talk/task.log"
+        And a script runs "for i in $(seq 60); do porelo task status porelo-mailbox-talk | grep -q 'ended' && break; sleep 5; done; LOG=/run/user/$(id -u)/porelo/porelo-mailbox-talk/task.log; if grep -q '\"type\":\"tool_execution_start\"' \"$LOG\"; then echo 'a tool ran, so the answer is not the guide alone'; else grep '\"type\":\"message_end\"' \"$LOG\" | grep '\"role\":\"assistant\"' | grep -o '\"type\":\"text\",\"text\":\"[^\"]*'; fi"
         Then its output contains "/run/porelo/mail/inbox/new"
         When a script runs "porelo project unfollow mailbox --force"
         Then it exits zero

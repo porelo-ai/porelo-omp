@@ -1,8 +1,8 @@
 # OM26 — Read The Code Changed Since The Last Skills Review
 
-**Status:** Backlog.
-**Size:** M - 30 files read against seven skills, each finding fixed with its own test; no
-contract another repository reads.
+**Status:** Implementing.
+**Size:** M - 30 files read against seven skills, each finding that can do harm fixed with its own
+test; no contract another repository reads.
 
 **What must be true.** The code changed since this repository was last read against its skills, on
 2026-09-27, has been read against them as well, and the versions read are on record.
@@ -51,18 +51,20 @@ skills are applied, not only named.
     `src/acceptance`.
 
   Files unchanged since `94a8883` were read on 2026-09-27 and stay out.
-- **Read each file against each skill.** A finding is a guess until a test reproduces it: it is fixed
-  with a test seen to fail on the unfixed code, or declined with the reason written here, or opened
-  as its own issue when it is larger than this one or belongs to another repository.
+- **Read each file against each skill.** A finding that can do harm is a guess until a test
+  reproduces it: it is fixed with a test seen to fail on the unfixed code, or declined with the reason
+  written here, or opened as its own issue when it is larger than this one or belongs to another
+  repository. A finding that names no harm, and only reads wrong, is fixed without a test.
 - **A fix to what ships** gets its changelog entry in the same commit; the native build and the
   acceptance suite run as for any change to the adapter.
-- **Red first:** each fix's test, run against the code before the fix.
+- **Red first:** each guarding fix's test, run against the code before the fix.
 
 ## Acceptance
 
 - The seven skills listed here with the version read and its verified SHA-256.
-- Every file in scope read; each finding fixed with a test seen red first, declined here with its
-  reason, or opened as an issue named here.
+- Every file in scope read; each finding that can do harm fixed with a test seen red first, each
+  that only reads wrong fixed without one, or declined here with its reason, or opened as an issue
+  named here.
 - Unit tests, the native build and the acceptance suite green on the commit handed over.
 
 ## To be checked
@@ -77,10 +79,12 @@ content changed beyond the rename to Porelo since `94a8883`: `pom.xml`, `src/deb
 `OmpConfigFile`, `OmpContainerSetup`, `OmpJsonFormatter`, `omp.yaml`, the four features `credential`, `session`,
 `waiting`, `wake`, and 17 unit test files. The workflows were read against `security-audit` too.
 
-Each finding is a guess until its test is seen red; none is fixed before [OM28](README.md#om28).
+Each finding that can do harm is a guess until its test is seen red; A1, B4 and B6 name none and are fixed
+without a test. None is fixed before [OM28](README.md#om28).
 
 **What ships:**
-- **A1, `OmpJsonFormatter.cut`: the cut at 300 characters can split a surrogate pair.** Red: `"a".repeat(299) + "😀"`.
+- **A1, `OmpJsonFormatter.cut`: the cut at 300 characters can split a surrogate pair.** It only reads wrong: cut on a
+  code point, no test.
 - **A2, terminal control characters pass through the formatter** (found in porelo-pi's reading, the same shape here).
   Red: `"a\u001b[2Jb"` formats to text with no ISO control character, through `format` and `ended`.
 
@@ -89,12 +93,16 @@ Each finding is a guess until its test is seen red; none is fixed before [OM28](
 - **B2, `WorkflowRulesTest`:** the empty-key guard matches text; the package-build scans assert no build found.
   Red: the step run with an empty key; `-Pdist,native -DskipTests` green today.
 - **B3, `WorkflowTimeLimitTest`:** lower-case job ids only, no set of jobs asserted. Red: a `Publish:` job.
-- **B4, `OmpJsonFormatter`'s `willRetry` branch has no test**; deleting it fails nothing. Red: an `agent_end` with
-  `willRetry` formats to "-- error, retrying: …".
+- **B4, `OmpJsonFormatter`'s `willRetry` branch has no test**; deleting it fails nothing. It only words a line, and
+  `ended` already has its own test for a retried end, so it gets none; its comment, split by the reformat, is
+  rejoined.
 - **B5, `credential.feature`, the mailbox scenario:** its grep also matches the `agent_end` line, which carries
   every tool result, so a model that lists `/run/porelo` passes it without the guide. Red: a log whose only mention
   of the path is a tool result inside `agent_end`. Fix: only the assistant's text blocks, and no tool run at all.
-- **B6, `NoOldNameTest` runs git with the machine's global configuration.** Fix: `GIT_CONFIG_GLOBAL=/dev/null`.
+  The step's script was run on three fixture logs: the old grep passes a tool's result and the agent's thinking,
+  the new one only the answer. **Still to be seen:** the scenario on the VM against a real run.
+- **B6, `NoOldNameTest` runs git with the machine's global configuration.** Fix: `GIT_CONFIG_GLOBAL=/dev/null`, no
+  test.
 - **To be measured:** whether `session.feature`'s attached scenario passes without `--resume`, if omp's welcome box
   lists recent sessions; it is trusted once seen red with the resume flag broken.
 
@@ -114,8 +122,11 @@ Each finding is a guess until its test is seen red; none is fixed before [OM28](
   only an older version makes the step exit 1.
 - **W4, `build.yml`: `${{ github.event_name }}` and `${{ github.ref }}` are interpolated into a shell line.** A
   pushed branch named `x$(cmd)` runs `cmd`; it needs push access and the step holds no secret, so it is hardening.
-  Fix: through `env`, as `update.yml` already says.
-- **W7, `persist-credentials`** and the push through the environment, as planned above.
+  Fix: through `env`, as `update.yml` already says. Red: the step's script with the expressions replaced as the
+  runner does, and a ref `refs/heads/x'$(touch ran)'`; no file `ran`.
+- **W7, `persist-credentials`** and the push through the environment, as planned above. Red: `check-actions` on
+  today's workflows, five checkouts; and the request step run against a local remote, its `git push` seen without
+  the header. Its test also sees that no later `gh` call holds the header and that `.git/config` never does.
 
 **Declined:** `format` and `ended` in one class with two scans for the last assistant message (one event schema,
 both tested); the broad catch around `Json.parse` (documented); qualified regex names; a fixture's wording already
@@ -125,4 +136,5 @@ measured by `credential.feature`. `graal` and `concurrency-review` found nothing
 and drops the first, cut line (`AgentEnding.TAIL`). omp's `agent_end` is one line carrying every message of the run,
 so a run whose tool output passes 64 KiB never says how it ended.
 
-**Size:** about 9 fixes and 12 tests; M holds.
+**Size:** 13 fixes: nine with a unit test seen red, B5 a scenario checked on fixture logs, A1, B4 and B6
+without a test; M holds.

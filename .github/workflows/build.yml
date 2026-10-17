@@ -37,6 +37,8 @@ jobs:
         timeout-minutes: 20
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
 
             - name: The pinned GraalVM
               uses: ./.github/actions/pinned-jdk
@@ -79,8 +81,12 @@ jobs:
             # Only main and a tag v<version> publish, and a run that publishes nothing says so rather than skipping silently.
             - name: Not publishing
               if: "!(github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')))"
+              # Through env, never interpolated into the script: a branch's name is anyone's text.
+              env:
+                  EVENT: ${{ github.event_name }}
+                  REF: ${{ github.ref }}
               run: |
-                  echo "Not publishing. This run is '${{ github.event_name }}' on '${{ github.ref }}',"
+                  echo "Not publishing. This run is '$EVENT' on '$REF',"
                   echo "and only a push to main or a tag v<version> publishes. The packages were built and tested here"
                   echo "and are attached to this run as artifacts; nothing reached Artifactory, so"
                   echo "'apt' will still offer whatever was published last."
@@ -143,10 +149,14 @@ jobs:
                   CHANNEL: ${{ steps.channel.outputs.channel }}
               run: |
                   set -eux
-                  # A published release is never replaced, as on Central.
-                  if [ "$CHANNEL" = releases ] && curl -sfL "${JF_URL}/artifactory/porelo-dist-deb/dists/releases/main/binary-amd64/Packages" \
-                          | grep -qF "Filename: pool/main/p/porelo-agent-omp/$(basename target/*.deb)"; then
-                      echo "::error::this release is published already"; exit 1
+                  # A published release is never replaced, as on Central; an index that cannot be read stops it,
+                  # since read as "not published" it would replace one.
+                  if [ "$CHANNEL" = releases ]; then
+                      curl -sfL -o target/released-index "${JF_URL}/artifactory/porelo-dist-deb/dists/releases/main/binary-amd64/Packages" \
+                          || { echo "::error::the release index could not be read, so whether this release is published is unknown"; exit 1; }
+                      if grep -qF "Filename: pool/main/p/porelo-agent-omp/$(basename target/*.deb)" target/released-index; then
+                          echo "::error::this release is published already"; exit 1
+                      fi
                   fi
                   # --flat, or the source directory travels and the package lands beside nothing.
                   jf rt upload "target/*.deb" "porelo-dist-deb/pool/main/p/porelo-agent-omp/" \
@@ -167,20 +177,22 @@ jobs:
                   CHANNEL: ${{ steps.channel.outputs.channel }}
               run: |
                   set -eu
+                  # The exact file, so its version: after the first publish the package's name alone is always there.
+                  DEB="$(basename target/*.deb)"
                   tries=0
                   # -L: Artifactory answers a file with a redirect to its cloud storage, and without it the
                   # body is empty - every package then reads as "not indexed" although it is.
                   while [ "$tries" -lt 20 ]; do
                       if jf rt curl -sL -XGET \
                           "/porelo-dist-deb/dists/${CHANNEL}/main/binary-amd64/Packages" 2>/dev/null \
-                          | grep -q "Package: porelo-agent-omp"; then
-                          echo "  OK    the Debian index lists porelo-agent-omp"
+                          | grep -qF "Filename: pool/main/p/porelo-agent-omp/$DEB"; then
+                          echo "  OK    the Debian index lists $DEB"
                           exit 0
                       fi
                       tries=$((tries + 1))
                       sleep 6
                   done
-                  echo "::error::porelo-agent-omp never appeared in the index - uploaded but not indexed"
+                  echo "::error::$DEB never appeared in the index - uploaded but not indexed"
                   exit 1
 
     acceptance:
@@ -199,6 +211,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
 
             # A release is published only after these legs, so on a tag they install what this run built.
             - name: The packages this run built
@@ -229,12 +243,13 @@ jobs:
                   PORELO_E2E_OPENROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
                   # Here rather than a repository setting, so the model is visible and changes with a commit.
                   PORELO_E2E_MODEL: z-ai/glm-5.3-flash
+                  OS: ${{ matrix.os }}
               # '--cucumber' runs the suite from here as a person at a terminal;
               run: |
                   [ -n "${PORELO_E2E_OPENROUTER_API_KEY:-}" ] || { echo "::error::the secret OPEN_ROUTER_API_KEY is empty - the credential scenarios would be skipped and the leg would prove less"; exit 1; }
                   if [ "$GITHUB_REF_TYPE" = tag ]; then FROM="--package porelo-agent-omp --candidate candidate"; else FROM="--package porelo-agent-omp"; fi
                   java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main acceptance \
-                      --os ${{ matrix.os }} $FROM \
+                      --os "$OS" $FROM \
                       --cucumber .
 
             - name: Delete what this run created
@@ -255,6 +270,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
 
             # A tag publishes a release, everything else a snapshot. A release is refused unless the tag is exactly
             # 'v' plus the version it carries, or built against a Porelo snapshot, and a version is never a release
@@ -307,10 +324,14 @@ jobs:
                   CHANNEL: ${{ steps.channel.outputs.channel }}
               run: |
                   set -eux
-                  # A published release is never replaced, as on Central.
-                  if [ "$CHANNEL" = releases ] && curl -sfL "${JF_URL}/artifactory/porelo-dist-deb/dists/releases/main/binary-amd64/Packages" \
-                          | grep -qF "Filename: pool/main/p/porelo-agent-omp/$(basename target/*.deb)"; then
-                      echo "::error::this release is published already"; exit 1
+                  # A published release is never replaced, as on Central; an index that cannot be read stops it,
+                  # since read as "not published" it would replace one.
+                  if [ "$CHANNEL" = releases ]; then
+                      curl -sfL -o target/released-index "${JF_URL}/artifactory/porelo-dist-deb/dists/releases/main/binary-amd64/Packages" \
+                          || { echo "::error::the release index could not be read, so whether this release is published is unknown"; exit 1; }
+                      if grep -qF "Filename: pool/main/p/porelo-agent-omp/$(basename target/*.deb)" target/released-index; then
+                          echo "::error::this release is published already"; exit 1
+                      fi
                   fi
                   # --flat, or the source directory travels and the package lands beside nothing.
                   jf rt upload "target/*.deb" "porelo-dist-deb/pool/main/p/porelo-agent-omp/" \
@@ -330,18 +351,20 @@ jobs:
                   CHANNEL: ${{ steps.channel.outputs.channel }}
               run: |
                   set -eu
+                  # The exact file, so its version: after the first publish the package's name alone is always there.
+                  DEB="$(basename target/*.deb)"
                   tries=0
                   # -L: Artifactory answers a file with a redirect to its cloud storage, and without it the
                   # body is empty - every package then reads as "not indexed" although it is.
                   while [ "$tries" -lt 20 ]; do
                       if jf rt curl -sL -XGET \
                           "/porelo-dist-deb/dists/${CHANNEL}/main/binary-amd64/Packages" 2>/dev/null \
-                          | grep -q "Package: porelo-agent-omp"; then
-                          echo "  OK    the Debian index lists porelo-agent-omp"
+                          | grep -qF "Filename: pool/main/p/porelo-agent-omp/$DEB"; then
+                          echo "  OK    the Debian index lists $DEB"
                           exit 0
                       fi
                       tries=$((tries + 1))
                       sleep 6
                   done
-                  echo "::error::porelo-agent-omp never appeared in the index - uploaded but not indexed"
+                  echo "::error::$DEB never appeared in the index - uploaded but not indexed"
                   exit 1

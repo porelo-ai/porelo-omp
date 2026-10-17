@@ -13,6 +13,14 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 ### Changed
 
 - Built on the snapshot of `porelo-parent` (0.2.1-SNAPSHOT, with the release tooling 0.5.1-SNAPSHOT), against Porelo 0.5.0.
+- No checkout leaves the job's token in `.git/config`; the weekly update's push gets it from its own environment, and no other step holds it.
+- The weekly update neither calls its pull request green nor merges it unless every step before succeeded, so a step ended by its time limit or a cancel stops it as a failed gate does.
+- A release is not uploaded when the release index cannot be read, and a publish is believed only once the index lists the exact package file it uploaded.
+
+### Fixed
+
+- A log line cut to its readable length is cut between characters, never inside one that takes two UTF-16 units, such as an emoji.
+- The log formatter and the run's end drop every terminal control character but a newline and a tab, so an escape sequence from a model, a tool or a provider cannot act on the terminal that shows the log.
 
 ## [0.5.0] - 2026-10-17
 

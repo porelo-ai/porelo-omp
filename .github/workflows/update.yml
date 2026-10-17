@@ -40,6 +40,8 @@ jobs:
         steps:
 
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
 
             # Before the lookup, which is Porelo's release tool; and before anything is rented, so the
             # cleanup below always has something to run.
@@ -218,8 +220,13 @@ jobs:
                   GH_TOKEN: ${{ github.token }}
                   TARGET: ${{ steps.plan.outputs.target }}
                   WAS: ${{ steps.detect.outputs.pinned }}
+                  JOB_STATUS: ${{ job.status }}
               run: |
                   set -eu
+                  # A step ended by its time limit or a cancel writes no STOP: anything but success is one.
+                  if [ "$JOB_STATUS" != success ] && [ -z "${STOP:-}" ]; then
+                      STOP="a step before this one ended as $JOB_STATUS"
+                  fi
                   git config user.name 'porelo-update'
                   git config user.email 'noreply@fuin.org'
                   if git diff --quiet; then
@@ -229,7 +236,16 @@ jobs:
                   BRANCH="update/oh-my-pi-$TARGET"
                   git checkout -b "$BRANCH"
                   git commit -am "Pin Oh My Pi $TARGET"
+                  # The checkout keeps no token, so the push alone gets it: through its environment, masked,
+                  # never on a command line or in .git/config, and gone before anything else runs.
+                  BASIC="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+                  echo "::add-mask::$BASIC"
+                  export GIT_CONFIG_COUNT=1
+                  export GIT_CONFIG_KEY_0=http.https://github.com/.extraheader
+                  GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $BASIC"
+                  export GIT_CONFIG_VALUE_0
                   git push --force origin "$BRANCH"
+                  unset GIT_CONFIG_COUNT GIT_CONFIG_KEY_0 GIT_CONFIG_VALUE_0 BASIC
 
                   {
                     echo "\`$WAS\` -> \`$TARGET\`, applied by Porelo's release tool: the"
@@ -255,13 +271,13 @@ jobs:
                         echo "packages, an unchanged third-party component set, and the acceptance suites"
                         echo "on Ubuntu and Fedora against these packages rather than the published ones."
                     fi
-                  } > /tmp/body.md
+                  } > "$RUNNER_TEMP/body.md"
                   # A weekly job reaches the same version twice whenever the first attempt stopped.
                   if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
-                      gh pr comment "$BRANCH" --body-file /tmp/body.md
+                      gh pr comment "$BRANCH" --body-file "$RUNNER_TEMP/body.md"
                       echo "the request for $TARGET was already open - re-verified, and said so on it"
                   else
-                      gh pr create --title "Pin Oh My Pi $TARGET" --body-file /tmp/body.md \
+                      gh pr create --title "Pin Oh My Pi $TARGET" --body-file "$RUNNER_TEMP/body.md" \
                                    --head "$BRANCH" --base main
                   fi
                   echo "opened=yes" >> "$GITHUB_OUTPUT"
@@ -274,8 +290,13 @@ jobs:
                   AUTO: ${{ vars.PORELO_UPDATE_AUTO_MERGE }}
                   HAVE_TOKEN: ${{ secrets.PORELO_UPDATE_TOKEN != '' }}
                   TARGET: ${{ steps.plan.outputs.target }}
+                  JOB_STATUS: ${{ job.status }}
               run: |
                   set -eu
+                  # As in the request: a step ended by its time limit or a cancel writes no STOP.
+                  if [ "$JOB_STATUS" != success ] && [ -z "${STOP:-}" ]; then
+                      STOP="a step before this one ended as $JOB_STATUS"
+                  fi
                   if [ -n "${STOP:-}" ]; then
                       echo "Not merging: $STOP."
                       echo "The branch is open for whoever decides it."

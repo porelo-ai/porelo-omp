@@ -47,11 +47,22 @@ public final class OmpJsonFormatter implements LogFormatter {
     private static final java.util.regex.Pattern LEADING_STATUS =
             java.util.regex.Pattern.compile("^([45]\\d{2})\\b");
 
-    /** Long enough for a sentence or a provider's refusal, short enough to stay one line. */
-    private static final int MAX = 300;
+    /**
+     * Long enough for a sentence or a provider's refusal, short enough to stay one line; counted in
+     * code points, so a cut never splits a character in two.
+     */
+    private static final int MAX_CODE_POINTS = 300;
+
+    /** Ends a line that was cut. */
+    private static final String CUT = "…";
 
     @Override
     public @Nullable String format(String line) {
+        final String shown = render(line);
+        return shown == null ? null : printable(shown);
+    }
+
+    private static @Nullable String render(String line) {
 
         final String trimmed = line.strip();
         if (!trimmed.startsWith("{")) {
@@ -136,8 +147,7 @@ public final class OmpJsonFormatter implements LogFormatter {
             return "-- done, " + count;
         }
         // omp retries a refusal it judges transient and ends the run again afterwards, so this end
-        // is
-        // not the last one and must not read like it.
+        // is not the last one and must not read like it.
         if (Boolean.TRUE.equals(event.get("willRetry"))) {
             return "-- error, retrying: " + failure + ", " + count;
         }
@@ -175,7 +185,8 @@ public final class OmpJsonFormatter implements LogFormatter {
             }
         }
         final Map<?, ?> found = last;
-        final String failure = found == null ? null : failure(found);
+        final String said = found == null ? null : failure(found);
+        final String failure = said == null ? null : printable(said);
         if (found == null || failure == null) {
             return new AgentEnd(true, "", AgentEnd.AGENT, null);
         }
@@ -206,11 +217,27 @@ public final class OmpJsonFormatter implements LogFormatter {
         return "request " + reason;
     }
 
+    /**
+     * Drops every ISO control character but a newline and a tab: what is returned is shown on a
+     * person's terminal, where an escape sequence from a model, a tool or a provider would act, not
+     * read.
+     */
+    private static String printable(String text) {
+        final StringBuilder out = new StringBuilder(text.length());
+        text.codePoints()
+                .filter(c -> c == '\n' || c == '\t' || !Character.isISOControl(c))
+                .forEach(out::appendCodePoint);
+        return out.toString();
+    }
+
     private static String collapse(String text) {
         return cut(text.strip().replaceAll("\\s+", " "));
     }
 
     private static String cut(String text) {
-        return text.length() > MAX ? text.substring(0, MAX) + "…" : text;
+        if (text.codePointCount(0, text.length()) <= MAX_CODE_POINTS) {
+            return text;
+        }
+        return text.substring(0, text.offsetByCodePoints(0, MAX_CODE_POINTS)) + CUT;
     }
 }

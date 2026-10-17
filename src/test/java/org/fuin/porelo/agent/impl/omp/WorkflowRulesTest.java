@@ -5,12 +5,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.fuin.porelo.agent.impl.omp.WorkflowSteps.Run;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class WorkflowRulesTest {
+
+    /** A Maven call whose profiles include {@code dist}, in any order: it builds the packages. */
+    private static final Pattern PACKAGE_BUILD =
+            Pattern.compile("\\./mvnw\\b.*\\s-P([\\w-]+,)*dist(,[\\w-]+)*(\\s|$)");
+
+    /** Skips the tests, NativeLinkageCheck and PackageVersionCheck among them. */
+    private static final Pattern SKIPS_TESTS =
+            Pattern.compile("-D(skipTests|maven\\.test\\.skip)(=true)?(\\s|$)");
 
     private static Path workflows() {
         return RepositoryDocuments.root().resolve(".github/workflows");
@@ -19,69 +33,160 @@ class WorkflowRulesTest {
     @Test
     void noWorkflowBuildsPackagesWithoutTheirTests() throws IOException {
 
-        // -DskipTests also skips NativeLinkageCheck, the one test that needs the binary.
+        // -DskipTests also skips NativeLinkageCheck and PackageVersionCheck, the tests that need
+        // the binary and the packages; packages built so ship what nothing ran.
+        final List<String> builds = new ArrayList<>();
         final List<String> skipping = new ArrayList<>();
         try (Stream<Path> files = Files.list(workflows())) {
             for (final Path file :
                     files.filter(f -> f.toString().endsWith(".yml")).sorted().toList()) {
-                final StringBuilder joined = new StringBuilder();
-                for (final String line : Files.readAllLines(file)) {
-                    if (line.endsWith("\\")) {
-                        joined.append(line, 0, line.length() - 1).append(' ');
-                        continue;
-                    }
-                    joined.append(line);
-                    final String command = joined.toString();
-                    if (command.contains("-Pnative,dist") && command.contains("-DskipTests")) {
-                        skipping.add(file.getFileName() + ": " + command.strip());
-                    }
-                    joined.setLength(0);
-                }
-            }
-        }
-        assertThat(skipping).as("package builds that skip their tests").isEmpty();
-    }
-
-    @Test
-    void anAcceptanceLegRefusesToRunWithoutTheKey() throws IOException {
-
-        // Without the key the credential scenarios are skipped, and a green leg proves less.
-        final String build = Files.readString(workflows().resolve("build.yml"));
-        final String update = Files.readString(workflows().resolve("update.yml"));
-        assertThat(build).contains("-n \"${PORELO_E2E_OPENROUTER_API_KEY:-}\"");
-        assertThat(update).contains("-n \"$KEY\"").contains("secrets.OPEN_ROUTER_API_KEY");
-    }
-
-    @Test
-    void noFoldedPackageBuildSkipsItsTests() throws IOException {
-
-        // A command folded onto more-indented lines, with or without a backslash, is still one
-        // command.
-        final List<String> untested = new ArrayList<>();
-        try (Stream<Path> files =
-                Files.list(RepositoryDocuments.root().resolve(".github/workflows"))) {
-            for (final Path file :
-                    files.filter(f -> f.toString().endsWith(".yml")).sorted().toList()) {
-                final List<String> lines = Files.readAllLines(file);
-                for (int i = 0; i < lines.size(); i++) {
-                    if (!lines.get(i).contains("-Pnative,dist")) {
-                        continue;
-                    }
-                    final int indent = indentOf(lines.get(i));
-                    for (int j = i;
-                            j < lines.size()
-                                    && (j == i
-                                            || !lines.get(j).isBlank()
-                                                    && indentOf(lines.get(j)) > indent);
-                            j++) {
-                        if (lines.get(j).contains("-DskipTests")) {
-                            untested.add(file.getFileName() + ":" + (j + 1));
+                for (final String command : commands(Files.readAllLines(file))) {
+                    if (PACKAGE_BUILD.matcher(command).find()) {
+                        builds.add(file.getFileName().toString());
+                        if (SKIPS_TESTS.matcher(command).find()) {
+                            skipping.add(file.getFileName() + ": " + command);
                         }
                     }
                 }
             }
         }
-        assertThat(untested).as("package builds that skip their tests on a folded line").isEmpty();
+        assertThat(builds)
+                .as("the workflows that build the packages, one build each")
+                .containsExactly("build.yml", "update.yml");
+        assertThat(skipping).as("package builds that skip their tests").isEmpty();
+    }
+
+    @Test
+    void seesAPackageBuildWhateverTheOrderOfItsProfilesOrItsFolding() {
+
+        final List<String> commands =
+                commands(
+                        List.of(
+                                "      run: ./mvnw -B -Pdist,native verify",
+                                "          -DskipTests",
+                                "      run: |",
+                                "          ./mvnw -B -Pnative,dist verify \\",
+                                "          -Dmaven.test.skip=true"));
+        assertThat(commands).as("commands read from a folded and a continued line").hasSize(2);
+        assertThat(commands)
+                .allSatisfy(
+                        command -> {
+                            assertThat(PACKAGE_BUILD.matcher(command).find())
+                                    .as("a package build: %s", command)
+                                    .isTrue();
+                            assertThat(SKIPS_TESTS.matcher(command).find())
+                                    .as("skips its tests: %s", command)
+                                    .isTrue();
+                        });
+        assertThat(PACKAGE_BUILD.matcher("./mvnw -B -Pnative verify").find())
+                .as("a build without the dist profile")
+                .isFalse();
+        assertThat(PACKAGE_BUILD.matcher("./mvnw -B -Pdistx verify").find())
+                .as("a profile that only starts with dist")
+                .isFalse();
+    }
+
+    @Test
+    void anAcceptanceLegRefusesToRunWithoutTheKey(@TempDir final Path dir) throws Exception {
+
+        // Without the key the credential scenarios are skipped, and a green leg proves less.
+        final List<String> steps =
+                WorkflowSteps.scripts("build.yml", "Acceptance on ${{ matrix.os }}");
+        assertThat(steps).as("the acceptance step of build.yml").hasSize(1);
+        final Path calls = stubJava(dir);
+        final Map<String, String> env = new HashMap<>();
+        env.put("PATH", dir + ":" + System.getenv("PATH"));
+        env.put("GITHUB_REF_TYPE", "branch");
+        env.put("OS", "ubuntu");
+        env.put("PORELO_E2E_OPENROUTER_API_KEY", "");
+
+        final Run empty = WorkflowSteps.run(steps.get(0), dir, env, WorkflowSteps.LIMIT);
+        assertThat(empty.exit())
+                .as("exit of the leg with an empty key:%n%s", empty.output())
+                .isNotZero();
+        assertThat(empty.output()).contains("the secret OPEN_ROUTER_API_KEY is empty");
+        assertThat(calls).as("the acceptance run although the key is empty").doesNotExist();
+
+        // With a key the same step reaches the acceptance, so the refusal above is the key's.
+        env.put("PORELO_E2E_OPENROUTER_API_KEY", "sk-or-not-a-key");
+        final Run keyed = WorkflowSteps.run(steps.get(0), dir, env, WorkflowSteps.LIMIT);
+        assertThat(keyed.exit()).as("exit of the leg with a key:%n%s", keyed.output()).isZero();
+        assertThat(Files.readString(calls))
+                .as("what the leg ran with a key")
+                .contains("acceptance --os ubuntu");
+    }
+
+    @Test
+    void theUpdateStopsWithoutTheKey(@TempDir final Path dir) throws Exception {
+
+        // The update merges what its legs passed; a leg without the key passes less than it says.
+        final List<String> steps =
+                WorkflowSteps.scripts("update.yml", "The credential scenarios can run");
+        assertThat(steps).as("the key's gate in update.yml").hasSize(1);
+        final Path githubEnv = dir.resolve("github-env");
+
+        Files.writeString(githubEnv, "");
+        final Run empty =
+                WorkflowSteps.run(
+                        steps.get(0),
+                        dir,
+                        Map.of("KEY", "", "GITHUB_ENV", githubEnv.toString()),
+                        WorkflowSteps.LIMIT);
+        assertThat(empty.exit()).as("exit of the gate:%n%s", empty.output()).isZero();
+        assertThat(Files.readString(githubEnv))
+                .as("what the gate left for the later steps with an empty key")
+                .startsWith("STOP=");
+
+        Files.writeString(githubEnv, "");
+        WorkflowSteps.run(
+                steps.get(0),
+                dir,
+                Map.of("KEY", "sk-or-not-a-key", "GITHUB_ENV", githubEnv.toString()),
+                WorkflowSteps.LIMIT);
+        assertThat(Files.readString(githubEnv))
+                .as("what the gate left for the later steps with a key")
+                .isEmpty();
+    }
+
+    /**
+     * Joins each command of a workflow: a line continued with a backslash, or folded onto the
+     * more-indented lines after it, is one command. A step's whole block joins too, which can only
+     * make a package build look as if it skipped its tests, never hide one that does.
+     */
+    private static List<String> commands(final List<String> lines) {
+        final List<String> result = new ArrayList<>();
+        int i = 0;
+        while (i < lines.size()) {
+            final int indent = indentOf(lines.get(i));
+            final StringBuilder command = new StringBuilder(strip(lines.get(i)));
+            i++;
+            while (i < lines.size()
+                    && !lines.get(i).isBlank()
+                    && !lines.get(i).strip().startsWith("#")
+                    && !lines.get(i).strip().startsWith("- ")
+                    && (lines.get(i - 1).endsWith("\\") || indentOf(lines.get(i)) > indent)) {
+                command.append(' ').append(strip(lines.get(i)));
+                i++;
+            }
+            result.add(command.toString().strip());
+        }
+        return result;
+    }
+
+    private static String strip(final String line) {
+        final String text = line.strip();
+        return text.endsWith("\\") ? text.substring(0, text.length() - 1).strip() : text;
+    }
+
+    /** A {@code java} on the PATH that records its arguments and succeeds. */
+    private static Path stubJava(final Path dir) throws IOException {
+        final Path calls = dir.resolve("java-calls");
+        final Path java = dir.resolve("java");
+        Files.writeString(java, "#!/bin/sh\necho \"$*\" >> '" + calls + "'\n");
+        Files.setPosixFilePermissions(java, PosixFilePermissions.fromString("rwxr-xr-x"));
+        Files.createDirectories(dir.resolve("target"));
+        Files.writeString(dir.resolve("target/cp.txt"), "cp");
+        return calls;
     }
 
     private static int indentOf(final String line) {

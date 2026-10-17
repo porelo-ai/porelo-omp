@@ -41,8 +41,7 @@ class DocumentTestsTaggedTest {
                         .toList();
 
         // The shared document checks of porelo-release replaced the tests that read documents, so
-        // the scan
-        // proves it reaches the test sources by the tests that are left.
+        // the scan proves it reaches the test sources by the tests that are left.
         assertThat(tests)
                 .as("the scan must reach the test sources")
                 .anySatisfy(

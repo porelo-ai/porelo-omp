@@ -174,8 +174,8 @@ class OmpAgentTest {
     void saysWhenItIsAtRestAsMeasuredAtATerminal() {
 
         // Porelo types its wake line only where this matches the last lines of the screen. The
-        // screens are
-        // cut from ones measured on the VM: after an answer, and during a 'sleep 90' tool call.
+        // screens are cut from ones measured on the VM: after an answer, and during a 'sleep 90'
+        // tool call.
         final var atRest = agent.definition().atRest();
         assertThat(atRest).isNotNull();
         assertThat(atRest.shows()).containsExactly("π > ", "📁 /workspace");

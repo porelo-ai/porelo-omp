@@ -84,4 +84,20 @@ class OmpAgentEndTest {
         assertThat(agent.ended("not json")).isNull();
         assertThat(agent.ended("{\"type\":\"agent_end\",\"messages\":\"not a list\"}")).isNull();
     }
+
+    @Test
+    void saysHowItEndedWithoutTerminalControlCharacters() {
+
+        // Porelo shows the reason on a person's terminal, where an escape sequence from the
+        // provider's message would act rather than read.
+        final AgentEnd end =
+                agent.ended(
+                        "{\"type\":\"agent_end\",\"messages\":[{\"role\":\"assistant\",\"content\":[],"
+                                + "\"stopReason\":\"error\",\"errorStatus\":401,"
+                                + "\"errorMessage\":\"401 \\u001b[2Jno \\u009b2J\\u0007key\"}]}");
+        assertThat(end).isNotNull();
+        assertThat(end.error().codePoints().filter(Character::isISOControl).toArray())
+                .as("control characters in the error %s", end.error())
+                .isEmpty();
+    }
 }

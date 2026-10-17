@@ -2,6 +2,7 @@ package org.fuin.porelo.agent.impl.omp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -195,5 +196,36 @@ class OmpJsonFormatterTest {
         assertThat(formatter.format(noTool)).isEqualTo("[unreadable] " + noTool);
         final String noMessages = "{\"type\":\"agent_end\"}";
         assertThat(formatter.format(noMessages)).isEqualTo("[unreadable] " + noMessages);
+    }
+
+    @Test
+    void passesNoTerminalControlCharacterToTheTerminal() {
+
+        // The log is shown on a person's terminal; an escape sequence from a model, a tool or a
+        // provider could clear it, move the cursor or retitle the window there. A newline and a tab
+        // only lay text out.
+        final String escape = "\u001b[2J";
+        final String csi = "\u009b2J";
+        final List<String> lines =
+                List.of(
+                        "a" + escape + "b" + csi + "c\u0007d",
+                        "{\"type\":\"something_new\",\"value\":\"a\u001b]0;title\u0007b\"}",
+                        "{\"type\":\"message_end\",\"message\":{\"role\":\"assistant\",\"content\":["
+                                + "{\"type\":\"text\",\"text\":\"a\\u001b[2Jb\\u009b2Jc\"}]}}",
+                        "{\"type\":\"tool_execution_start\",\"toolCallId\":\"t1\",\"toolName\":\"ba\\u001b[2Jsh\"}",
+                        "{\"type\":\"agent_end\",\"messages\":[{\"role\":\"assistant\",\"content\":[],"
+                                + "\"stopReason\":\"error\",\"errorMessage\":\"401 \\u001b[2Jno\"}]}");
+        for (final String line : lines) {
+            final String shown = formatter.format(line);
+            assertThat(shown).as("what %s shows", line).isNotNull();
+            assertThat(shown.codePoints().filter(OmpJsonFormatterTest::control).toArray())
+                    .as("control characters shown for %s: %s", line, shown)
+                    .isEmpty();
+        }
+        assertThat(formatter.format("a\tb")).as("a tab stays").isEqualTo("a\tb");
+    }
+
+    private static boolean control(final int codePoint) {
+        return Character.isISOControl(codePoint) && codePoint != '\n' && codePoint != '\t';
     }
 }
