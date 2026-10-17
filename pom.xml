@@ -158,6 +158,13 @@
 
         <plugins>
 
+            <!-- The shared code style: porelo-parent checks Java against google-java-format and every
+                 *.sh against shfmt in validate; 'spotless:apply' formats them. -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+
             <!-- This package's bill. It covers the adapter alone: the tool is fetched by the
                  image build from a pinned URL rather than carried here, so it is not part of
                  what this package ships. The supply-chain roster answers for that half. -->

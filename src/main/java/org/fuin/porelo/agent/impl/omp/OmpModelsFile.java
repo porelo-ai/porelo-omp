@@ -4,14 +4,14 @@ import org.fuin.porelo.wire.Json;
 
 /**
  * The models file that points Oh My Pi at Porelo's broker.
- * <p>
- * omp cannot be redirected with an environment variable, and its extension API cannot do it
+ *
+ * <p>omp cannot be redirected with an environment variable, and its extension API cannot do it
  * either: an extension calling {@code registerProvider(name, {baseUrl})} for a built-in provider
  * loads and runs, and the requests still go to the provider's own host. Measured against 18.1.13.
- * What does redirect it is {@code providers.<name>.baseUrl} in the models file, which is
- * data rather than code and is read before the first request.
- * <p>
- * Neither the provider's name nor the dialect's path is written here: the name arrives with the
+ * What does redirect it is {@code providers.<name>.baseUrl} in the models file, which is data
+ * rather than code and is read before the first request.
+ *
+ * <p>Neither the provider's name nor the dialect's path is written here: the name arrives with the
  * task, and the path is already on the endpoint Porelo hands over.
  */
 final class OmpModelsFile {
@@ -31,7 +31,7 @@ final class OmpModelsFile {
      *
      * @param provider Name of the provider, as omp already knows it.
      * @param endpoint Base URL Porelo is listening on, inside this container's namespace, with the
-     *        dialect's path already on it.
+     *     dialect's path already on it.
      * @param token Task-scoped token to present, standing in for the real credential.
      * @return File content.
      */
@@ -45,6 +45,7 @@ final class OmpModelsFile {
                   %s:
                     baseUrl: %s
                     apiKey: %s
-                """.formatted(Json.write(provider), Json.write(endpoint), Json.write(token));
+                """
+                .formatted(Json.write(provider), Json.write(endpoint), Json.write(token));
     }
 }

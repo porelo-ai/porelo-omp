@@ -1,6 +1,4 @@
-/**
- * The Porelo adapter for Oh My Pi.
- */
+/** The Porelo adapter for Oh My Pi. */
 @NullMarked
 package org.fuin.porelo.agent.impl.omp;
 

@@ -22,7 +22,8 @@ class WorkflowRulesTest {
         // -DskipTests also skips NativeLinkageCheck, the one test that needs the binary.
         final List<String> skipping = new ArrayList<>();
         try (Stream<Path> files = Files.list(workflows())) {
-            for (final Path file : files.filter(f -> f.toString().endsWith(".yml")).sorted().toList()) {
+            for (final Path file :
+                    files.filter(f -> f.toString().endsWith(".yml")).sorted().toList()) {
                 final StringBuilder joined = new StringBuilder();
                 for (final String line : Files.readAllLines(file)) {
                     if (line.endsWith("\\")) {
@@ -54,17 +55,25 @@ class WorkflowRulesTest {
     @Test
     void noFoldedPackageBuildSkipsItsTests() throws IOException {
 
-        // A command folded onto more-indented lines, with or without a backslash, is still one command.
+        // A command folded onto more-indented lines, with or without a backslash, is still one
+        // command.
         final List<String> untested = new ArrayList<>();
-        try (Stream<Path> files = Files.list(RepositoryDocuments.root().resolve(".github/workflows"))) {
-            for (final Path file : files.filter(f -> f.toString().endsWith(".yml")).sorted().toList()) {
+        try (Stream<Path> files =
+                Files.list(RepositoryDocuments.root().resolve(".github/workflows"))) {
+            for (final Path file :
+                    files.filter(f -> f.toString().endsWith(".yml")).sorted().toList()) {
                 final List<String> lines = Files.readAllLines(file);
                 for (int i = 0; i < lines.size(); i++) {
                     if (!lines.get(i).contains("-Pnative,dist")) {
                         continue;
                     }
                     final int indent = indentOf(lines.get(i));
-                    for (int j = i; j < lines.size() && (j == i || !lines.get(j).isBlank() && indentOf(lines.get(j)) > indent); j++) {
+                    for (int j = i;
+                            j < lines.size()
+                                    && (j == i
+                                            || !lines.get(j).isBlank()
+                                                    && indentOf(lines.get(j)) > indent);
+                            j++) {
                         if (lines.get(j).contains("-DskipTests")) {
                             untested.add(file.getFileName() + ":" + (j + 1));
                         }

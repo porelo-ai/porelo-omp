@@ -11,9 +11,7 @@ import org.fuin.porelo.agent.api.SetupContext;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
-/**
- * Tests for {@link OmpContainerSetup}.
- */
+/** Tests for {@link OmpContainerSetup}. */
 class OmpContainerSetupTest {
 
     private static final String TOKEN = "porelo_pt_example";
@@ -41,8 +39,8 @@ class OmpContainerSetupTest {
         // ~/.omp/agent, not ~/.pi/agent: the fork moved its configuration directory, and the two
         // are installed side by side.
         assertThat(paths(files("http://127.0.0.1:9419/api/v1")))
-                .containsExactlyInAnyOrder("/home/agent/.omp/agent/models.yml",
-                        "/home/agent/.omp/agent/config.yml");
+                .containsExactlyInAnyOrder(
+                        "/home/agent/.omp/agent/models.yml", "/home/agent/.omp/agent/config.yml");
     }
 
     @Test
@@ -61,7 +59,8 @@ class OmpContainerSetupTest {
 
         assertThat(models("http://127.0.0.1:9419").content()).contains(TOKEN);
         assertThat(models("http://127.0.0.1:9419").ownerOnly())
-                .as("it holds a token, so it is not world readable").isTrue();
+                .as("it holds a token, so it is not world readable")
+                .isTrue();
     }
 
     @Test
@@ -75,15 +74,25 @@ class OmpContainerSetupTest {
     @Test
     void survivesATokenWithCharactersThatWouldBreakTheFile() {
 
-        final List<ContainerFile> files = new OmpContainerSetup().files(new SetupContext(
-                "tok\"en\\with\nquotes", "api-key", "/workspace", "http://127.0.0.1:9419",
-                "openrouter"));
+        final List<ContainerFile> files =
+                new OmpContainerSetup()
+                        .files(
+                                new SetupContext(
+                                        "tok\"en\\with\nquotes",
+                                        "api-key",
+                                        "/workspace",
+                                        "http://127.0.0.1:9419",
+                                        "openrouter"));
 
         // Read back as a YAML reader reads it: the claim is that the token arrives intact, not that
         // some escape appears in the text.
-        final Map<?, ?> providers = (Map<?, ?>) new Yaml().<Map<?, ?>>load(named(files, OmpModelsFile.PATH).content())
-                .get("providers");
-        assertThat(((Map<?, ?>) providers.get("openrouter")).get("apiKey")).isEqualTo("tok\"en\\with\nquotes");
+        final Map<?, ?> providers =
+                (Map<?, ?>)
+                        new Yaml()
+                                .<Map<?, ?>>load(named(files, OmpModelsFile.PATH).content())
+                                .get("providers");
+        assertThat(((Map<?, ?>) providers.get("openrouter")).get("apiKey"))
+                .isEqualTo("tok\"en\\with\nquotes");
     }
 
     @Test
@@ -91,8 +100,16 @@ class OmpContainerSetupTest {
 
         // The endpoint alone is half a wiring: the models file would carry an empty token, which
         // omp rejects looking exactly like a wrong one.
-        assertThat(paths(new OmpContainerSetup().files(new SetupContext(
-                "  ", "api-key", "/workspace", "http://127.0.0.1:9419", "openrouter"))))
+        assertThat(
+                        paths(
+                                new OmpContainerSetup()
+                                        .files(
+                                                new SetupContext(
+                                                        "  ",
+                                                        "api-key",
+                                                        "/workspace",
+                                                        "http://127.0.0.1:9419",
+                                                        "openrouter"))))
                 .containsExactly(OmpConfigFile.PATH);
     }
 
@@ -110,7 +127,8 @@ class OmpContainerSetupTest {
 
         // Measured on 18.1.13: a fresh task opens at a five-step setup wizard - providers, default
         // model, glyphs, layout, theme - even with a credential in place. Skipping it writes
-        // setupVersion: 2 here and nothing else that matters; with that line the prompt comes first.
+        // setupVersion: 2 here and nothing else that matters; with that line the prompt comes
+        // first.
         assertThat(named(files(""), OmpConfigFile.PATH).content()).contains("setupVersion: 2\n");
     }
 
@@ -120,9 +138,20 @@ class OmpContainerSetupTest {
         // Measured on 18.4.1 with 'porelo task start --provider github-copilot --model gpt-4.1':
         // without this omp took gpt-4.1 to be openai's, which the task has no key for. Read back as
         // a YAML reader reads it, since the claim is the list omp gets, not some text in the file.
-        final Map<?, ?> settings = new Yaml().load(named(new OmpContainerSetup().files(new SetupContext(
-                TOKEN, "oauth-device", "/workspace", "http://127.0.0.1:9419", "github-copilot")),
-                OmpConfigFile.PATH).content());
+        final Map<?, ?> settings =
+                new Yaml()
+                        .load(
+                                named(
+                                                new OmpContainerSetup()
+                                                        .files(
+                                                                new SetupContext(
+                                                                        TOKEN,
+                                                                        "oauth-device",
+                                                                        "/workspace",
+                                                                        "http://127.0.0.1:9419",
+                                                                        "github-copilot")),
+                                                OmpConfigFile.PATH)
+                                        .content());
         assertThat(settings.get("modelProviderOrder")).isEqualTo(List.of("github-copilot"));
     }
 
@@ -131,8 +160,20 @@ class OmpContainerSetupTest {
 
         // An unbrokered task can come without a provider; an entry naming "" would rank nothing
         // and only look like configuration.
-        final Map<?, ?> settings = new Yaml().load(named(new OmpContainerSetup().files(new SetupContext(
-                "", "", "/workspace", "", "")), OmpConfigFile.PATH).content());
+        final Map<?, ?> settings =
+                new Yaml()
+                        .load(
+                                named(
+                                                new OmpContainerSetup()
+                                                        .files(
+                                                                new SetupContext(
+                                                                        "",
+                                                                        "",
+                                                                        "/workspace",
+                                                                        "",
+                                                                        "")),
+                                                OmpConfigFile.PATH)
+                                        .content());
         assertThat(settings.containsKey("modelProviderOrder")).isFalse();
     }
 
@@ -151,8 +192,17 @@ class OmpContainerSetupTest {
         // Porelo never sends one: no provider chosen means no endpoint either. A file naming the
         // provider "" would override nothing and fail as a wrong credential, so a blank one is
         // Porelo's regression, and saying so is what would find it.
-        assertThatThrownBy(() -> new OmpContainerSetup().files(new SetupContext(
-                "porelo_pt_x", "api-key", "/workspace", "http://127.0.0.1:9419", " ")))
-                .isInstanceOf(AgentException.class).hasMessageContaining("empty provider");
+        assertThatThrownBy(
+                        () ->
+                                new OmpContainerSetup()
+                                        .files(
+                                                new SetupContext(
+                                                        "porelo_pt_x",
+                                                        "api-key",
+                                                        "/workspace",
+                                                        "http://127.0.0.1:9419",
+                                                        " ")))
+                .isInstanceOf(AgentException.class)
+                .hasMessageContaining("empty provider");
     }
 }
