@@ -10,8 +10,7 @@ agent's documentation says whose app that is. A GitHub Enterprise host is not of
 
 ## Why
 
-Porelo grants a provider with one command
-([B132](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b132)), and takes the client id from
+Porelo grants a provider with one command, `porelo vault authorize <provider>`, and takes the client id from
 the installed agent's `login.grants.<provider>`: one id per host and the app's owner. `omp.yaml` declares
 none, so the command refuses as for an agent that does not sign in.
 
