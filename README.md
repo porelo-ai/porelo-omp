@@ -1,27 +1,27 @@
-# sokar-omp
+# porelo-omp
 
 <img src="doc/images/early-bird.svg" width="350" alt="Early bird - work in progress">
 
-> **Early bird - work in progress.** Sokar is not stable yet: until release 1.0.0, its code, commands
+> **Early bird - work in progress.** Porelo is not stable yet: until release 1.0.0, its code, commands
 > and file formats can change without notice.
 
 Runs [Oh My Pi](https://github.com/can1357/oh-my-pi) (`omp`) inside
-[Sokar](https://github.com/sokar-ai/sokar): in a hardened container, reaching only what it needs,
+[Porelo](https://github.com/porelo-ai/porelo): in a hardened container, reaching only what it needs,
 with your credential kept on the machine and its work waiting for your review. It is not
-[Pi](https://github.com/earendil-works/pi), which [sokar-pi](https://github.com/sokar-ai/sokar-pi)
+[Pi](https://github.com/earendil-works/pi), which [porelo-pi](https://github.com/porelo-ai/porelo-pi)
 adapts.
-It is an adapter, not Sokar: it describes the agent and shapes in Java only what the agent cannot
-express as data, and it depends on Sokar's published agent API alone, never on Sokar's implementation.
+It is an adapter, not Porelo: it describes the agent and shapes in Java only what the agent cannot
+express as data, and it depends on Porelo's published agent API alone, never on Porelo's implementation.
 
-Its documentation: **<https://sokar-ai.github.io/omp/>**.
+Its documentation: **<https://porelo-ai.github.io/omp/>**.
 
 ## Install
 
-Once Sokar's package repository is set up, as Sokar's
-[getting started](https://github.com/sokar-ai/sokar/blob/main/doc/getting-started.md) describes:
+Once Porelo's package repository is set up, as Porelo's
+[getting started](https://github.com/porelo-ai/porelo/blob/main/doc/getting-started.md) describes:
 
 ```
-sudo apt install sokar-agent-omp      # or: sudo dnf install sokar-agent-omp
+sudo apt install porelo-agent-omp      # or: sudo dnf install porelo-agent-omp
 ```
 
 How to sign in, start a task, what the task reaches and what to read when it does not work:

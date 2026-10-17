@@ -14,11 +14,11 @@ on:
     paths-ignore: ['**/*.md', 'mkdocs.yml', 'doc/**', 'issues/**']
   workflow_dispatch:
 
-# Read by every Maven call, the pinned-jdk action's too. On a tag -Dsokar.release: nothing from Central's
+# Read by every Maven call, the pinned-jdk action's too. On a tag -Dporelo.release: nothing from Central's
 # snapshots and nothing asked for again, so a release is built from releases only. Elsewhere -U: Maven asks
-# for a newer snapshot once a day, and a cache restored the day Sokar publishes would keep yesterday's.
+# for a newer snapshot once a day, and a cache restored the day Porelo publishes would keep yesterday's.
 env:
-  MAVEN_ARGS: ${{ startsWith(github.ref, 'refs/tags/v') && '-Dsokar.release' || '-U' }}
+  MAVEN_ARGS: ${{ startsWith(github.ref, 'refs/tags/v') && '-Dporelo.release' || '-U' }}
 
 # Read-only: nothing in this workflow writes to the repository with its token.
 permissions:
@@ -46,19 +46,19 @@ jobs:
         run: ./mvnw -B -s settings.xml verify
 
       # A bump that forgets the digest builds and packages green, and fails at an image build.
-      # Sokar's release tool and the machine tooling, resolved once for every step that calls them.
+      # Porelo's release tool and the machine tooling, resolved once for every step that calls them.
       - name: Resolve the release and machine tooling
         run: |
           ./mvnw -B -q -Pci-tools -s settings.xml dependency:build-classpath \
               -Dmdep.outputFile=target/cp.txt
 
       - name: The pin agrees everywhere it is written
-        run: java -cp "$(cat target/cp.txt)" org.fuin.sokar.release.Main check-pin
+        run: java -cp "$(cat target/cp.txt)" org.fuin.porelo.release.Main check-pin
 
       # What every workflow step runs is pinned, and Dependabot moves the pins: the shared rule, refused
       # here when broken - a tag, a version-name JDK action, a pin without its exact release.
       - name: Every workflow step is pinned
-        run: java -cp "$(cat target/cp.txt)" org.fuin.sokar.release.Main check-actions
+        run: java -cp "$(cat target/cp.txt)" org.fuin.porelo.release.Main check-actions
 
       # The packages are what an operator installs;
       # Not -DskipTests: that also skips NativeLinkageCheck and PackageVersionCheck, the tests that
@@ -86,7 +86,7 @@ jobs:
           echo "'apt' will still offer whatever was published last."
 
       # A tag publishes a release, everything else a snapshot. A release is refused unless the tag is exactly
-      # 'v' plus the version it carries, or built against a Sokar snapshot, and a version is never a release
+      # 'v' plus the version it carries, or built against a Porelo snapshot, and a version is never a release
       # and a snapshot at once.
       - name: Which channel
         id: channel
@@ -95,16 +95,16 @@ jobs:
           set -eu
           VERSION="$(sed -n 's|^    <version>\(.*\)</version>$|\1|p' pom.xml | head -1)"
           [ -n "$VERSION" ] || { echo "::error::no version in pom.xml"; exit 1; }
-          SOKAR="$(sed -n 's|^        <sokar.version>\(.*\)</sokar.version>$|\1|p' pom.xml | head -1)"
-          [ -n "$SOKAR" ] || { echo "::error::no sokar.version in pom.xml"; exit 1; }
+          PORELO="$(sed -n 's|^        <porelo.version>\(.*\)</porelo.version>$|\1|p' pom.xml | head -1)"
+          [ -n "$PORELO" ] || { echo "::error::no porelo.version in pom.xml"; exit 1; }
           if [ "$GITHUB_REF_TYPE" = tag ]; then
               [ "$GITHUB_REF_NAME" = "v$VERSION" ] \
                   || { echo "::error::the tag $GITHUB_REF_NAME is not v$VERSION, the version this commit carries"; exit 1; }
               case "$VERSION" in
                   *-SNAPSHOT) echo "::error::$VERSION is a snapshot; a release carries its own version"; exit 1 ;;
               esac
-              case "$SOKAR" in
-                  *-SNAPSHOT) echo "::error::sokar.version $SOKAR is a snapshot; a release is built against a released Sokar"; exit 1 ;;
+              case "$PORELO" in
+                  *-SNAPSHOT) echo "::error::porelo.version $PORELO is a snapshot; a release is built against a released Porelo"; exit 1 ;;
               esac
               echo "channel=releases" >> "$GITHUB_OUTPUT"
           else
@@ -117,13 +117,13 @@ jobs:
           echo "  $VERSION -> $(tail -1 "$GITHUB_OUTPUT")"
 
       # A release depends only on releases: every -SNAPSHOT in the effective pom - dependencies, the imported
-      # BOM, plugins and their dependencies such as sokar-release, inactive profiles too - refuses the tag.
+      # BOM, plugins and their dependencies such as porelo-release, inactive profiles too - refuses the tag.
       - name: A release depends only on releases
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         run: |
           ./mvnw -B -s settings.xml help:effective-pom -Doutput=target/effective-pom.xml
-          java -cp "$(cat target/cp.txt)" org.fuin.sokar.release.Main check-releases target/effective-pom.xml \
-              --requires org.fuin.sokar:sokar-release
+          java -cp "$(cat target/cp.txt)" org.fuin.porelo.release.Main check-releases target/effective-pom.xml \
+              --requires org.fuin.porelo:porelo-release
 
       # Off: build-info goes to a repository this token cannot write, warning on every run.
       - uses: jfrog/setup-jfrog-cli@68c0efdc951dd2359bbbfa15c48bc67b3ae8e4d6 # v5.2.0
@@ -134,7 +134,7 @@ jobs:
           JF_URL: ${{ vars.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
 
-      # Sokar's own repositories, because this package depends on sokar; deb.* is what indexes it.
+      # Porelo's own repositories, because this package depends on porelo; deb.* is what indexes it.
       - name: Publish the packages
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
@@ -144,19 +144,19 @@ jobs:
         run: |
           set -eux
           # A published release is never replaced, as on Central.
-          if [ "$CHANNEL" = releases ] && curl -sfL "${JF_URL}/artifactory/sokar-dist-deb/dists/releases/main/binary-amd64/Packages" \
-                  | grep -qF "Filename: pool/main/s/sokar-agent-omp/$(basename target/*.deb)"; then
+          if [ "$CHANNEL" = releases ] && curl -sfL "${JF_URL}/artifactory/porelo-dist-deb/dists/releases/main/binary-amd64/Packages" \
+                  | grep -qF "Filename: pool/main/p/porelo-agent-omp/$(basename target/*.deb)"; then
               echo "::error::this release is published already"; exit 1
           fi
           # --flat, or the source directory travels and the package lands beside nothing.
-          jf rt upload "target/*.deb" "sokar-dist-deb/pool/main/s/sokar-agent-omp/" \
+          jf rt upload "target/*.deb" "porelo-dist-deb/pool/main/p/porelo-agent-omp/" \
               --flat=true \
               --target-props="deb.distribution=${CHANNEL};deb.component=main;deb.architecture=amd64"
-          jf rt upload "target/*.rpm" "sokar-dist-rpm/${CHANNEL}/" --flat=true
+          jf rt upload "target/*.rpm" "porelo-dist-rpm/${CHANNEL}/" --flat=true
 
           # The bill beside the package, readable without installing.
-          jf rt upload "target/sokar-agent-omp.cdx.json" "sokar-dist-deb/pool/main/s/sokar-agent-omp/" --flat=true
-          jf rt upload "target/sokar-agent-omp.cdx.json" "sokar-dist-rpm/${CHANNEL}/" --flat=true
+          jf rt upload "target/porelo-agent-omp.cdx.json" "porelo-dist-deb/pool/main/p/porelo-agent-omp/" --flat=true
+          jf rt upload "target/porelo-agent-omp.cdx.json" "porelo-dist-rpm/${CHANNEL}/" --flat=true
 
       # Uploaded is not installable: indexing is asynchronous, and silent when it fails.
       - name: The package is indexed, not merely stored
@@ -172,15 +172,15 @@ jobs:
           # body is empty - every package then reads as "not indexed" although it is.
           while [ "$tries" -lt 20 ]; do
               if jf rt curl -sL -XGET \
-                  "/sokar-dist-deb/dists/${CHANNEL}/main/binary-amd64/Packages" 2>/dev/null \
-                  | grep -q "Package: sokar-agent-omp"; then
-                  echo "  OK    the Debian index lists sokar-agent-omp"
+                  "/porelo-dist-deb/dists/${CHANNEL}/main/binary-amd64/Packages" 2>/dev/null \
+                  | grep -q "Package: porelo-agent-omp"; then
+                  echo "  OK    the Debian index lists porelo-agent-omp"
                   exit 0
               fi
               tries=$((tries + 1))
               sleep 6
           done
-          echo "::error::sokar-agent-omp never appeared in the index - uploaded but not indexed"
+          echo "::error::porelo-agent-omp never appeared in the index - uploaded but not indexed"
           exit 1
 
   acceptance:
@@ -219,21 +219,21 @@ jobs:
           ./mvnw -B -q -Pci-tools -s settings.xml dependency:build-classpath \
               -Dmdep.outputFile=target/cp.txt
 
-      # SOKAR_E2E_OPENROUTER_API_KEY turns tier 2 on;
+      # PORELO_E2E_OPENROUTER_API_KEY turns tier 2 on;
       - name: Acceptance on ${{ matrix.os }}
         timeout-minutes: 30
         env:
           HETZNER_API: ${{ secrets.HETZNER_API }}
           HETZNER_SSH: ${{ secrets.HETZNER_SSH }}
-          SOKAR_CI_LEG: acc-${{ matrix.os }}
-          SOKAR_E2E_OPENROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          PORELO_CI_LEG: acc-${{ matrix.os }}
+          PORELO_E2E_OPENROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
           # Here rather than a repository setting, so the model is visible and changes with a commit.
-          SOKAR_E2E_MODEL: z-ai/glm-5.3-flash
+          PORELO_E2E_MODEL: z-ai/glm-5.3-flash
         # '--cucumber' runs the suite from here as a person at a terminal;
         run: |
-          [ -n "${SOKAR_E2E_OPENROUTER_API_KEY:-}" ] || { echo "::error::the secret OPEN_ROUTER_API_KEY is empty - the credential scenarios would be skipped and the leg would prove less"; exit 1; }
-          if [ "$GITHUB_REF_TYPE" = tag ]; then FROM="--package sokar-agent-omp --candidate candidate"; else FROM="--package sokar-agent-omp"; fi
-          java -cp "$(cat target/cp.txt)" org.fuin.sokar.machines.Main acceptance \
+          [ -n "${PORELO_E2E_OPENROUTER_API_KEY:-}" ] || { echo "::error::the secret OPEN_ROUTER_API_KEY is empty - the credential scenarios would be skipped and the leg would prove less"; exit 1; }
+          if [ "$GITHUB_REF_TYPE" = tag ]; then FROM="--package porelo-agent-omp --candidate candidate"; else FROM="--package porelo-agent-omp"; fi
+          java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main acceptance \
               --os ${{ matrix.os }} $FROM \
               --cucumber .
 
@@ -241,8 +241,8 @@ jobs:
         if: always()
         env:
           HETZNER_API: ${{ secrets.HETZNER_API }}
-          SOKAR_CI_LEG: acc-${{ matrix.os }}
-        run: java -cp "$(cat target/cp.txt)" org.fuin.sokar.machines.Main sweep --mine
+          PORELO_CI_LEG: acc-${{ matrix.os }}
+        run: java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main sweep --mine
 
   # A release is never replaced and is what people install, so it waits for every job of the run, the legs
   # on rented machines included. A snapshot publishes from the build job, beside a leg still running.
@@ -257,7 +257,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # A tag publishes a release, everything else a snapshot. A release is refused unless the tag is exactly
-      # 'v' plus the version it carries, or built against a Sokar snapshot, and a version is never a release
+      # 'v' plus the version it carries, or built against a Porelo snapshot, and a version is never a release
       # and a snapshot at once.
       - name: Which channel
         id: channel
@@ -265,16 +265,16 @@ jobs:
           set -eu
           VERSION="$(sed -n 's|^    <version>\(.*\)</version>$|\1|p' pom.xml | head -1)"
           [ -n "$VERSION" ] || { echo "::error::no version in pom.xml"; exit 1; }
-          SOKAR="$(sed -n 's|^        <sokar.version>\(.*\)</sokar.version>$|\1|p' pom.xml | head -1)"
-          [ -n "$SOKAR" ] || { echo "::error::no sokar.version in pom.xml"; exit 1; }
+          PORELO="$(sed -n 's|^        <porelo.version>\(.*\)</porelo.version>$|\1|p' pom.xml | head -1)"
+          [ -n "$PORELO" ] || { echo "::error::no porelo.version in pom.xml"; exit 1; }
           if [ "$GITHUB_REF_TYPE" = tag ]; then
               [ "$GITHUB_REF_NAME" = "v$VERSION" ] \
                   || { echo "::error::the tag $GITHUB_REF_NAME is not v$VERSION, the version this commit carries"; exit 1; }
               case "$VERSION" in
                   *-SNAPSHOT) echo "::error::$VERSION is a snapshot; a release carries its own version"; exit 1 ;;
               esac
-              case "$SOKAR" in
-                  *-SNAPSHOT) echo "::error::sokar.version $SOKAR is a snapshot; a release is built against a released Sokar"; exit 1 ;;
+              case "$PORELO" in
+                  *-SNAPSHOT) echo "::error::porelo.version $PORELO is a snapshot; a release is built against a released Porelo"; exit 1 ;;
               esac
               echo "channel=releases" >> "$GITHUB_OUTPUT"
           else
@@ -299,7 +299,7 @@ jobs:
           JF_URL: ${{ vars.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
 
-      # Sokar's own repositories, because this package depends on sokar; deb.* is what indexes it.
+      # Porelo's own repositories, because this package depends on porelo; deb.* is what indexes it.
       - name: Publish the packages
         env:
           JF_URL: ${{ vars.JF_URL }}
@@ -308,19 +308,19 @@ jobs:
         run: |
           set -eux
           # A published release is never replaced, as on Central.
-          if [ "$CHANNEL" = releases ] && curl -sfL "${JF_URL}/artifactory/sokar-dist-deb/dists/releases/main/binary-amd64/Packages" \
-                  | grep -qF "Filename: pool/main/s/sokar-agent-omp/$(basename target/*.deb)"; then
+          if [ "$CHANNEL" = releases ] && curl -sfL "${JF_URL}/artifactory/porelo-dist-deb/dists/releases/main/binary-amd64/Packages" \
+                  | grep -qF "Filename: pool/main/p/porelo-agent-omp/$(basename target/*.deb)"; then
               echo "::error::this release is published already"; exit 1
           fi
           # --flat, or the source directory travels and the package lands beside nothing.
-          jf rt upload "target/*.deb" "sokar-dist-deb/pool/main/s/sokar-agent-omp/" \
+          jf rt upload "target/*.deb" "porelo-dist-deb/pool/main/p/porelo-agent-omp/" \
               --flat=true \
               --target-props="deb.distribution=${CHANNEL};deb.component=main;deb.architecture=amd64"
-          jf rt upload "target/*.rpm" "sokar-dist-rpm/${CHANNEL}/" --flat=true
+          jf rt upload "target/*.rpm" "porelo-dist-rpm/${CHANNEL}/" --flat=true
 
           # The bill beside the package, readable without installing.
-          jf rt upload "target/sokar-agent-omp.cdx.json" "sokar-dist-deb/pool/main/s/sokar-agent-omp/" --flat=true
-          jf rt upload "target/sokar-agent-omp.cdx.json" "sokar-dist-rpm/${CHANNEL}/" --flat=true
+          jf rt upload "target/porelo-agent-omp.cdx.json" "porelo-dist-deb/pool/main/p/porelo-agent-omp/" --flat=true
+          jf rt upload "target/porelo-agent-omp.cdx.json" "porelo-dist-rpm/${CHANNEL}/" --flat=true
 
       # Uploaded is not installable: indexing is asynchronous, and silent when it fails.
       - name: The package is indexed, not merely stored
@@ -335,13 +335,13 @@ jobs:
           # body is empty - every package then reads as "not indexed" although it is.
           while [ "$tries" -lt 20 ]; do
               if jf rt curl -sL -XGET \
-                  "/sokar-dist-deb/dists/${CHANNEL}/main/binary-amd64/Packages" 2>/dev/null \
-                  | grep -q "Package: sokar-agent-omp"; then
-                  echo "  OK    the Debian index lists sokar-agent-omp"
+                  "/porelo-dist-deb/dists/${CHANNEL}/main/binary-amd64/Packages" 2>/dev/null \
+                  | grep -q "Package: porelo-agent-omp"; then
+                  echo "  OK    the Debian index lists porelo-agent-omp"
                   exit 0
               fi
               tries=$((tries + 1))
               sleep 6
           done
-          echo "::error::sokar-agent-omp never appeared in the index - uploaded but not indexed"
+          echo "::error::porelo-agent-omp never appeared in the index - uploaded but not indexed"
           exit 1

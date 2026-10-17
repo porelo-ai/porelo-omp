@@ -1,6 +1,6 @@
 # Oh My Pi - https://github.com/can1357/oh-my-pi
 #
-# NOT the Pi that sokar-pi adapts. That one is earendil-works/pi, published as
+# NOT the Pi that porelo-pi adapts. That one is earendil-works/pi, published as
 # @earendil-works/pi-coding-agent and run as 'pi'. This one is a fork of a different Pi, published
 # as @oh-my-pi/pi-coding-agent and run as 'omp'. Three projects, two names.
 
@@ -8,10 +8,10 @@ name: omp
 label: Oh My Pi
 binary: omp
 
-# What turns this agent's own approval prompts off. Sokar adds these to every run inside a task,
+# What turns this agent's own approval prompts off. Porelo adds these to every run inside a task,
 # attached or not - never conditionally: the container is what makes the answer always yes, and
 # unattended there is nobody to answer. Only the 'how' is declared here, because the flag is this
-# CLI's own and Sokar must not guess it.
+# CLI's own and Porelo must not guess it.
 #
 # --auto-approve rather than --approval-mode=yolo: both exist in 'omp --help', and the first says
 # only what is meant here - skip the approval prompts - while the second overrides a configured
@@ -19,8 +19,8 @@ binary: omp
 sandboxed:
   arguments: ["--auto-approve"]
 
-# How the agent is told what Sokar puts in its task - the mailbox where there is one, /sokar/files and
-# what arrives there. Sokar writes this guide to a read-only file in every task Sokar makes and puts these
+# How the agent is told what Porelo puts in its task - the mailbox where there is one, /porelo/files and
+# what arrives there. Porelo writes this guide to a read-only file in every task Porelo makes and puts these
 # arguments behind the 'sandboxed' ones, '{file}' standing for its path, on every start, attended or not, a resumed
 # one included. 'omp --help' on 18.4.1: "--append-system-prompt=<value>  Append text or file contents to the system prompt", so a
 # path given there brings in the file's contents.
@@ -47,7 +47,7 @@ session:
   # Where it names the session it runs. Measured on 18.4.1: an unattended run's first record,
   # {"type":"session"}, carries the id. An attended session is kept as
   # ~/.omp/agent/sessions/--workspace--/<timestamp>_<id>.jsonl, with the same {"type":"session"} record
-  # inside it after a title record; Sokar reads the id from there, and '--resume <id>' continues it.
+  # inside it after a title record; Porelo reads the id from there, and '--resume <id>' continues it.
   session_id:
     record: { type: session }
     key: id
@@ -58,7 +58,7 @@ session:
   # the setup wizard is up. The bound covers a first image build.
   ready_marker: "Welcome back!"
   ready_within_seconds: 300
-  # When the agent is at rest at its prompt, for Sokar to type its one wake line into the session
+  # When the agent is at rest at its prompt, for Porelo to type its one wake line into the session
   # and only then; never where 'waiting' matches. Read from the last 20 lines of the screen, plain. Measured
   # on the VM at a terminal: at rest its status line starts "π > ", and while it works a spinner and the
   # turn's time stand there instead ("⠋ 59s > ◉ …"); "📁 /workspace" is in it either way, so the shell left when omp
@@ -67,10 +67,10 @@ session:
   at_rest:
     shows: ["π > ", "📁 /workspace"]
     lacks: ["↑/↓ move · ⎋ cancel"]
-  # What waiting for a person looks like on the attached screen, for Sokar to read. Measured on
+  # What waiting for a person looks like on the attached screen, for Porelo to read. Measured on
   # 18.4.1 at a terminal: its ask box ends with "⏎ select · n note · ↑/↓ move ·
   # ⎋ cancel" - symbols where earlier releases wrote "Enter" and "Esc". A bare "⎋" is not enough:
-  # its working line starts with one too. The window title's "π !" says the same, but Sokar reads
+  # its working line starts with one too. The window title's "π !" says the same, but Porelo reads
   # the screen. Like the title, this is armed for its ask tool and approval prompts, not for the
   # model picker or /login: it under-reports, which is the safe direction. Unattended its ask tool
   # refuses to run without a terminal, so a run that wanted to ask ends with an error.
@@ -91,7 +91,7 @@ provider:
   dialect: native
 
   # A URL, not a socket: omp is pointed at a provider by a base URL in models.yml and has nowhere
-  # to put a socket path. Sokar answers that by binding a relay inside this task's namespace.
+  # to put a socket path. Porelo answers that by binding a relay inside this task's namespace.
   endpoint: url
 
 # Names 18.1.13 resolves and does not need: its own model catalogue, live model lists for

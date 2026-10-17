@@ -26,11 +26,11 @@ what it may do in a task, how it is built and updated, and the risks accepted on
 | The task | [A task that comes back continues its conversation](#a-task-that-comes-back-continues-its-conversation) - `--resume` with the id from the session record |
 | Updates | [Its release cadence is unlike the other two](#its-release-cadence-is-unlike-the-other-two) - many releases to Pi's few, so no rule follows from a shared origin |
 | Updates | [What an update takes, and when](#what-an-update-takes-and-when) - three days old and still the newest, a patch bump, a real model call |
-| The build | [The release tooling is Sokar's, configured from the pom](#the-release-tooling-is-sokars-configured-from-the-pom) - data beside the pin, and the matrix its digest parser was measured on |
-| The build | [A release is built from releases only](#a-release-is-built-from-releases-only) - on a tag nothing from Central's snapshots, and a tag on a Sokar snapshot refused by the step itself |
-| The build | [Actions run from a commit, and Dependabot moves them](#actions-run-from-a-commit-and-dependabot-moves-them) - every `uses:` at a commit, `check-actions` refuses the rest, GraalVM by Sokar's pin |
-| The build | [NullAway comes from `sokar-parent`](#nullaway-comes-from-sokar-parent) - one compiler configuration for every repository; `.mvn/jvm.config` stays here |
-| The build | [The changelog is written by hand, and nothing enforces it](#the-changelog-is-written-by-hand-and-nothing-enforces-it) - requiring an entry belongs to Sokar's changelog check, on logchange |
+| The build | [The release tooling is Porelo's, configured from the pom](#the-release-tooling-is-porelos-configured-from-the-pom) - data beside the pin, and the matrix its digest parser was measured on |
+| The build | [A release is built from releases only](#a-release-is-built-from-releases-only) - on a tag nothing from Central's snapshots, and a tag on a Porelo snapshot refused by the step itself |
+| The build | [Actions run from a commit, and Dependabot moves them](#actions-run-from-a-commit-and-dependabot-moves-them) - every `uses:` at a commit, `check-actions` refuses the rest, GraalVM by Porelo's pin |
+| The build | [NullAway comes from `porelo-parent`](#nullaway-comes-from-porelo-parent) - one compiler configuration for every repository; `.mvn/jvm.config` stays here |
+| The build | [The changelog is written by hand, and nothing enforces it](#the-changelog-is-written-by-hand-and-nothing-enforces-it) - requiring an entry belongs to Porelo's changelog check, on logchange |
 | Risk | [Accepted risk: the release binary and its digest share one trust root](#accepted-risk-the-release-binary-and-its-digest-share-one-trust-root) - nothing independent to verify the download against, and why that stays |
 
 ## Why the package is small and the download is not
@@ -44,7 +44,7 @@ recorded in the accepted risk below: one trust root for both the binary and its 
 Run whole on **Fedora 44** against the installed `.rpm` with a **real OpenRouter key**:
 
 - both packages install from the package repository rather than from a build tree;
-- `sokar` discovers an agent it was never linked against;
+- `porelo` discovers an agent it was never linked against;
 - **the agent authenticates against the provider and completes a prompt**;
 - the container holds no credential but the task-scoped token;
 - and the key appears in no log the run produces.
@@ -59,21 +59,21 @@ identical under a different name and is exactly where a collision would hide.
 Oh My Pi and Pi are near-identical trees under different names, which is where a collision would hide.
 Measured on Ubuntu 26.04 with both packages installed:
 
-| | `sokar-agent-omp` | `sokar-agent-pi` |
+| | `porelo-agent-omp` | `porelo-agent-pi` |
 |---|---|---|
 | agent name | `omp` | `pi` |
 | binary in the container | `omp` | `pi` |
-| adapter on the host | `…/agents/sokar-agent-omp` | `…/agents/sokar-agent-pi` |
-| what the package installs elsewhere | `/usr/share/sokar/sbom/sokar-agent-omp.cdx.json` | `/usr/share/sokar/agents/pi/pi-tree.tar.gz` |
+| adapter on the host | `…/agents/porelo-agent-omp` | `…/agents/porelo-agent-pi` |
+| what the package installs elsewhere | `/usr/share/porelo/sbom/porelo-agent-omp.cdx.json` | `/usr/share/porelo/agents/pi/pi-tree.tar.gz` |
 | where the tool lands in the image | `/home/agent/.local/bin/omp` | `/opt/pi`, `/opt/node`, `/usr/local/bin/pi` |
-| file Sokar writes into the container | `/home/agent/.omp/agent/models.yml` | `/home/agent/.pi/agent/extensions/sokar-route.ts` |
+| file Porelo writes into the container | `/home/agent/.omp/agent/models.yml` | `/home/agent/.pi/agent/extensions/porelo-route.ts` |
 
-`comm -12` over the two `dpkg -L` listings finds no file claimed by both, and `sokar agents` lists
+`comm -12` over the two `dpkg -L` listings finds no file claimed by both, and `porelo agents` lists
 each under its own name from its own package.
 
 **One shared name remains, and it is an environment variable.** omp honours `PI_CONFIG_DIR` and
 `PI_PROFILE` from its ancestry. Either one moves its config directory away from `~/.omp/agent`, so the
-file Sokar writes is never read and the task talks straight to the provider - measured. Sokar sets
+file Porelo writes is never read and the task talks straight to the provider - measured. Porelo sets
 neither, and nothing in a task image sets them.
 
 ## A fork is not a promise: how this agent is pointed at the broker
@@ -90,7 +90,7 @@ shares with Pi matters more than the mechanism it does not.
 ## A relay in the task's namespace, at a literal address
 
 omp can only be given a URL. A host-side listener is unreachable from a rootless container, so the
-**listening end** moves into the task's network namespace: `sokar vault relay` binds `127.0.0.1:9419`
+**listening end** moves into the task's network namespace: `porelo vault relay` binds `127.0.0.1:9419`
 there and forwards to the broker's unix socket on the host. The broker itself stays on the host, where
 it keeps the host's DNS and egress and holds the real credential.
 
@@ -100,10 +100,10 @@ What the container gets is one file, `/home/agent/.omp/agent/models.yml`, and no
 providers:
   "openrouter":
     baseUrl: "http://127.0.0.1:9419/api/v1"
-    apiKey: "sokar_pt_…"
+    apiKey: "porelo_pt_…"
 ```
 
-`sokar_pt_…` is a token for this task only; the broker checks it, swaps in the real key and reissues
+`porelo_pt_…` is a token for this task only; the broker checks it, swaps in the real key and reissues
 the request to `https://openrouter.ai`. Three things about the file are load-bearing:
 
 - **`/api/v1` belongs to the provider, not to omp.** OpenRouter serves the OpenAI dialect there, and
@@ -137,7 +137,7 @@ changes this on 18.4.1 is not measured.
 
 A subscription reached through a browser sign-in is what this agent is for, and Copilot is the one
 that matters: an organisation that has approved only Copilot can run Oh My Pi only if Copilot
-can be brokered. **It can, measured on 18.4.1** with a real Copilot account, through Sokar on a VM:
+can be brokered. **It can, measured on 18.4.1** with a real Copilot account, through Porelo on a VM:
 `--provider github-copilot` answered, and the container held only the task's token - no GitHub token
 in its environment or its files.
 
@@ -145,7 +145,7 @@ in its environment or its files.
 Bearer`, with no exchange for a short-lived Copilot token - its source says so, and its refresh hands the
 same token back. So the broker mints nothing; it replaces one header. The token comes from GitHub's
 device flow - OpenCode's OAuth app on github.com, scope `read:user` - which a person grants once on the
-host with `sokar vault authorize github-copilot`. The token never expires, so Sokar keeps it as it is,
+host with `porelo vault authorize github-copilot`. The token never expires, so Porelo keeps it as it is,
 and removing it here cannot revoke it: that is done at GitHub, under Authorized OAuth Apps. An
 organisation that restricts third-party OAuth apps has to approve OpenCode's, which is a different
 approval from Copilot's.
@@ -154,7 +154,7 @@ approval from Copilot's.
 ranks above it, and the adapter writes the endpoint and the task's token there for Copilot as for any
 provider. A base that is not Copilot's own is kept as given, with Copilot's headers and per-model paths
 under it, and omp does not then ask `api.github.com` for an endpoint; none was asked in the run.
-The same store is why this adapter declares no `config_dir`: `sokar vault import` has nothing to read,
+The same store is why this adapter declares no `config_dir`: `porelo vault import` has nothing to read,
 and Oh My Pi's other `/login` services are not brokered.
 
 **The task's provider is ranked first.** Several providers offer the same model id - `gpt-4.1` is
@@ -190,7 +190,7 @@ answered NXDOMAIN and the run still reached its endpoint and completed, which is
 rather than allowed. Listing them lets a reviewer, and the domain-coverage check, tell a refusal from
 an oversight.
 
-Every provider Sokar knows is declared for it, because it speaks `native` - whichever dialect its
+Every provider Porelo knows is declared for it, because it speaks `native` - whichever dialect its
 provider does. OpenRouter and GitHub Copilot are the ones that have been run.
 
 ## omp starts at its prompt: the setup wizard is marked done
@@ -203,7 +203,7 @@ that line, and omp starts at its prompt.
 
 Measured on 18.1.13 at a terminal, a fresh task per run: without the line, the wizard; with it, the
 prompt - with a credential, and without one (omp started by hand in a task with a shell attached,
-since Sokar does not start the agent without a credential; it then warns that no model is
+since Porelo does not start the agent without a credential; it then warns that no model is
 available). **Headless**, a prompt run answers and exits either way: the wizard is attended only.
 
 ## Reaching work is checked on the rendered screen, because omp draws its prompt first
@@ -225,16 +225,16 @@ rule is the same as the other two's, and it is what answers the cadence - see be
 
 ## Waiting for a person is read from the question's own last line
 
-Sokar tells a person the agent is waiting for them from `session.waiting` in the agent's YAML: literal
+Porelo tells a person the agent is waiting for them from `session.waiting` in the agent's YAML: literal
 lines on the attached screen that only a question draws. Measured on 18.4.1 at a terminal, a
-question Oh My Pi puts ends with `⏎ select · n note · ↑/↓ move · ⎋ cancel` - symbols, not the words "Enter" and "Esc". The rule is `↑/↓ move · ⎋ cancel` in the last 5 lines. Its working line starts with `⎋` too, which is why the rule is not the symbol alone. The window title's `π !` says the same, but Sokar reads the screen; like the title, the box is drawn for its ask tool and approval prompts, not the model picker or /login - it under-reports, the safe direction.
+question Oh My Pi puts ends with `⏎ select · n note · ↑/↓ move · ⎋ cancel` - symbols, not the words "Enter" and "Esc". The rule is `↑/↓ move · ⎋ cancel` in the last 5 lines. Its working line starts with `⎋` too, which is why the rule is not the symbol alone. The window title's `π !` says the same, but Porelo reads the screen; like the title, the box is drawn for its ask tool and approval prompts, not the model picker or /login - it under-reports, the safe direction.
 
 **Proven three ways.** `WaitingDeclarationTest` reads the declaration against the measured screens, and
-fails without it. By hand on the VM, Sokar read the agent as not waiting at rest and as waiting once it
-asked. `waiting.feature` drives it to a question at the version it pins and asks Sokar, never the
+fails without it. By hand on the VM, Porelo read the agent as not waiting at rest and as waiting once it
+asked. `waiting.feature` drives it to a question at the version it pins and asks Porelo, never the
 screen - so a release that words its questions differently fails the build instead of going quiet. The scenario enters the prompt with the kit's `I enter`, text and Enter together, which Oh My Pi takes as typed and submits.
 
-**Unattended there is nothing to declare**: a run that wanted to ask ends, and Sokar says what it said
+**Unattended there is nothing to declare**: a run that wanted to ask ends, and Porelo says what it said
 last rather than that it waits.
 
 **What would change the answer:** a release that draws its questions differently, which the scenario is
@@ -242,26 +242,26 @@ there to catch.
 
 ## A task that comes back continues its conversation
 
-Sokar records the session a task's agent ran and passes it back with `--resume` when the task starts
+Porelo records the session a task's agent ran and passes it back with `--resume` when the task starts
 again. **`--resume`, not `--session`:** 18.4.1 has no `--session`, and a task started again with it fails
 on an unknown option. Where the id is, `omp.yaml` declares under `session.session_id`. Measured on
 18.4.1: an unattended run's first record, `{"type":"session"}`, carries it as `id`. An attached session is
 kept as `~/.omp/agent/sessions/--workspace--/<timestamp>_<id>.jsonl`, with the same `{"type":"session"}`
-record inside it after a title record; Sokar reads the id from inside the newest session file.
+record inside it after a title record; Porelo reads the id from inside the newest session file.
 
 **Proven at the version it pins.** `SessionIdDeclarationTest` reads the declaration against the measured
-records and file names. `session.feature` drives it through Sokar on a VM: a word to remember in one run,
-the task started again, Sokar reporting that it continues the session, and the word given back although
+records and file names. `session.feature` drives it through Porelo on a VM: a word to remember in one run,
+the task started again, Porelo reporting that it continues the session, and the word given back although
 the second prompt never names it.
 The attached half is proven the same way: a message, the task stopped and started
 again, and the earlier message back on its screen.
 
-## The release tooling is Sokar's, configured from the pom
+## The release tooling is Porelo's, configured from the pom
 
-The release tooling is the shared `sokar-release`, not a copy in each agent repository: copies of
+The release tooling is the shared `porelo-release`, not a copy in each agent repository: copies of
 one tool drift apart.
 
-**What differs between agents is data**, and it lives in `pom.xml` as `sokar.release.*`, beside
+**What differs between agents is data**, and it lives in `pom.xml` as `porelo.release.*`, beside
 `agent.cli.version`: the label, the source definition, the newest GitHub release as upstream, and
 the `SHA256SUMS.txt` the digest is read from. Flags on each call would put the same facts on every
 workflow line, and the second copy is the one that goes stale. At package time the tool is a
@@ -287,19 +287,19 @@ a digest one character off; `compare-bills` stops on a component the update did 
 
 ## A release is built from releases only
 
-Between releases everything is built on snapshots: `sokar.version`, the parent, and with the parent the release
+Between releases everything is built on snapshots: `porelo.version`, the parent, and with the parent the release
 tooling. A tag's build takes none of them.
 
 - **Nothing from Central's snapshots on a tag.** The snapshot repository is a profile in `settings.xml` that
-  switches itself off when `sokar.release` is set, and `build.yml` sets `MAVEN_ARGS` to `-Dsokar.release` on a tag
+  switches itself off when `porelo.release` is set, and `build.yml` sets `MAVEN_ARGS` to `-Dporelo.release` on a tag
   and to `-U` elsewhere. Measured: with it, a build from an empty local repository cannot resolve the snapshot
   parent; without it, it does. Not `-P!standard`: Maven then lists the profile as inactive and still takes the
   parent from its repository, also measured.
 - **Nothing asked for again on a tag.** `-U` is in no command; `MAVEN_ARGS` carries it where it belongs, also into
   the `pinned-jdk` action.
-- **A tag on a snapshot is refused.** "Which channel" refuses a `sokar.version` that names a snapshot, in the build
+- **A tag on a snapshot is refused.** "Which channel" refuses a `porelo.version` that names a snapshot, in the build
   job and in the release job. `ReleaseChannelTest` runs both steps as a tag's run would, sees the refusal, and sees
-  a released Sokar let through; it was seen to fail with the refusal taken out. `check-releases` then refuses any
+  a released Porelo let through; it was seen to fail with the refusal taken out. `check-releases` then refuses any
   snapshot left in the effective pom.
 - **Secrets only where a tool needs them.** The tooling is resolved and the channel decided in steps that hold no
   secret. The steps that hold one run only what needs it: the acceptance legs and their clean-up the cloud's key and
@@ -315,9 +315,9 @@ depend on who publishes the action.
 release arrives as a pull request with the new commit and its version, and nothing merges it
 automatically: the review is what the pin buys.
 
-**`sokar-release check-actions` fails the build on a step that names a tag, a branch, a bare hash or a
+**`porelo-release check-actions` fails the build on a step that names a tag, a branch, a bare hash or a
 line of releases like `# v7`**, and says how to pin it, so a new workflow cannot bring a tag back. It is
-Sokar's one check for this rule, run in the build job, and this repository keeps no second test for it.
+Porelo's one check for this rule, run in the build job, and this repository keeps no second test for it.
 A step of this repository and an image by digest pass. Measured against this repository's workflows,
 with a tag, a `# v7`, a `setup-graalvm` at a commit and a Dependabot without `/.github/actions/*` each
 put in: every one refused.
@@ -337,11 +337,11 @@ product's own Artifactory. The setup actions download their tools themselves, an
 - **The JFrog CLI is fixed by the action's commit.** `setup-jfrog-cli` 5.2.0 defaults to `jf` 2.124.0
   and asks for the newest only when told to, so a Dependabot bump moves both together, under review. It
   checks no digest, which is the same publisher's trust as the action.
-- **GraalVM is the one Sokar pins, checked against its digest.** `setup-graalvm` with `'25'` resolves
+- **GraalVM is the one Porelo pins, checked against its digest.** `setup-graalvm` with `'25'` resolves
   the newest 25.x at run time and checks nothing for community builds - and that JDK compiles the
   native binary this repository publishes. So every job uses `./.github/actions/pinned-jdk`: the
-  runner's own Java 25 runs `sokar-machines jdk --github` once, which installs the GraalVM
-  `sokar-machines` pins (`machines.graalvm.*`, moved by Sokar's Machines workflow under the same
+  runner's own Java 25 runs `porelo-machines jdk --github` once, which installs the GraalVM
+  `porelo-machines` pins (`machines.graalvm.*`, moved by Porelo's Machines workflow under the same
   three-day rule), checks its digest before unpacking, and sets `JAVA_HOME`. The build and the
   acceptance machines use the same pin, by construction. `check-actions` refuses `setup-graalvm` and
   `setup-java` even at a pinned commit, because the commit fixes the action, not the JDK it fetches.
@@ -350,10 +350,10 @@ product's own Artifactory. The setup actions download their tools themselves, an
 
 ## What an update takes, and when
 
-Sokar's release tool applies these rules; `UpdateRulesTest` fails when this
+Porelo's release tool applies these rules; `UpdateRulesTest` fails when this
 repository stops asking for them.
 
-**A release is taken once it is three days old, and still the newest**: `sokar.release.min-age` is
+**A release is taken once it is three days old, and still the newest**: `porelo.release.min-age` is
 `3d`. A release withdrawn or patched within days never becomes a pull request, and the people who
 install on the first day get the days to report what breaks. A younger release is not skipped for the
 one before it: the job waits and says until when. A release whose date cannot be read is never old
@@ -367,7 +367,7 @@ temporary. Published metadata proves the download is intact; only a real request
 version still starts without a question, reads its credential variable, routes through the broker and
 gets an answer.
 
-**The CI machines are not kept current here.** GraalVM and the pre-pulled base images are Sokar's
+**The CI machines are not kept current here.** GraalVM and the pre-pulled base images are Porelo's
 machine tooling, under the same rule, once for every repository.
 
 **The three-day rule answers this agent's cadence**: a release superseded within three days is never
@@ -376,10 +376,10 @@ opened as a pull request.
 **What would change the answer:** a release that cannot wait three days. Dispatching the job with the
 version named takes it at once - that is the way round the rule, not a change to it.
 
-## NullAway comes from `sokar-parent`
+## NullAway comes from `porelo-parent`
 
 The compiler configuration that runs NullAway - Error Prone with only NullAway, `OnlyNullMarked`, the
-two processor paths - is `sokar-parent`'s, managed for every Sokar repository, so this pom declares no
+two processor paths - is `porelo-parent`'s, managed for every Porelo repository, so this pom declares no
 compiler plugin. Only the `default-compile` execution runs it: tests pass `null` on purpose, and Error
 Prone never sees them.
 
@@ -390,12 +390,12 @@ on that JVM refuses it the compiler's internals - measured on JDK 25, an `Illega
 ## The changelog is written by hand, and nothing enforces it
 
 The changelog is written by hand in the same commit as the change, and no check requires it. A
-check for a hand-kept file would have to be rebuilt as soon as Sokar's move to logchange - one YAML
+check for a hand-kept file would have to be rebuilt as soon as Porelo's move to logchange - one YAML
 file per change, and a generated `CHANGELOG.md` - reaches this repository. Requiring an entry comes
-with Sokar's changelog check, proposed to logchange upstream, which keeps three lessons: a waiver answers for its
+with Porelo's changelog check, proposed to logchange upstream, which keeps three lessons: a waiver answers for its
 own commit only, documentation is not exempt, and a range that cannot be compared fails.
 
-**What would change it:** Sokar's changelog check landing, or logchange being adopted here.
+**What would change it:** Porelo's changelog check landing, or logchange being adopted here.
 
 ## Accepted risk: the release binary and its digest share one trust root
 

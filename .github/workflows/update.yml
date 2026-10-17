@@ -13,7 +13,7 @@ on:
         required: false
 
 # Read by every Maven call, the pinned-jdk action's too: Maven asks for a newer snapshot once a day, and a
-# cache restored the day Sokar publishes would keep yesterday's. Never run on a tag.
+# cache restored the day Porelo publishes would keep yesterday's. Never run on a tag.
 env:
   MAVEN_ARGS: -U
 
@@ -41,7 +41,7 @@ jobs:
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # Before the lookup, which is Sokar's release tool; and before anything is rented, so the
+      # Before the lookup, which is Porelo's release tool; and before anything is rented, so the
       # cleanup below always has something to run.
       - name: The pinned GraalVM
         uses: ./.github/actions/pinned-jdk
@@ -64,9 +64,9 @@ jobs:
           set -eu
           # A dispatch answers for upstream, so 'major' is still measured against what is pinned.
           if [ -n "${VERSION:-}" ]; then
-              java -cp "$(cat target/cp.txt)" org.fuin.sokar.release.Main upstream-version --upstream "$VERSION"
+              java -cp "$(cat target/cp.txt)" org.fuin.porelo.release.Main upstream-version --upstream "$VERSION"
           else
-              java -cp "$(cat target/cp.txt)" org.fuin.sokar.release.Main upstream-version
+              java -cp "$(cat target/cp.txt)" org.fuin.porelo.release.Main upstream-version
           fi
 
       - name: What this run will do
@@ -92,7 +92,7 @@ jobs:
               echo "Until one of the two moves, every scheduled run stops here."
           elif [ -n "${WAITING:-}" ]; then
               echo "proceed=no" >> "$GITHUB_OUTPUT"
-              echo "Oh My Pi $UPSTREAM is out, but younger than the pom's sokar.release.min-age."
+              echo "Oh My Pi $UPSTREAM is out, but younger than the pom's porelo.release.min-age."
               echo "It is taken from $WAITING on. $PINNED stays pinned until then."
           else
               echo "proceed=no" >> "$GITHUB_OUTPUT"
@@ -106,7 +106,7 @@ jobs:
         if: steps.plan.outputs.proceed == 'yes'
         env:
           TARGET: ${{ steps.plan.outputs.target }}
-        run: java -cp "$(cat target/cp.txt)" org.fuin.sokar.release.Main update "$TARGET"
+        run: java -cp "$(cat target/cp.txt)" org.fuin.porelo.release.Main update "$TARGET"
 
       # ------------------------------------------------------------------ verify
 
@@ -120,7 +120,7 @@ jobs:
       - name: The pin agrees everywhere it is written
         if: steps.plan.outputs.proceed == 'yes' && !env.STOP
         run: |
-          java -cp "$(cat target/cp.txt)" org.fuin.sokar.release.Main check-pin \
+          java -cp "$(cat target/cp.txt)" org.fuin.porelo.release.Main check-pin \
               || echo "STOP=the pinned version and digest disagree" >> "$GITHUB_ENV"
 
       # Not -DskipTests: that also skips NativeLinkageCheck, the one test that needs the binary.
@@ -136,9 +136,9 @@ jobs:
       - name: What else changed in the shipped tree
         if: steps.plan.outputs.proceed == 'yes' && !env.STOP
         run: |
-          java -cp "$(cat target/cp.txt)" org.fuin.sokar.release.Main compare-bills \
-              target/sokar-agent-omp.cdx.json \
-              https://fuinorg.jfrog.io/artifactory/sokar-dist-deb/pool/main/s/sokar-agent-omp/sokar-agent-omp.cdx.json \
+          java -cp "$(cat target/cp.txt)" org.fuin.porelo.release.Main compare-bills \
+              target/porelo-agent-omp.cdx.json \
+              https://fuinorg.jfrog.io/artifactory/porelo-dist-deb/pool/main/p/porelo-agent-omp/porelo-agent-omp.cdx.json \
               --expect-moved omp \
               > target/bill-change.txt 2>&1 \
               || echo "STOP=third-party components or licenses changed" >> "$GITHUB_ENV"
@@ -169,13 +169,13 @@ jobs:
         env:
           HETZNER_API: ${{ secrets.HETZNER_API }}
           HETZNER_SSH: ${{ secrets.HETZNER_SSH }}
-          SOKAR_CI_LEG: upd-ubuntu
-          SOKAR_E2E_OPENROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-          SOKAR_E2E_MODEL: z-ai/glm-5.3-flash
-          SOKAR_E2E_EXPECT_CLI: ${{ steps.plan.outputs.target }}
+          PORELO_CI_LEG: upd-ubuntu
+          PORELO_E2E_OPENROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          PORELO_E2E_MODEL: z-ai/glm-5.3-flash
+          PORELO_E2E_EXPECT_CLI: ${{ steps.plan.outputs.target }}
         run: |
-          java -cp "$(cat target/cp.txt)" org.fuin.sokar.machines.Main acceptance \
-              --os ubuntu --package sokar-agent-omp \
+          java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main acceptance \
+              --os ubuntu --package porelo-agent-omp \
               --cucumber . --candidate target \
               || echo "STOP=acceptance failed on ubuntu" >> "$GITHUB_ENV"
 
@@ -185,13 +185,13 @@ jobs:
         env:
           HETZNER_API: ${{ secrets.HETZNER_API }}
           HETZNER_SSH: ${{ secrets.HETZNER_SSH }}
-          SOKAR_CI_LEG: upd-fedora
-          SOKAR_E2E_OPENROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-          SOKAR_E2E_MODEL: z-ai/glm-5.3-flash
-          SOKAR_E2E_EXPECT_CLI: ${{ steps.plan.outputs.target }}
+          PORELO_CI_LEG: upd-fedora
+          PORELO_E2E_OPENROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          PORELO_E2E_MODEL: z-ai/glm-5.3-flash
+          PORELO_E2E_EXPECT_CLI: ${{ steps.plan.outputs.target }}
         run: |
-          java -cp "$(cat target/cp.txt)" org.fuin.sokar.machines.Main acceptance \
-              --os fedora --package sokar-agent-omp \
+          java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main acceptance \
+              --os fedora --package porelo-agent-omp \
               --cucumber . --candidate target \
               || echo "STOP=acceptance failed on fedora" >> "$GITHUB_ENV"
 
@@ -199,15 +199,15 @@ jobs:
         if: always() && steps.plan.outputs.proceed == 'yes'
         env:
           HETZNER_API: ${{ secrets.HETZNER_API }}
-          SOKAR_CI_LEG: upd-ubuntu
-        run: java -cp "$(cat target/cp.txt)" org.fuin.sokar.machines.Main sweep --mine || true
+          PORELO_CI_LEG: upd-ubuntu
+        run: java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main sweep --mine || true
 
       - name: Delete what this run created - fedora leg
         if: always() && steps.plan.outputs.proceed == 'yes'
         env:
           HETZNER_API: ${{ secrets.HETZNER_API }}
-          SOKAR_CI_LEG: upd-fedora
-        run: java -cp "$(cat target/cp.txt)" org.fuin.sokar.machines.Main sweep --mine || true
+          PORELO_CI_LEG: upd-fedora
+        run: java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main sweep --mine || true
 
       # ------------------------------------------------------------------ ask, or publish
 
@@ -220,7 +220,7 @@ jobs:
           WAS: ${{ steps.detect.outputs.pinned }}
         run: |
           set -eu
-          git config user.name 'sokar-update'
+          git config user.name 'porelo-update'
           git config user.email 'noreply@fuin.org'
           if git diff --quiet; then
               echo "nothing was written - there is no change to propose"
@@ -232,7 +232,7 @@ jobs:
           git push --force origin "$BRANCH"
 
           {
-            echo "\`$WAS\` -> \`$TARGET\`, applied by Sokar's release tool: the"
+            echo "\`$WAS\` -> \`$TARGET\`, applied by Porelo's release tool: the"
             echo "\`agent.cli.version\` property and the SHA-256 read from the SHA256SUMS.txt"
             echo "upstream publishes. Everything else naming the version is filtered from"
             echo "the property and could not drift."
@@ -270,9 +270,9 @@ jobs:
       - name: Merge, or say why not
         if: always() && steps.request.outputs.opened == 'yes'
         env:
-          GH_TOKEN: ${{ secrets.SOKAR_UPDATE_TOKEN || github.token }}
-          AUTO: ${{ vars.SOKAR_UPDATE_AUTO_MERGE }}
-          HAVE_TOKEN: ${{ secrets.SOKAR_UPDATE_TOKEN != '' }}
+          GH_TOKEN: ${{ secrets.PORELO_UPDATE_TOKEN || github.token }}
+          AUTO: ${{ vars.PORELO_UPDATE_AUTO_MERGE }}
+          HAVE_TOKEN: ${{ secrets.PORELO_UPDATE_TOKEN != '' }}
           TARGET: ${{ steps.plan.outputs.target }}
         run: |
           set -eu
@@ -280,11 +280,11 @@ jobs:
               echo "Not merging: $STOP."
               echo "The branch is open for whoever decides it."
           elif [ "$AUTO" != "true" ]; then
-              echo "Not merging: the repository variable SOKAR_UPDATE_AUTO_MERGE is '${AUTO:-unset}'."
+              echo "Not merging: the repository variable PORELO_UPDATE_AUTO_MERGE is '${AUTO:-unset}'."
               echo "Everything passed. Merging the pull request publishes Oh My Pi $TARGET."
               echo "Set the variable to 'true' when these runs have been watched enough."
           elif [ "$HAVE_TOKEN" != "true" ]; then
-              echo "::error::SOKAR_UPDATE_AUTO_MERGE is on but the secret SOKAR_UPDATE_TOKEN is not set."
+              echo "::error::PORELO_UPDATE_AUTO_MERGE is on but the secret PORELO_UPDATE_TOKEN is not set."
               echo "Merging with the workflow's own token triggers no build, so nothing would be"
               echo "published and the run would look successful. Refusing to merge."
               exit 1

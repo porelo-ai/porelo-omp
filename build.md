@@ -1,9 +1,9 @@
 # Building
 
-Nothing here needs a checkout of [Sokar](https://github.com/sokar-ai/sokar). This
-repository compiles against the **published agent contract** - `sokar-agent-api`
-and `sokar-wire` - resolved from Maven, and that is the property worth keeping: if
-a build here ever needs the Sokar sources, the split has been undone without
+Nothing here needs a checkout of [Porelo](https://github.com/porelo-ai/porelo). This
+repository compiles against the **published agent contract** - `porelo-agent-api`
+and `porelo-wire` - resolved from Maven, and that is the property worth keeping: if
+a build here ever needs the Porelo sources, the split has been undone without
 anyone deciding to undo it.
 
 ```
@@ -17,15 +17,15 @@ repository the snapshot comes from. The native build needs GraalVM as `JAVA_HOME
 What the second command leaves in `target/`:
 
 ```
-sokar-agent-omp                              the adapter, 15 MB, run by Sokar on the host
-sokar-agent-omp_0.4.0~SNAPSHOT_amd64.deb     6.2 MB
-sokar-agent-omp-0.4.0~SNAPSHOT-1.x86_64.rpm  6.2 MB
+porelo-agent-omp                              the adapter, 15 MB, run by Porelo on the host
+porelo-agent-omp_0.4.0~SNAPSHOT_amd64.deb     6.2 MB
+porelo-agent-omp-0.4.0~SNAPSHOT-1.x86_64.rpm  6.2 MB
 ```
 
 Measured on one machine: 2 s for the unit build, 25 s with the native image and
 both packages. **No container runtime is needed to build this** — the tool is not
 carried in the package, so there is no tree to assemble. That is the whole
-difference from [sokar-pi](https://github.com/sokar-ai/sokar-pi), which takes
+difference from [porelo-pi](https://github.com/porelo-ai/porelo-pi), which takes
 minutes and needs podman: Pi is 162 npm packages with no single URL to pin, while
 Oh My Pi publishes one self-contained 200 MB binary per release with a
 `SHA256SUMS.txt` beside it. Where a publisher offers a digest, the image build
@@ -34,14 +34,14 @@ fetches and checks it and the package stays small.
 The trade that buys: a task image build for this agent needs network access to
 `github.com`, where a Pi image build needs none.
 
-**The package version is this agent's own**, not Sokar's and not Oh My Pi's. An
-agent released against an unchanged CLI is still an upgrade, and a Sokar release
+**The package version is this agent's own**, not Porelo's and not Oh My Pi's. An
+agent released against an unchanged CLI is still an upgrade, and a Porelo release
 does not move it. `~` rather than `-` before `SNAPSHOT` because dpkg and rpm sort
 `~` below everything; left as `-SNAPSHOT` it would sort *above* the release and
 apt would refuse the upgrade.
 
 The Oh My Pi version the image installs is carried in the package description
-instead, so `dpkg -s sokar-agent-omp` and `rpm -qi` still answer it.
+instead, so `dpkg -s porelo-agent-omp` and `rpm -qi` still answer it.
 
 ## Bumping the Oh My Pi version
 
@@ -65,7 +65,7 @@ trusted.
 so the pair cannot drift silently; the digest itself is only checked where it is
 used, at image-build time, where a mismatch fails the layer.
 
-`sokar agents --supply-chain` reports what the installed adapter pins, so which
+`porelo agents --supply-chain` reports what the installed adapter pins, so which
 version ran is answered from the package rather than from a build log.
 
 ## Checking it
@@ -76,7 +76,7 @@ Three things, in the order they are worth running.
    the command line, the definition, and the file the adapter writes into a
    container, including a token containing quotes and newlines.
 
-2. **The `broker.feature` scenario** — a real task on an installed Sokar, with a
+2. **The `broker.feature` scenario** — a real task on an installed Porelo, with a
    deliberately fake OpenRouter key. It asserts everything around the credential:
    the file is in the container and `0600`, it carries a phantom token, the real
    key is in neither the environment nor the file, and the request reached the
@@ -87,15 +87,15 @@ Three things, in the order they are worth running.
    means the key was sent and refused.
    Needs no account; it uses a vault of its own and removes what it created.
 
-3. **Sokar's own `buildtools/e2e-tier1.sh`**, pointed here:
+3. **Porelo's own `buildtools/e2e-tier1.sh`**, pointed here:
 
    ```
-   SOKAR_E2E_AGENT=omp SOKAR_E2E_AGENT_MODULE=<path to this checkout> \
+   PORELO_E2E_AGENT=omp PORELO_E2E_AGENT_MODULE=<path to this checkout> \
        buildtools/e2e-tier1.sh
    ```
 
-   It expects a Sokar build tree - `app/target/sokar` and
-   `<module>/target/sokar-agent-omp` relative to its own parent directory - so a
+   It expects a Porelo build tree - `app/target/porelo` and
+   `<module>/target/porelo-agent-omp` relative to its own parent directory - so a
    directory with those two paths and the installed binaries copied into them is
    enough to run it against packages rather than a checkout.
 
@@ -106,7 +106,7 @@ Three things, in the order they are worth running.
 
    Its `credential exchange` check cannot pass for this agent. It looks for a
    socket or base-URL variable in the container, and an agent pointed at a broker
-   by a file has neither; `sokar-agent-pi` fails it identically.
+   by a file has neither; `porelo-agent-pi` fails it identically.
 
 That a **valid** key gets an answer is what the `@credential` scenarios below check,
 and only they: `credential.feature` runs a task with a real OpenRouter key, attended
@@ -119,9 +119,9 @@ OpenRouter account.
 **One sentence per change** - it is a compressed summary of the commits it covers, and
 `git log` is where anyone who wants the reasoning goes.
 
-A version bump is not written by hand: the `update` of Sokar's release tool writes its own line and replaces
+A version bump is not written by hand: the `update` of Porelo's release tool writes its own line and replaces
 the one it wrote last time. Everything else is by hand, and nothing checks for
-it; requiring one is Sokar's changelog check - see [`doc/decisions.md`](doc/decisions.md).
+it; requiring one is Porelo's changelog check - see [`doc/decisions.md`](doc/decisions.md).
 
 ## Following Oh My Pi without watching it
 
@@ -137,7 +137,7 @@ all this one has, which puts the whole weight on the verification below.
 **The point is the stopping.** The run refuses to publish when an acceptance suite failed, when
 the third-party component set or a license changed, or when the upstream **major** version
 moved. Whatever the outcome it opens a pull request; merging is what publishes. Auto-merge is
-off behind `SOKAR_UPDATE_AUTO_MERGE`, and needs `SOKAR_UPDATE_TOKEN` as well - a push made with
+off behind `PORELO_UPDATE_AUTO_MERGE`, and needs `PORELO_UPDATE_TOKEN` as well - a push made with
 the workflow's own token triggers no build, so merging with it would publish nothing and report
 success.
 
@@ -155,13 +155,13 @@ network, so the release tool's `check-pin` still checks both on every push, agai
 ## Publishing
 
 A push to `main` uploads the two packages to Artifactory, into the **same repositories
-Sokar itself publishes to** - `sokar-dist-deb` and `sokar-dist-rpm`. They belong
-together: this package declares `Depends: sokar`, so split across repositories an
+Porelo itself publishes to** - `porelo-dist-deb` and `porelo-dist-rpm`. They belong
+together: this package declares `Depends: porelo`, so split across repositories an
 operator would have to configure both for the dependency to resolve.
 
 A pull request builds and packages but publishes nothing.
 
-Two repository settings are needed, the same ones Sokar uses: the variable `JF_URL`
+Two repository settings are needed, the same ones Porelo uses: the variable `JF_URL`
 (the platform url, **without** `/artifactory`) and the secret `JF_ACCESS_TOKEN`. The
 token needs Read, Deploy/Cache, **Annotate** and **Delete** on both repositories -
 Annotate because the Debian index is driven by properties, Delete because the snapshot
@@ -175,18 +175,18 @@ run if it never appears.
 ## Acceptance, as a person at a terminal
 
 `src/acceptance` holds Cucumber scenarios that drive a real machine over ssh - a pty for what a
-person sees, no pty for what a script gets - through Sokar's published acceptance kit. They are
+person sees, no pty for what a script gets - through Porelo's published acceptance kit. They are
 off unless a host is named, so an ordinary build neither resolves the kit nor compiles them:
 
 ```
 ./mvnw -s settings.xml verify \
-    -Dsokar.acceptance.host=<machine with sokar and this agent's package installed> \
-    -Dsokar.acceptance.user=acceptance \
-    -Dsokar.acceptance.key=$HOME/.ssh/id_ed25519
+    -Dporelo.acceptance.host=<machine with porelo and this agent's package installed> \
+    -Dporelo.acceptance.user=acceptance \
+    -Dporelo.acceptance.key=$HOME/.ssh/id_ed25519
 ```
 
 The report lands in `target/acceptance.html`. The scenarios tagged `@credential` need
-`SOKAR_E2E_OPENROUTER_API_KEY` and `SOKAR_E2E_MODEL` in the environment of the machine running the
+`PORELO_E2E_OPENROUTER_API_KEY` and `PORELO_E2E_MODEL` in the environment of the machine running the
 suite - typed into the vault at a terminal, never on a command line - and are **skipped**, not
 passed, without them. There is no glue class here: every step is the kit's, which is what keeps
 this repository free of test code that knows about ssh.

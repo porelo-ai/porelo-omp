@@ -15,7 +15,7 @@ secret.
 
 ## Plan
 
-- **The grant, once, by the operator:** `sokar vault authorize github-copilot` in the VM account the
+- **The grant, once, by the operator:** `porelo vault authorize github-copilot` in the VM account the
   acceptance runs in, signed in at the terminal; nothing of the account goes into a committed file.
 - **A scenario in `credential.feature`'s shape, tagged so CI never runs it:** a task started with
   `--provider github-copilot` answers through the broker, and its environment, its files under

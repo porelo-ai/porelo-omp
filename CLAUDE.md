@@ -1,3 +1,3 @@
-# Projekt-Kontext: Sokar Oh My Pi (OMP)
+# Projekt-Kontext: Porelo Oh My Pi (OMP)
 
 Read the rules in AGENTS.md and (if it exists) in .AGENTS.md
