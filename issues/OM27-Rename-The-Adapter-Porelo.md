@@ -1,6 +1,6 @@
 # OM27 — Rename The Adapter Porelo
 
-**Status:** Implementing.
+**Status:** Review.
 **Size:** S - one commit made by a script and read through; 719 occurrences in one module, and the build,
 the native build and the acceptance as for any change to the adapter.
 
