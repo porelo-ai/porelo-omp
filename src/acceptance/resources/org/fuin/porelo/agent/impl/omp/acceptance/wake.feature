@@ -83,8 +83,9 @@ Feature: An agent at rest is woken by a message for it
         Then within 120 seconds this script exits zero:
             """
             screen=$(podman exec porelo-busy-busy tmux capture-pane -p -t porelo)
-            printf '%s\n' "$screen" | grep -qF '$ sleep 10' || exit 1
-            ! printf '%s\n' "$screen" | grep -qF 'Wall:'
+            printf '%s\n' "$screen" | grep -qF '$ sleep 10' && ! printf '%s\n' "$screen" | grep -qF 'Wall:' && exit 0
+            printf 'screen, last lines:\n'; printf '%s\n' "$screen" | grep -v '^ *$' | tail -25
+            exit 1
             """
         When a script runs "echo 'What is 1234 plus 4321? Reply with the digits only.' | porelo talk tell porelo-busy-busy"
         Then it exits zero
