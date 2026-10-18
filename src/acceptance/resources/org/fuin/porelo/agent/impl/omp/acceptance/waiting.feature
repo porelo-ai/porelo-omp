@@ -25,6 +25,15 @@ Feature: Porelo shows the agent waiting for a person, read by the agent's own de
         Then the "omp" agent in task "asks" of "asks" reaches work without being asked anything
         And porelo shows the "omp" agent in task "asks" of "asks" not waiting for a person
         When I enter "Use your ask tool to ask me whether I prefer red or blue. Do nothing else."
+        # The question on the screen first, so a run where it never comes shows what omp showed; Porelo's reading of
+        # it is asked after, as before.
+        Then within 60 seconds this script exits zero:
+            """
+            screen=$(podman exec porelo-asks-asks tmux capture-pane -p -t porelo)
+            printf '%s\n' "$screen" | grep -qF '↑/↓ move · ⎋ cancel' && exit 0
+            printf 'screen, last lines:\n'; printf '%s\n' "$screen" | grep -v '^ *$' | tail -25
+            exit 1
+            """
         Then porelo shows the "omp" agent in task "asks" of "asks" waiting for a person
         When a script runs "porelo project unfollow asks --force"
         Then it exits zero
