@@ -202,14 +202,14 @@ jobs:
               env:
                   HETZNER_API: ${{ secrets.HETZNER_API }}
                   PORELO_CI_LEG: upd-ubuntu
-              run: java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main sweep --mine || true
+              run: java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main sweep --mine
 
             - name: Delete what this run created - fedora leg
               if: always() && steps.plan.outputs.proceed == 'yes'
               env:
                   HETZNER_API: ${{ secrets.HETZNER_API }}
                   PORELO_CI_LEG: upd-fedora
-              run: java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main sweep --mine || true
+              run: java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main sweep --mine
 
             # ------------------------------------------------------------------ ask, or publish
 
