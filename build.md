@@ -125,7 +125,7 @@ it; requiring one is Porelo's changelog check - see [`doc/decisions.md`](doc/dec
 
 ## Following Oh My Pi without watching it
 
-`.github/workflows/update.yml` runs once a week, on Monday. It asks GitHub for the newest
+`.github/workflows/update.yml` runs once a week, on Wednesday at 05:17 UTC. It asks GitHub for the newest
 release and, if that is not what this module pins, does what a person would: the release tool's
 `update`, rebuild, and prove the result on a real Ubuntu machine and a real Fedora one **before anything
 is published**.
