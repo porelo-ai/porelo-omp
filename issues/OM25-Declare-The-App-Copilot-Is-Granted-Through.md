@@ -1,6 +1,6 @@
 # OM25 — Declare the app Copilot is granted through
 
-**Status:** Implementing.
+**Status:** Review.
 **Size:** S - a `login.grants` block in `omp.yaml`, its test, a check in the weekly update and a paragraph
 in `doc/`; Porelo's side is built.
 

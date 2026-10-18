@@ -4,11 +4,16 @@ What is open in this repository, grouped by state in the order Review, Rework, I
 Analyzed, Accepted, Idea, Estimated, Finished and Rejected; a group with nothing in it is left out.
 Within a group, the order is the priority. The number is identity, not sequence.
 
-## Implementing
+## Review
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
 | <a id="om25"></a>[OM25](OM25-Declare-The-App-Copilot-Is-Granted-Through.md) | S |  | the app `vault authorize github-copilot` signs in through for Oh My Pi |
+
+## Implementing
+
+| # | Size | Blocked by | What it covers |
+|---|---|---|---|
 | <a id="om30"></a>[OM30](OM30-Read-Oh-My-Pi-18.11s-Start-Screen-As-Ready.md) | S | — | Oh My Pi 18.11's start screen read as ready, so the pin moves past 18.4.1 |
 | <a id="om29"></a>[OM29](OM29-Take-The-Legs-From-A-Run-That-Proved-The-Same-Tree.md) | S | — | a Build on `main` takes its legs from a run that proved the same tree within a day |
 
