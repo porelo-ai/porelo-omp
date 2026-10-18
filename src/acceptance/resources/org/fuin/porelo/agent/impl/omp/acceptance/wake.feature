@@ -88,7 +88,15 @@ Feature: An agent at rest is woken by a message for it
             """
         When a script runs "echo 'What is 1234 plus 4321? Reply with the digits only.' | porelo talk tell porelo-busy-busy"
         Then it exits zero
-        And within 240 seconds the terminal shows "A message for you waits"
+        # Read on the task's own screen, so a wake not seen shows what omp showed instead of the terminal's stream.
+        And within 240 seconds this script exits zero:
+            """
+            screen=$(podman exec porelo-busy-busy tmux capture-pane -p -S - -t porelo)
+            printf '%s\n' "$screen" | grep -qF 'A message for you waits' && exit 0
+            printf 'status:\n'; porelo task status porelo-busy-busy | grep -E '^(state|activity|screen)'
+            printf 'screen, last lines:\n'; printf '%s\n' "$screen" | grep -v '^ *$' | tail -25
+            exit 1
+            """
         # The guide has a message answered with a message, so the answer counts either way the agent gives it:
         # as its reply, held because this project cannot address the person, or on its screen. The kit stops
         # the wait at once when the agent loops.
