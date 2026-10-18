@@ -54,11 +54,11 @@ session:
         directory: ".omp/agent/sessions/--workspace--"
         suffix: ".jsonl"
     # What the agent shows once it is at work, attended, having asked nothing - the acceptance kit
-    # waits for it without typing. Measured at a terminal: on screen at the prompt, absent while
-    # the setup wizard is up. The bound counts from the session
-    # existing, after any image build: about four times the 31 s measured on the leg's machine type,
-    # cpx12, on 2026-10-17.
-    ready_marker: "Welcome back!"
+    # waits for it without typing. The start of the status line it draws under its prompt: measured on
+    # 18.11.0 at a terminal, on screen at the prompt and hidden while the setup wizard is up. 18.11 dropped
+    # the "Welcome back!" box this read before. The bound counts from the session existing, after any image
+    # build: about four times the 31 s measured on the leg's machine type, cpx12, on 2026-10-17.
+    ready_marker: "📁 /workspace"
     ready_within_seconds: 120
     # When the agent is at rest at its prompt, for Porelo to type its one wake line into the session
     # and only then; never where 'waiting' matches. Read from the last 20 lines of the screen, plain. Measured
@@ -123,7 +123,7 @@ install:
     version: "${agent.cli.version}"
     artifacts:
         - url: https://github.com/can1357/oh-my-pi/releases/download/v${agent.cli.version}/omp-linux-x64
-          sha256: "494ed1f2c8eb223168d87d3592cf56aa52afe4d35f4191908ba99a0fbe57fad9"
+          sha256: "c23a58ad8a92f4e738aa12dc904f3b0a1ac7035b953b9bf5d39b71a226179f6f"
           license: "MIT"
           target: /home/agent/.local/bin/omp
           mode: "0755"

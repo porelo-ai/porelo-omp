@@ -12,6 +12,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Changed
 
+- Oh My Pi pinned to 18.11.0 (was 18.4.1).
 - The code is in the shared style, google-java-format in its AOSP variant, with YAML and Gherkin at four spaces, and `validate` refuses code that is not; `.git-blame-ignore-revs` lets `git blame` skip the commit that reformatted it.
 - The acceptance suite allows the agent 120 seconds to reach work and an unattended run 120 seconds to end, about four times what the adapters' rented test machine measured, so a run stuck at a question fails in minutes, not half an hour.
 - Built on the snapshot of `porelo-parent` (0.2.1-SNAPSHOT, with the release tooling 0.5.1-SNAPSHOT), against Porelo 0.5.0.
@@ -21,6 +22,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Fixed
 
+- A task on Oh My Pi 18.11 is seen at work: the adapter reads the start of the status line under omp's prompt, since 18.11 no longer draws the welcome box it read before, and the setup wizard still hides it.
 - A log line cut to its readable length is cut between characters, never inside one that takes two UTF-16 units, such as an emoji.
 - The log formatter and the run's end drop every terminal control character but a newline and a tab, so an escape sequence from a model, a tool or a provider cannot act on the terminal that shows the log.
 

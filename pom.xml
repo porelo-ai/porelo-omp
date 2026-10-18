@@ -15,7 +15,7 @@
 
     <groupId>org.fuin.porelo</groupId>
     <artifactId>porelo-agent-omp</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.2-SNAPSHOT</version>
     <name>Porelo Agent Oh My Pi</name>
     <description>Porelo agent for Oh My Pi</description>
 
@@ -47,7 +47,7 @@
         <!-- The Oh My Pi version this package installs. Filtered into omp.yaml and carried in
              the package description, so 'dpkg -s' and 'rpm -qi' answer it. Bumping it means the
              new digest from that release's SHA256SUMS.txt. Not part of the package version. -->
-        <agent.cli.version>18.4.1</agent.cli.version>
+        <agent.cli.version>18.11.0</agent.cli.version>
 
         <!-- What this agent's update differs in, read by Porelo's release tool beside the pin. -->
         <porelo.release.agent>Oh My Pi</porelo.release.agent>

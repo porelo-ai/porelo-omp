@@ -209,13 +209,15 @@ available). **Headless**, a prompt run answers and exits either way: the wizard 
 ## Reaching work is checked on the rendered screen, because omp draws its prompt first
 
 **The acceptance run fails when anything comes before omp's prompt**, known or not. The definition
-declares `Welcome back!`, and the kit's step waits for it attended, typing nothing; a second scenario
-requires an unattended run to end within its bound. **omp draws its welcome box before a dialog and
-the dialog over it**: in the bytes of a start with the setup wizard back, `Welcome back!` comes at
-3,509 and `Setup step` at 468,241. So a check that reads the byte stream passes while the wizard is
-up - measured, it did. The step reads the screen as the task's tmux renders it, and needs the marker
-there for three seconds on end: with `setupVersion: 2` taken out of the build it fails, and the screen
-it reports shows the wizard. Both scenarios pass on 18.4.1.
+declares `📁 /workspace`, the start of the status line omp draws under its prompt, and the kit's step waits
+for it attended, typing nothing; a second scenario requires an unattended run to end within its bound.
+**omp draws its prompt before a dialog and the dialog over it**: in the bytes of a start with the setup
+wizard back, 18.4.1's welcome box came at 3,509 and `Setup step` at 468,241. So a check that reads the
+byte stream passes while the wizard is up - measured, it did. The step reads the screen as the task's tmux
+renders it, and needs the marker there for three seconds on end. Measured on 18.11.0 with `setupVersion: 2`
+taken out of the build, it fails and reports the wizard ("Setup step 1 of 5 … Select provider to login");
+with the line in, the five scenarios that attach pass. 18.11 dropped the "Welcome back!" box the marker read
+before, which is why it is the status line now.
 
 ## Its release cadence is unlike the other two
 

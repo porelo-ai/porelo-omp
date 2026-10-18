@@ -19,7 +19,7 @@ class OmpAgentTest {
         // The kit's check waits for this text and types nothing; a dialog before the prompt hides
         // it.
         assertThat(agent.definition().ready()).isNotNull();
-        assertThat(agent.definition().ready().text()).isEqualTo("Welcome back!");
+        assertThat(agent.definition().ready().text()).isEqualTo("📁 /workspace");
     }
 
     @Test
