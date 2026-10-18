@@ -99,6 +99,8 @@ class WorkflowRulesTest {
         env.put("GITHUB_REF_TYPE", "branch");
         env.put("OS", "ubuntu");
         env.put("PORELO_E2E_OPENROUTER_API_KEY", "");
+        // The leg reads the pin it tells the suite to expect from the pom it is run beside.
+        Files.writeString(dir.resolve("pom.xml"), "<agent.cli.version>1.0.0</agent.cli.version>\n");
 
         final Run empty = WorkflowSteps.run(steps.get(0), dir, env, WorkflowSteps.LIMIT);
         assertThat(empty.exit())

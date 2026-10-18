@@ -65,6 +65,7 @@ class WorkflowTimeLimitTest {
                 .as("the jobs read from the workflows")
                 .containsExactlyInAnyOrder(
                         "build.yml build",
+                        "build.yml proof",
                         "build.yml acceptance",
                         "build.yml release",
                         "delete-runs.yml delete",
