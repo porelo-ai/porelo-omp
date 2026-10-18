@@ -89,10 +89,21 @@ Feature: An agent at rest is woken by a message for it
         When a script runs "echo 'What is 1234 plus 4321? Reply with the digits only.' | porelo talk tell porelo-busy-busy"
         Then it exits zero
         # Read on the task's own screen, so a wake not seen shows what omp showed instead of the terminal's stream.
+        # A wake is owed only to a message still in inbox/new when the agent comes to rest, which is what Porelo's wake
+        # reads. An eager model may read its mailbox while it works and answer there, as DeepSeek V4.1 Flash did once
+        # in ten; then nothing waits at rest, no wake is due, and the answer below is still required. While the message
+        # waits at rest, only the wake passes.
         And within 240 seconds this script exits zero:
             """
             screen=$(podman exec porelo-busy-busy tmux capture-pane -p -S - -t porelo)
             printf '%s\n' "$screen" | grep -qF 'A message for you waits' && exit 0
+            now=$(podman exec porelo-busy-busy tmux capture-pane -p -t porelo)
+            waits=$(podman exec porelo-busy-busy sh -c 'ls /run/porelo/mail/inbox/new/' | grep '\.json$')
+            rest=no
+            printf '%s\n' "$now" | grep -qF 'π > ' && printf '%s\n' "$now" | grep -qF '📁 /workspace' && rest=yes
+            printf '%s\n' "$now" | grep -qF '↑/↓ move · ⎋ cancel' && rest=no
+            [ "$rest" = yes ] && [ -z "$waits" ] && { printf 'read while it worked, so no wake is due\n'; exit 0; }
+            printf 'at rest: %s, waiting: %s\n' "$rest" "${waits:-none}"
             printf 'status:\n'; porelo task status porelo-busy-busy | grep -E '^(state|activity|screen)'
             printf 'screen, last lines:\n'; printf '%s\n' "$screen" | grep -v '^ *$' | tail -25
             exit 1
