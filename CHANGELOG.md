@@ -10,6 +10,10 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ## [Unreleased]
 
+### Added
+
+- `porelo vault authorize github-copilot` grants GitHub Copilot on github.com through the OAuth app Oh My Pi itself signs in with there, and the weekly update stops when a new pin signs in with another.
+
 ### Changed
 
 - Oh My Pi pinned to 18.11.0 (was 18.4.1).

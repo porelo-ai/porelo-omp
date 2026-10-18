@@ -8,6 +8,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
+| <a id="om25"></a>[OM25](OM25-Declare-The-App-Copilot-Is-Granted-Through.md) | S |  | the app `vault authorize github-copilot` signs in through for Oh My Pi |
 | <a id="om30"></a>[OM30](OM30-Read-Oh-My-Pi-18.11s-Start-Screen-As-Ready.md) | S | — | Oh My Pi 18.11's start screen read as ready, so the pin moves past 18.4.1 |
 | <a id="om29"></a>[OM29](OM29-Take-The-Legs-From-A-Run-That-Proved-The-Same-Tree.md) | S | — | a Build on `main` takes its legs from a run that proved the same tree within a day |
 
@@ -17,7 +18,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 |---|---|---|---|
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S |  | the Copilot path proven by hand before a release |
 | <a id="om19"></a>[OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | S | porelo [B101](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b101) | a thinking level and a read-only mode a start can ask for |
-| <a id="om25"></a>[OM25](OM25-Declare-The-App-Copilot-Is-Granted-Through.md) | S |  | the app `vault authorize github-copilot` signs in through for Oh My Pi |
 
 ## Finished
 

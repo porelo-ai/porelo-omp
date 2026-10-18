@@ -32,11 +32,19 @@ porelo vault put openrouter --type api-key
 It asks for the key without showing it. The entry carries the provider's name, so another agent
 reaching OpenRouter uses the same one.
 
-With a **GitHub Copilot subscription**, granted once on this machine: an `oauth-device` entry named
-`github-copilot`, then `porelo vault authorize github-copilot`, and tasks started with
-`--provider github-copilot`. Porelo's
-[credentials guide](https://github.com/porelo-ai/porelo/blob/main/doc/credentials.md#a-subscription-granted-once-github-copilot)
-has the commands. Oh My Pi's other `/login` services are not brokered.
+With a **GitHub Copilot subscription**, granted once on this machine with one command, then tasks started
+with `--provider github-copilot`:
+
+```
+porelo vault authorize github-copilot
+```
+
+Open the link it shows in any browser and enter the code. **Whose app you grant:** the one Oh My Pi itself
+signs in with on github.com, `Ov23li8tweQw6odWQebz`, which its source calls the OpenCode OAuth app, chosen
+for its narrow `read:user` consent. That is the source's word, not verified with GitHub. **A GitHub
+Enterprise host is not offered:** Oh My Pi uses another app there, GitHub's own Copilot CLI client, and
+Porelo grants only what the adapter declares. A grant is withdrawn on GitHub under Settings → Applications →
+Authorized OAuth Apps. Oh My Pi's other `/login` services are not brokered.
 
 ## Start a task
 

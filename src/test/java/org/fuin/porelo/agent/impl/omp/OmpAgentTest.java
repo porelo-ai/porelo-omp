@@ -3,7 +3,9 @@ package org.fuin.porelo.agent.impl.omp;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Objects;
 import org.fuin.porelo.agent.api.Agent;
+import org.fuin.porelo.agent.api.AgentGrant;
 import org.fuin.porelo.agent.api.AgentRegistry;
 import org.fuin.porelo.agent.api.RunRequest;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,28 @@ class OmpAgentTest {
         // it.
         assertThat(agent.definition().ready()).isNotNull();
         assertThat(agent.definition().ready().text()).isEqualTo("📁 /workspace");
+    }
+
+    @Test
+    void grantsGitHubCopilotOnGitHubComThroughTheAppOmpSignsInWithThere() {
+
+        // Without it 'porelo vault authorize github-copilot' refuses Oh My Pi as an agent that
+        // signs
+        // in nowhere, so a Copilot task cannot be given its credential at all.
+        final AgentGrant grant =
+                Objects.requireNonNull(
+                        agent.definition().grantFor("github-copilot"),
+                        "the GitHub Copilot grant omp.yaml declares");
+        for (final String host : new String[] {"github.com", "www.github.com", "api.github.com"}) {
+            assertThat(grant.clientIdFor(host))
+                    .as("the client id Oh My Pi signs in with on %s", host)
+                    .isEqualTo("Ov23li8tweQw6odWQebz");
+        }
+        // Oh My Pi uses another app on an Enterprise host; granting the OpenCode one there would
+        // hand a token to an app that instance does not know.
+        assertThat(grant.clientIdFor("company.ghe.com"))
+                .as("the client id offered for a GitHub Enterprise host")
+                .isNull();
     }
 
     @Test

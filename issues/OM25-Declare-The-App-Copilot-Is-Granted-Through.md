@@ -1,6 +1,6 @@
 # OM25 — Declare the app Copilot is granted through
 
-**Status:** Estimated.
+**Status:** Implementing.
 **Size:** S - a `login.grants` block in `omp.yaml`, its test, a check in the weekly update and a paragraph
 in `doc/`; Porelo's side is built.
 
@@ -14,8 +14,9 @@ Porelo grants a provider with one command, `porelo vault authorize <provider>`, 
 the installed agent's `login.grants.<provider>`: one id per host and the app's owner. `omp.yaml` declares
 none, so the command refuses as for an agent that does not sign in.
 
-**What Oh My Pi 18.4.1 signs in with,** read in its source
-(`packages/ai/src/registry/oauth/github-copilot.ts` at `v18.4.1`, and the same in the pinned binary):
+**What Oh My Pi signs in with,** read in its source
+(`packages/ai/src/registry/oauth/github-copilot.ts` at `v18.4.1`, and again at `v18.11.0`, the pin since 2026-10-18,
+and the same in the pinned binary):
 - **`github.com`** (and `www.github.com`, `api.github.com`): `Ov23li8tweQw6odWQebz`, which the source calls
   "the OpenCode OAuth app", chosen for its narrow `read:user` consent.
 - **Any other host, a GitHub Enterprise one:** `Ov23ctDVkRmgkPke0Mmm`, which the source calls "the GitHub-owned
@@ -41,6 +42,19 @@ none, so the command refuses as for an agent that does not sign in.
 - **On the VM**, with the adapter installed per account: on an empty vault, `porelo vault authorize
   github-copilot` shows a device code, which proves the client id reached GitHub, and is then left
   unfinished. A full grant needs an account with Copilot.
+
+## Measured
+
+- **The pinned binary, 18.11.0,** holds both ids beside `read:user` and the device flow's URLs. Its source at
+  `v18.11.0` keeps `resolveOAuthClientId`: the OpenCode id on a public GitHub host, the Copilot CLI one otherwise.
+- **The update's new step** "The pinned CLI still signs in with the app the adapter grants", run here against the
+  pinned download: "OK … signs in to GitHub Copilot as Ov23li8tweQw6odWQebz"; with the id in `omp.yaml` changed,
+  it writes STOP and nothing is published.
+- **On `ubuntu26.04`, 2026-10-18,** the adapter of this commit in `smith`'s agents directory, porelo 0.5.0, a vault
+  of the run's own: with Pi's adapter there too, `porelo vault authorize github-copilot` first asked which agent's
+  app to grant ("1 omp, 2 pi"); with omp chosen it answered "with the app omp signs in with: Ov23li8tweQw6odWQebz,
+  the OpenCode OAuth app, …", "open https://github.com/login/device" and a code. Left unfinished, the vault locked
+  and removed; a full grant needs an account with Copilot.
 
 ## Acceptance
 

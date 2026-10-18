@@ -124,6 +124,33 @@ jobs:
                   java -cp "$(cat target/cp.txt)" org.fuin.porelo.release.Main check-pin \
                       || echo "STOP=the pinned version and digest disagree" >> "$GITHUB_ENV"
 
+            # Porelo grants GitHub Copilot through the app omp.yaml names for github.com. A release that signs in
+            # with another app would be handed a token for an app it does not use, while every other gate stays green.
+            - name: The pinned CLI still signs in with the app the adapter grants
+              if: steps.plan.outputs.proceed == 'yes' && !env.STOP
+              run: |
+                  set -eu
+                  DEFINITION=src/main/resources/agent/omp.yaml
+                  CLIENT_ID="$(sed -n 's|^                github\.com: \(.*\)$|\1|p' "$DEFINITION" | head -1)"
+                  VERSION="$(sed -n 's|^        <agent.cli.version>\(.*\)</agent.cli.version>$|\1|p' pom.xml | head -1)"
+                  TEMPLATE="$(sed -n 's|^        - url: \(.*\)$|\1|p' "$DEFINITION" | head -1)"
+                  SHA256="$(sed -n 's|^          sha256: "\(.*\)"$|\1|p' "$DEFINITION" | head -1)"
+                  if [ -z "$CLIENT_ID" ] || [ -z "$VERSION" ] || [ -z "$TEMPLATE" ] || [ -z "$SHA256" ]; then
+                      echo "STOP=the Copilot client id or the pinned download could not be read" >> "$GITHUB_ENV"
+                      exit 0
+                  fi
+                  BIN="target/omp-$VERSION"
+                  if ! curl -sfL -o "$BIN" "${TEMPLATE//'${agent.cli.version}'/$VERSION}" \
+                          || ! echo "$SHA256  $BIN" | sha256sum -c -; then
+                      echo "STOP=Oh My Pi $VERSION could not be downloaded as pinned" >> "$GITHUB_ENV"
+                      exit 0
+                  fi
+                  if LC_ALL=C grep -aqF "$CLIENT_ID" "$BIN" && LC_ALL=C grep -aqF 'read:user' "$BIN"; then
+                      echo "  OK    Oh My Pi $VERSION signs in to GitHub Copilot as $CLIENT_ID"
+                  else
+                      echo "STOP=Oh My Pi $VERSION no longer signs in to GitHub Copilot with the app omp.yaml grants" >> "$GITHUB_ENV"
+                  fi
+
             # Not -DskipTests: that also skips NativeLinkageCheck, the one test that needs the binary.
             - name: Native binary and packages
               if: steps.plan.outputs.proceed == 'yes' && !env.STOP
