@@ -47,6 +47,12 @@ Feature: A task that comes back continues the conversation it was having
             """
             podman exec porelo-back-back tmux capture-pane -p -t porelo | grep -v 'Reply with OK' | grep -qw OK
             """
+        # And once omp has written that turn: 18.11 shows its answer before the turn ends and writes the
+        # session at the end. Measured, the file came 6 s after the answer, and a stop between left none.
+        Then within 60 seconds this script exits zero:
+            """
+            podman exec porelo-back-back sh -c 'ls /home/agent/.omp/agent/sessions/--workspace--/*.jsonl' >/dev/null 2>&1
+            """
         When a script runs "sleep 3; porelo task stop porelo-back-back"
         Then porelo says task "back" of "back" has a session to continue
         Given a terminal on the machine

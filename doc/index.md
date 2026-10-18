@@ -61,6 +61,12 @@ work goes; `porelo project default list` shows the name `-r` takes. Started insi
 `z-ai/glm-4.6` cannot send a message with Oh My Pi: the JSON a `write` call carries arrives cut off at its
 first `":`, and the model tries again until the task ends. `z-ai/glm-5.3-flash` sends it whole.
 
+**A task stopped within seconds of its first answer may have no conversation to continue.** Oh My Pi draws
+its answer before its turn ends and writes the session only at the turn's end; measured on 18.11.0, up to
+6 s later. Stopped in between, `porelo task status` shows no session line, and the next start begins a new
+conversation. That is Oh My Pi's own timing, not something Porelo dropped: wait until its prompt is back,
+or for the status line's spinner to go, before `porelo task stop`.
+
 ## What the task holds and reaches
 
 - **Not your credential.** The container gets a token that works for this task only, in
