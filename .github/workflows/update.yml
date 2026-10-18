@@ -222,7 +222,7 @@ jobs:
                   HETZNER_SSH: ${{ secrets.HETZNER_SSH }}
                   PORELO_CI_LEG: upd-ubuntu
                   PORELO_E2E_OPENROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-                  PORELO_E2E_MODEL: z-ai/glm-5.3-flash
+                  PORELO_E2E_MODEL: deepseek/deepseek-v4.1-flash
                   PORELO_E2E_EXPECT_CLI: ${{ steps.plan.outputs.target }}
               run: |
                   java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main acceptance \
@@ -238,7 +238,7 @@ jobs:
                   HETZNER_SSH: ${{ secrets.HETZNER_SSH }}
                   PORELO_CI_LEG: upd-fedora
                   PORELO_E2E_OPENROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-                  PORELO_E2E_MODEL: z-ai/glm-5.3-flash
+                  PORELO_E2E_MODEL: deepseek/deepseek-v4.1-flash
                   PORELO_E2E_EXPECT_CLI: ${{ steps.plan.outputs.target }}
               run: |
                   java -cp "$(cat target/cp.txt)" org.fuin.porelo.machines.Main acceptance \
