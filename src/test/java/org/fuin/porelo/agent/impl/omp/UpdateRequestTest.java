@@ -86,6 +86,34 @@ class UpdateRequestTest {
     }
 
     @Test
+    void aBranchLeftByAClosedRequestIsDeletedBeforeThePush(@TempDir final Path dir)
+            throws Exception {
+
+        // Measured on 2026-10-18: such a branch sits on an older main, so moving it moves the
+        // workflows it holds, which GitHub refuses the job's token, and the run opens no request.
+        final Map<String, String> env = setUp(dir);
+        env.put("JOB_STATUS", "success");
+        assertThat(
+                        git(
+                                dir.resolve("repo"),
+                                "push",
+                                "-q",
+                                "origin",
+                                "HEAD:refs/heads/update/oh-my-pi-1.2.3"))
+                .as("the branch a closed request left")
+                .isZero();
+
+        final Run open =
+                WorkflowSteps.run(step(OPEN), dir.resolve("repo"), env, WorkflowSteps.LIMIT);
+        assertThat(open.exit()).as("exit of the request:%n%s", open.output()).isZero();
+        assertThat(calls(dir))
+                .as("gh calls with a branch left by a closed request")
+                .contains(
+                        "api -X DELETE repos/porelo-ai/porelo-omp/git/refs/heads/update/oh-my-pi-1.2.3")
+                .anyMatch(c -> c.startsWith("pr create"));
+    }
+
+    @Test
     void onlyThePushHoldsTheTokenAndNothingWritesIt(@TempDir final Path dir) throws Exception {
 
         // The checkout leaves no token in .git/config, so the build and the legs on rented
@@ -208,6 +236,9 @@ class UpdateRequestTest {
         env.put("WAS", "1.2.2");
         env.put("AUTO", "true");
         env.put("HAVE_TOKEN", "true");
+        env.put("GITHUB_REPOSITORY", "porelo-ai/porelo-omp");
+        env.put("GITHUB_SHA", "the-checked-out-commit");
+        env.put("GITHUB_RUN_NUMBER", "7");
         return env;
     }
 

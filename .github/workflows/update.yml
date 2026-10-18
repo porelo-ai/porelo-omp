@@ -236,6 +236,26 @@ jobs:
                   BRANCH="update/oh-my-pi-$TARGET"
                   git checkout -b "$BRANCH"
                   git commit -am "Pin Oh My Pi $TARGET"
+                  # A branch moves only from its own main: one left by a closed request, or under an open one made
+                  # on an older main, holds that main's workflows, and moving it would move them, which this job's
+                  # token may never do. Such a branch is deleted first; its open request is closed and named by the
+                  # fresh one.
+                  OPEN="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
+                  REPLACES=""
+                  if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
+                      BEHIND=""
+                      if [ -n "$OPEN" ]; then
+                          BEHIND="$(gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$BRANCH" --jq .behind_by)"
+                      fi
+                      if [ "$BEHIND" != 0 ]; then
+                          if [ -n "$OPEN" ]; then
+                              gh pr close "$OPEN" --comment "Made on an older main; run $GITHUB_RUN_NUMBER opens a fresh request."
+                              REPLACES="$OPEN"
+                              OPEN=""
+                          fi
+                          gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$BRANCH" >/dev/null
+                      fi
+                  fi
                   # The checkout keeps no token, so the push alone gets it: through its environment, masked,
                   # never on a command line or in .git/config, and gone before anything else runs.
                   BASIC="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
@@ -273,7 +293,10 @@ jobs:
                     fi
                   } > "$RUNNER_TEMP/body.md"
                   # A weekly job reaches the same version twice whenever the first attempt stopped.
-                  if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
+                  if [ -n "$REPLACES" ]; then
+                      printf '\nReplaces #%s, made on an older `main`.\n' "$REPLACES" >> "$RUNNER_TEMP/body.md"
+                  fi
+                  if [ -n "$OPEN" ]; then
                       gh pr comment "$BRANCH" --body-file "$RUNNER_TEMP/body.md"
                       echo "the request for $TARGET was already open - re-verified, and said so on it"
                   else
