@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * Runs the build workflow's publishing steps against a stub {@code curl} and a stub {@code jf}, so
- * what they upload and what they believe is seen, not looked for.
+ * Runs the build workflow's publishing steps against a stub {@code curl}, with the repository's own
+ * {@code artifactory.sh} beside them, so what they upload and what they believe is seen, not looked
+ * for.
  */
 class PublishStepsTest {
 
@@ -126,8 +128,9 @@ class PublishStepsTest {
         return steps;
     }
 
+    /** An upload is a {@code curl} that sends a file, as {@code art_put} does. */
     private static boolean upload(final String call) {
-        return call.startsWith("jf rt upload");
+        return call.startsWith("curl ") && call.contains(" -T ");
     }
 
     private static List<String> calls(final Path dir) throws IOException {
@@ -136,8 +139,9 @@ class PublishStepsTest {
     }
 
     /**
-     * Writes the built files, an index holding the given stanzas, and stubs for curl, jf and sleep
-     * on the PATH; returns the environment that points the step at them.
+     * Writes the built files, an index holding the given stanzas, the repository's {@code
+     * artifactory.sh} where the step sources it, and stubs for curl and sleep on the PATH; returns
+     * the environment that points the step at them.
      */
     private static Map<String, String> stubs(final Path dir, final String index)
             throws IOException {
@@ -148,6 +152,11 @@ class PublishStepsTest {
         Files.writeString(target.resolve("porelo-agent-omp.cdx.json"), "{}");
         Files.writeString(dir.resolve("index"), index);
         Files.deleteIfExists(dir.resolve("calls"));
+        final Path scripts = Files.createDirectories(dir.resolve(".github/scripts"));
+        Files.copy(
+                Path.of(".github/scripts/artifactory.sh"),
+                scripts.resolve("artifactory.sh"),
+                StandardCopyOption.REPLACE_EXISTING);
         script(
                 bin.resolve("curl"),
                 """
@@ -159,12 +168,6 @@ class PublishStepsTest {
                     shift
                 done
                 if [ -n "$out" ]; then cat "$INDEX" > "$out"; else cat "$INDEX"; fi
-                """);
-        script(
-                bin.resolve("jf"),
-                """
-                echo "jf $*" >> "$CALLS"
-                if [ "$1 $2" = "rt curl" ]; then cat "$INDEX"; fi
                 """);
         // The index step waits between tries; here nothing is gained by waiting.
         script(bin.resolve("sleep"), "exit 0\n");
