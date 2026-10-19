@@ -1,6 +1,6 @@
 # OM31 — Publish Without A Downloaded Client
 
-**Status:** Analyzed.
+**Status:** Implementing.
 **Size:** S - the two Publish steps of `build.yml` move from the JFrog CLI to porelo's
 `artifactory.sh`; the packages, their channels and the index read-back stay as they are.
 
