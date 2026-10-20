@@ -18,6 +18,18 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om30"></a>[OM30](OM30-Read-Oh-My-Pi-18.11s-Start-Screen-As-Ready.md) | S | — | Oh My Pi 18.11's start screen read as ready, so the pin moves past 18.4.1 |
 | <a id="om29"></a>[OM29](OM29-Take-The-Legs-From-A-Run-That-Proved-The-Same-Tree.md) | S | — | a Build on `main` takes its legs from a run that proved the same tree within a day |
 
+## Analyzed
+
+| # | Size | Blocked by | What it covers | Open questions |
+|---|---|---|---|---|
+| <a id="om32"></a>[OM32](OM32-Report-What-Oh-My-Pi-Finds-Of-Itself-On-The-Host.md) | S | porelo [B224](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b224), [B225](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b225) | Oh My Pi reported set up on the host by its `agent.db`, its sign-in "cannot say", for [PJ53](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj53) | 0 |
+
+## Idea
+
+| # | Size | Blocked by | What it covers |
+|---|---|---|---|
+| <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) |  | [OM32](#om32) | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database, for [PJ53](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj53) |
+
 ## Estimated
 
 | # | Size | Blocked by | What it covers |
