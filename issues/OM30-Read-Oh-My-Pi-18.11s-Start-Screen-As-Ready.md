@@ -1,6 +1,6 @@
 # OM30 — Read Oh My Pi 18.11's Start Screen As Ready
 
-**Status:** Implementing.
+**Status:** Review.
 **Size:** S - the ready marker in `omp.yaml` and its test, the pin moved to 18.11.0 in the same commit, and the
 acceptance on the VM against 18.11.0.
 
@@ -29,3 +29,8 @@ so the pin can move past 18.4.1; and the check still fails while the setup wizar
 
 - On the VM, the whole suite against 18.11.0 with the new marker, `PORELO_E2E_EXPECT_CLI` set to it.
 - After the push, the Build's legs are green on 18.11.0; the update request #5 is closed as superseded.
+
+## Measured after the push
+
+- The Build of `5e26629`, the first with `e1aec22`, ran both legs green on 18.11.0 with `📁 /workspace` as the
+  marker. Update request #5 is closed.

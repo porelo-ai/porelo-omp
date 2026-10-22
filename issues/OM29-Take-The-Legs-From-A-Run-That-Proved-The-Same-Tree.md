@@ -1,6 +1,6 @@
 # OM29 — Take The Legs From A Run That Proved The Same Tree
 
-**Status:** Implementing.
+**Status:** Review.
 **Size:** S - a job in `build.yml` that asks porelo's `proven-legs`, the legs' condition, and one step in
 `update.yml` that names the tree it verifies; no contract another repository reads.
 
@@ -26,3 +26,9 @@ which built the shared command.
 - `proven-legs` asked for real with this repository's names: a tree a green Build proved is found, another is not.
 - After the push: the Build of a tree already proven skips its legs and names the run; the next update request,
   once merged, gives a Build that takes the update run's legs.
+
+## Measured after the push
+
+- The Build of `3839023`, the merged update request #6, said `proven=yes`, "legs taken from run 39582881375", the
+  update run that verified its tree, and ran no legs. The Builds of `4f9b12e` and `5e26629`, whose trees no run had
+  proved, ran both.
