@@ -23,6 +23,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
+| <a id="om34"></a>[OM34](OM34-The-Shared-Workflow-Tests-See-Every-Refusal-Red.md) |  | — | the shared workflow tests see every publishing and channel refusal red, and the refused-key scenario runs in CI |
 | <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) |  | [OM32](#om32) | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database, for [PJ53](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj53) |
 
 ## Estimated
