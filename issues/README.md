@@ -4,15 +4,6 @@ What is open in this repository, grouped by state in the order Review, Rework, I
 Analyzed, Accepted, Idea, Estimated, Finished and Rejected; a group with nothing in it is left out.
 Within a group, the order is the priority. The number is identity, not sequence.
 
-## Review
-
-| # | Size | Blocked by | What it covers |
-|---|---|---|---|
-| <a id="om30"></a>[OM30](OM30-Read-Oh-My-Pi-18.11s-Start-Screen-As-Ready.md) | S | — | Oh My Pi 18.11's start screen read as ready, so the pin moves past 18.4.1 |
-| <a id="om29"></a>[OM29](OM29-Take-The-Legs-From-A-Run-That-Proved-The-Same-Tree.md) | S | — | a Build on `main` takes its legs from a run that proved the same tree within a day |
-| <a id="om25"></a>[OM25](OM25-Declare-The-App-Copilot-Is-Granted-Through.md) | S |  | the app `vault authorize github-copilot` signs in through for Oh My Pi |
-| <a id="om31"></a>[OM31](OM31-Publish-Without-A-Downloaded-Client.md) | S | — | the Build publishes with curl and porelo's script, with no client downloaded beside the token |
-
 ## Analyzed
 
 | # | Size | Blocked by | What it covers | Open questions |
@@ -37,6 +28,10 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Title | What was built |
 |---|---|---|
+| <a id="om30"></a>[OM30](README.md#om30) | Read Oh My Pi 18.11's Start Screen As Ready | `omp.yaml` declares `📁 /workspace`, the start of the status line under omp's prompt, as the ready marker in place of the welcome box 18.11 dropped, and the check still fails while the setup wizard is up. |
+| <a id="om29"></a>[OM29](README.md#om29) | Take The Legs From A Run That Proved The Same Tree | A Build on `main` asks `porelo-release proven-legs` whether a Build or an update run already proved the pushed tree on both legs within a day and takes those legs instead of renting again, while a tag always runs its own. |
+| <a id="om25"></a>[OM25](README.md#om25) | Declare The App Copilot Is Granted Through | `omp.yaml` declares the OpenCode OAuth app (`Ov23li8tweQw6odWQebz`) Oh My Pi signs in with on `github.com` under `login.grants.github-copilot`, the weekly update stops when a new pin signs in with another, and `doc/index.md` names the app and that Enterprise hosts are not offered. |
+| <a id="om31"></a>[OM31](README.md#om31) | Publish Without A Downloaded Client | Both Publish steps in `build.yml` upload the packages and their bill of materials through `.github/scripts/artifactory.sh` with `curl`, with no JFrog CLI action or `jf` command left under `.github/`. |
 | <a id="om28"></a>[OM28](README.md#om28) | Reformat To The Shared Style | The code is in the shared style, google-java-format in its AOSP variant with YAML and Gherkin at four spaces; `validate` refuses code that is not, and `git blame` with `.git-blame-ignore-revs` skips the reformatting. |
 | <a id="om26"></a>[OM26](README.md#om26) | Read The Code Changed Since The Last Skills Review | The code changed since 2026-09-27 read against seven skills, each finding fixed, with a test where it could do harm: no terminal control character reaches a log, and no checkout keeps the job's token. |
 | <a id="om27"></a>[OM27](README.md#om27) | Rename The Adapter Porelo | The repository, its artifact, its packages, its Java packages and its documents say Porelo; a documents test keeps the old name to the released part of `CHANGELOG.md`. |
