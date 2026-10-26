@@ -8,6 +8,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
+| <a id="om19"></a>[OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | S | porelo [B101](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b101) | `--thinking` on the five effort levels and a `read-only` mode without edit tools, for a reviewer ([B172](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b172)) | 0 |
 | <a id="om32"></a>[OM32](OM32-Report-What-Oh-My-Pi-Finds-Of-Itself-On-The-Host.md) | S | porelo [B224](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b224), [B225](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b225) | Oh My Pi reported set up on the host by its `agent.db`, its sign-in "cannot say", for [PJ53](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj53) | 0 |
 
 ## Idea
@@ -22,7 +23,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S |  | the Copilot path proven by hand before a release |
-| <a id="om19"></a>[OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | S | porelo [B101](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b101) | a thinking level and a read-only mode a start can ask for |
 
 ## Finished
 
