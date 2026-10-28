@@ -2,8 +2,7 @@
 
 **Status:** Analyzed; blocked by [OM35](README.md#om35), porelo-project
 [PJ59](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj59) (the move's procedure and check)
-porelo [B298](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b298), and for the registry
-porelo-project [PJ75](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj75).
+and porelo [B298](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b298).
 **Size:** S - no code here beyond `porelo.yml`, the move itself done by the procedure; about 2 hours of the agent's
 work, plus the operator's attended start of the task.
 
@@ -26,8 +25,9 @@ image*) and `doc/running.md` (the agent's layer), and porelo-project's `project.
 - **What the task reaches while it runs:** Maven Central, Sonatype or the forge's registry, `fuinorg.jfrog.io` for
   the skills, `github.com` for `check-citations`, and the forge's address as a host service. That egress is the
   project's, in porelo-project's `project.yml`; the image, the agent's CLI with it, is built on the host outside the
-  task's firewall. The forge's registry refuses a task today (the organization is private, porelo-project [PJ75](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj75)), so
-  until then the task's build reads Sonatype's snapshots.
+  task's firewall. The task's build reads Sonatype's snapshots: the forge's registry refuses a task today (the
+  organization is private, porelo-project [PJ75](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj75)), and nothing sets
+  `MAVEN_SNAPSHOTS_URL` in a task yet, so the `forge` profile stays off there until both are in.
 - **The sub-agent reading:** no sub-agent CLI is in the task's image, since a project file names one
   agent per repository and porelo describes no second sign-in inside a task. Until porelo
   [B172](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b172)'s reviewer task is built, an agent
@@ -57,7 +57,9 @@ image*) and `doc/running.md` (the agent's layer), and porelo-project's `project.
 - Its build runs on the local forge as on the central one, [OM35](README.md#om35).
 - The room shows it as `Agent Omp`, from the nickname `Omp` in porelo-project's `project.yml`, set once porelo
   [B298](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b298) is published.
-- The build in the task takes porelo's snapshots from the local forge's registry, once porelo-project [PJ75](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj75) is in.
+- The build in the task passes on Sonatype's snapshots; it takes them from the local forge's registry only once
+  porelo-project [PJ75](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj75) is in and the
+  task sets `MAVEN_SNAPSHOTS_URL`, which is not this move's.
 - [PJ59](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj59)'s move check is red for `porelo-omp` before the move and green after it; the agent's session on this machine and its
   VM accounts are no longer used, and the way back [PJ59](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj59) describes is open.
 
@@ -66,7 +68,8 @@ image*) and `doc/running.md` (the agent's layer), and porelo-project's `project.
 - **Which CLI runs this repository's agent in its task.** (a) Claude Code, as for every one of this agent's
   repositories today: woken by a message, its subscription brokered; (b) Oh My Pi itself, so the adapter is used daily
   where it is built: it declares its resting and its waiting screen, so it is woken, but it needs a model provider's
-  key in the host's vault. **Recommended: (a)** for the move, one new thing at a time; (b) as an issue of its own
+  key in the host's vault, and its definition refuses `registry.npmjs.org`, so it could not install a package in the
+  task. **Recommended: (a)** for the move, one new thing at a time; (b) as an issue of its own
   afterwards.
 
 ## To be checked
