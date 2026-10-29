@@ -8,8 +8,7 @@ credential's value.
 
 ## Why
 
-[PJ53](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj53) offers `vault import` for what an
-agent finds of itself; [OM32](README.md#om32) answers "cannot say" for Oh My Pi's sign-in. A nice to have, with three
+Porelo offers `vault import` for what an agent finds of itself; [OM32](README.md#om32) answers "cannot say" for Oh My Pi's sign-in. A nice to have, with three
 things against it:
 
 - **A SQLite reader in the native executable**: a JDBC driver built into the native image, held to `-march=x86-64` and
@@ -19,6 +18,4 @@ things against it:
   own and may change in any release.
 - **The database is open while Oh My Pi runs**, in WAL mode, so a read must never take a lock Oh My Pi waits on.
 
-The provider asked for comes through porelo's
-[B226](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b226), as for Pi's
-[PI36](https://github.com/porelo-ai/porelo-pi/blob/main/issues/README.md#pi36).
+The provider asked for comes through Porelo's `ExtractCredential`, as for Pi.

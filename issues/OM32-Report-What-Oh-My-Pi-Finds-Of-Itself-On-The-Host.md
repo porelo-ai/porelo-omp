@@ -1,7 +1,7 @@
 # OM32 — Report What Oh My Pi Finds Of Itself On The Host
 
-**Status:** Analyzed; blocked by porelo [B224](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b224)
-and [B225](https://github.com/porelo-ai/porelo/blob/main/issues/base/README.md#b225).
+**Status:** Analyzed; waits for the agent API's method that asks an agent what it finds of itself on the
+host.
 **Size:** S - one class and its tests in this module, reading only whether files exist; the contract it answers is
 porelo's.
 
@@ -10,8 +10,7 @@ set up there, with the path, and says "cannot say" for its sign-in, which stays 
 
 ## Why
 
-[PJ53](https://github.com/porelo-ai/porelo-project/blob/main/issues/README.md#pj53) makes the agent already on the
-machine the default: each packaged agent reports what it finds of itself, and `porelo` chooses. Oh My Pi keeps its
+Porelo makes the agent already on the machine the default: each packaged agent reports what it finds of itself, and `porelo` chooses. Oh My Pi keeps its
 sign-ins in a SQLite database, and this adapter reads none. Reading them is
 [OM33](README.md#om33).
 
