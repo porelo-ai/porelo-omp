@@ -1,6 +1,7 @@
 # OM39 — The Busy Check Waits On A Tool The Scenario Ends
 
-**Status:** Idea; size S.
+**Status:** Backlog.
+**Size:** S - one scenario of `wake.feature` in this repository, no contract another repository reads.
 
 **What must be true.** In `wake.feature`'s scenario *a message that arrives while the agent works wakes it once it
 is at rest*, the check that omp is busy no longer depends on how the model schedules its tools. The tool call

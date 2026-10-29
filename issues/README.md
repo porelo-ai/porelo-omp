@@ -14,6 +14,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
+| <a id="om39"></a>[OM39](OM39-The-Busy-Check-Waits-On-A-Tool-The-Scenario-Ends.md) | S | — | the busy check of `wake.feature`'s message-while-it-works scenario waits on a loop the scenario ends, not on how the model schedules a `sleep 10` |
 | <a id="om35"></a>[OM35](OM35-The-Build-Runs-On-The-Local-Forge-As-On-The-Central-One.md) | S | — | the workflows run 1:1 on the local Forgejo and the central forge: snapshots from `MAVEN_SNAPSHOTS_URL`, publishing switched by `PORELO_PUBLISH`, legs asked by kind; the GitHub side built, the Forgejo half once a host exists |
 | <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine |
 
@@ -28,7 +29,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
-| <a id="om39"></a>[OM39](OM39-The-Busy-Check-Waits-On-A-Tool-The-Scenario-Ends.md) | S | — | the busy check of `wake.feature`'s message-while-it-works scenario waits on a loop the scenario ends, not on how the model schedules a `sleep 10` |
 | <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) |  | [OM35](#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind |
 | <a id="om34"></a>[OM34](OM34-The-Shared-Workflow-Tests-See-Every-Refusal-Red.md) |  | — | the shared workflow tests see every publishing and channel refusal red, and the refused-key scenario runs in CI |
 | <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) |  | [OM32](#om32) | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database |
