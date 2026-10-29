@@ -1,6 +1,6 @@
 # OM39 — The Busy Check Waits On A Tool The Scenario Ends
 
-**Status:** Backlog.
+**Status:** Implementing.
 **Size:** S - one scenario of `wake.feature` in this repository, no contract another repository reads.
 
 **What must be true.** In `wake.feature`'s scenario *a message that arrives while the agent works wakes it once it
