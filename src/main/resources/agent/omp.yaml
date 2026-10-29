@@ -57,7 +57,7 @@ session:
     # waits for it without typing. The start of the status line it draws under its prompt: measured on
     # 18.11.0 at a terminal, on screen at the prompt and hidden while the setup wizard is up. 18.11 dropped
     # the "Welcome back!" box this read before. The bound counts from the session existing, after any image
-    # build: about four times the 31 s measured on the leg's machine type, cpx12, on 2026-10-17.
+    # build: about four times the 31 s measured on the leg's machine kind, amd64, on 2026-10-17.
     ready_marker: "📁 /workspace"
     ready_within_seconds: 120
     # When the agent is at rest at its prompt, for Porelo to type its one wake line into the session

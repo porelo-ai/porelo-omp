@@ -27,7 +27,7 @@ what it may do in a task, how it is built and updated, and the risks accepted on
 | Updates | [Its release cadence is unlike the other two](#its-release-cadence-is-unlike-the-other-two) - many releases to Pi's few, so no rule follows from a shared origin |
 | Updates | [What an update takes, and when](#what-an-update-takes-and-when) - three days old and still the newest, a patch bump, a real model call |
 | The build | [The release tooling is Porelo's, configured from the pom](#the-release-tooling-is-porelos-configured-from-the-pom) - data beside the pin, and the matrix its digest parser was measured on |
-| The build | [A release is built from releases only](#a-release-is-built-from-releases-only) - on a tag nothing from Central's snapshots, and a tag on a Porelo snapshot refused by the step itself |
+| The build | [A release is built from releases only](#a-release-is-built-from-releases-only) - on a tag no snapshot repository, Central's or the forge's, and a tag on a Porelo snapshot refused by the step itself |
 | The build | [Actions run from a commit, and Dependabot moves them](#actions-run-from-a-commit-and-dependabot-moves-them) - every `uses:` at a commit, `check-actions` refuses the rest, GraalVM by Porelo's pin |
 | The build | [NullAway comes from `porelo-parent`](#nullaway-comes-from-porelo-parent) - one compiler configuration for every repository; `.mvn/jvm.config` stays here |
 | The build | [The changelog is written by hand, and nothing enforces it](#the-changelog-is-written-by-hand-and-nothing-enforces-it) - requiring an entry belongs to Porelo's changelog check, on logchange |
@@ -292,20 +292,21 @@ a digest one character off; `compare-bills` stops on a component the update did 
 Between releases everything is built on snapshots: `porelo.version`, the parent, and with the parent the release
 tooling. A tag's build takes none of them.
 
-- **Nothing from Central's snapshots on a tag.** The snapshot repository is a profile in `settings.xml` that
-  switches itself off when `porelo.release` is set, and `build.yml` sets `MAVEN_ARGS` to `-Dporelo.release` on a tag
-  and to `-U` elsewhere. Measured: with it, a build from an empty local repository cannot resolve the snapshot
-  parent; without it, it does. Not `-P!standard`: Maven then lists the profile as inactive and still takes the
-  parent from its repository, also measured.
+- **No snapshot repository on a tag.** The snapshot repositories are two profiles in `settings.xml`, `standard`
+  (Central's snapshots) where no forge names its own and `forge` where `MAVEN_SNAPSHOTS_URL` does; a profile's
+  activation takes one property only, so `build.yml` sets `MAVEN_ARGS` to `-P!standard,!forge` on a tag and to `-U`
+  elsewhere. Measured: with it, a build from an empty local repository cannot resolve the snapshot parent, with
+  `MAVEN_SNAPSHOTS_URL` set and without; without it, it does in both cases.
 - **Nothing asked for again on a tag.** `-U` is in no command; `MAVEN_ARGS` carries it where it belongs, also into
   the `pinned-jdk` action.
 - **A tag on a snapshot is refused.** "Which channel" refuses a `porelo.version` that names a snapshot, in the build
   job and in the release job. `ReleaseChannelTest` runs both steps as a tag's run would, sees the refusal, and sees
   a released Porelo let through; it was seen to fail with the refusal taken out. `check-releases` then refuses any
   snapshot left in the effective pom.
-- **Secrets only where a tool needs them.** The tooling is resolved and the channel decided in steps that hold no
-  secret. The steps that hold one run only what needs it: the acceptance legs and their clean-up the cloud's key and
-  the provider's, publishing the repository's token.
+- **Secrets only where a tool needs them.** The channel is decided in a step that holds no secret, and the tooling
+  is resolved in steps that hold only the token that reads the forge's snapshots, as every step that calls Maven
+  does. The other steps that hold one run only what needs it: the acceptance legs and their clean-up the cloud's key
+  and the provider's, publishing the repository's token.
 ## Actions run from a commit, and Dependabot moves them
 
 Every `uses:` names a full commit with its release beside it, `@<commit> # vX.Y.Z`. A tag is a name its
