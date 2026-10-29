@@ -76,19 +76,42 @@ Feature: An agent at rest is woken by a message for it
         And a terminal on the machine
         When I run "porelo task start busy --project busy --repository busy --agent omp --provider openrouter --model ${PORELO_E2E_MODEL} --clearance deny"
         Then the "omp" agent in task "busy" of "busy" reaches work without being asked anything
-        When I type "Run the shell command 'sleep 10' with your shell tool, then reply with the single word DONE."
+        # A wait that ends when the scenario says, so the message below comes while the tool still runs, however the
+        # model schedules its tools: a sleep of its own once ran beside a second call and was drawn only with its
+        # result. The timeout is named, since the model sets its own, 30 s for a sleep 10 once; in the foreground,
+        # since a job in the background ends the turn at once. The started file goes when the loop ends.
+        When I type "Run 'touch /tmp/porelo-busy-started; until [ -e /tmp/porelo-busy-done ]; do sleep 2; done; rm -f /tmp/porelo-busy-started' in the foreground with your shell tool and a timeout of 600 seconds, then reply with the single word DONE."
         And I press Enter
-        # Working, seen rather than assumed: its shell tool shows the sleep and no result yet, so the message below comes
-        # while it works. omp runs a command inside its own process, so no sleep shows among the task's processes.
+        # Working, seen rather than assumed: the loop runs, which its file in the task says whatever omp draws, and
+        # omp is not at rest, which omp.yaml's at_rest reads from the last 20 lines: "π > " stands there only at rest.
+        # omp runs a command inside its own process, so the loop shows among no processes. A loop sent to the
+        # background is not the case this scenario proves, and a try says so. The file is read before the screen, so
+        # the screen is never older than what the file said.
         Then within 120 seconds this script exits zero:
             """
-            screen=$(podman exec porelo-busy-busy tmux capture-pane -p -t porelo)
-            printf '%s\n' "$screen" | grep -qF '$ sleep 10' && ! printf '%s\n' "$screen" | grep -qF 'Wall:' && exit 0
+            started=no; podman exec porelo-busy-busy test -e /tmp/porelo-busy-started && started=yes
+            screen=$(podman exec porelo-busy-busy tmux capture-pane -p -S - -t porelo)
+            rest=no
+            printf '%s\n' "$screen" | tail -n 20 | grep -qF 'π > ' && rest=yes
+            backgrounded=no
+            printf '%s\n' "$screen" | grep -qF 'Backgrounded:' && backgrounded=yes
+            [ "$started" = yes ] && [ "$rest" = no ] && [ "$backgrounded" = no ] && exit 0
+            printf 'loop started: %s, at rest: %s, backgrounded: %s\n' "$started" "$rest" "$backgrounded"
             printf 'screen, last lines:\n'; printf '%s\n' "$screen" | grep -v '^ *$' | tail -25
             exit 1
             """
         When a script runs "echo 'What is 1234 plus 4321? Reply with the digits only.' | porelo talk tell porelo-busy-busy"
         Then it exits zero
+        # The message waits in inbox/new, so the loop may end and the turn with it; but only if the loop still runs
+        # and omp still works now, after the message came.
+        Then within 10 seconds this script exits zero:
+            """
+            podman exec porelo-busy-busy test -e /tmp/porelo-busy-started || { printf 'the loop ended before the message came\n'; exit 1; }
+            if podman exec porelo-busy-busy tmux capture-pane -p -t porelo | tail -n 20 | grep -qF 'π > '; then
+              printf 'omp came to rest before the message came\n'; exit 1
+            fi
+            podman exec porelo-busy-busy touch /tmp/porelo-busy-done
+            """
         # Read on the task's own screen, so a wake not seen shows what omp showed instead of the terminal's stream.
         # A wake is owed only to a message still in inbox/new when the agent comes to rest, which is what Porelo's wake
         # reads. An eager model may read its mailbox while it works and answer there, as DeepSeek V4.1 Flash did once

@@ -1,6 +1,6 @@
 # OM39 — The Busy Check Waits On A Tool The Scenario Ends
 
-**Status:** Implementing.
+**Status:** Review; three runs on the VM green, the legs on ubuntu and fedora are the Build's.
 **Size:** S - one scenario of `wake.feature` in this repository, no contract another repository reads.
 
 **What must be true.** In `wake.feature`'s scenario *a message that arrives while the agent works wakes it once it
@@ -23,27 +23,26 @@ chose differently. Ten seconds is also a window that a slow first token can use 
 
 ## Plan
 
-- Ask omp to run `until [ -e /tmp/porelo-busy-done ]; do sleep 2; done` in the foreground with its shell tool,
-  then reply DONE. It runs with a timeout above the scenario's own waits, which the prompt names, since omp's bash
-  tool otherwise stops it at its default timeout (30 s in the failed run).
-- The busy check passes on the loop's command line in omp's tool block with no `Wall:` under it. omp runs a
-  command in its own process, so `podman top` does not show it.
-  - A capture that sees the line still standing in the input box presses Enter again, as in claude-code.
-  - A capture that sees neither says what it saw.
-- After `porelo talk tell` exits zero, a step runs `podman exec porelo-busy-busy touch /tmp/porelo-busy-done`, so
-  the turn ends only after the message is in `inbox/new`. The wake check that follows stays as it is.
+- Ask omp to run `touch /tmp/porelo-busy-started; until [ -e /tmp/porelo-busy-done ]; do sleep 2; done; rm -f
+  /tmp/porelo-busy-started` in the foreground with its shell tool and a timeout of 600 seconds, then reply DONE.
+  The timeout is named because the model sets its own (30 s for the sleep in the failed run); omp's default is
+  300 s. The started file exists only while the loop runs.
+- The busy check passes once the started file exists, omp is not at rest (no `π > ` in the last 20 lines, which
+  `omp.yaml`'s `at_rest` reads) and the screen shows no `Backgrounded:`, omp's mark of a job sent to the
+  background, which would end the turn at once. The file is read before the screen. The check no longer reads
+  the tool's block, which omp may draw only with its result. omp runs a command inside its own process, so
+  `podman top` does not show it.
+- After `porelo talk tell` exits zero, a step checks again that the started file exists and omp is not at rest,
+  then touches `/tmp/porelo-busy-done`, so the turn ends only after the message is in `inbox/new`. The wake
+  check that follows stays as it is.
 
 ## Acceptance
 
-- Seen to fail first: the check as it is today fails on a screen captured from the failed run, where the sleep's
-  block already shows `Wall:`.
-- The same screen with the loop running and no `Wall:` passes the new check, and with `Wall:` under the loop it does
-  not.
+- Seen to fail first: the check as it was fails on the screen of the failed run, where the sleep's block already
+  shows `Wall:`. The new check fails while the started file is missing, while omp is at rest and while
+  `Backgrounded:` shows, and it passes once the loop has started.
 - Acceptance on ubuntu and on fedora runs the scenario green.
 
 ## To be checked
 
-- That omp 18.x's bash tool takes a timeout from the prompt, and what its block shows while a command runs
-  longer than its default timeout.
-- That a model that runs a second tool beside the loop still leaves the loop's block without `Wall:` until the file
-  exists.
+- That a model which runs a second tool beside the loop still leaves the turn open until the file exists.
