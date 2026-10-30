@@ -25,6 +25,12 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om19"></a>[OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | S | — | `--thinking` on the five effort levels and a `read-only` mode without edit tools, for a reviewer | 0 |
 | <a id="om32"></a>[OM32](OM32-Report-What-Oh-My-Pi-Finds-Of-Itself-On-The-Host.md) | S | — | Oh My Pi reported set up on the host by its `agent.db`, its sign-in "cannot say" | 0 |
 
+## Accepted
+
+| # | Size | Blocked by | What it covers |
+|---|---|---|---|
+| <a id="om40"></a>[OM40](OM40-The-Sign-In-Says-How-It-Is-Answered.md) | XS | — | the definition names its sign-in's flow, `device-code`, so the person is told to paste a code or confirm a device page; waits for Porelo's agent API with `login.flow` |
+
 ## Idea
 
 | # | Size | Blocked by | What it covers |
