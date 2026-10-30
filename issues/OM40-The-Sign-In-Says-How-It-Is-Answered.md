@@ -1,6 +1,6 @@
 # OM40 — The Sign-In Says How It Is Answered
 
-**Status:** Implementing; Estimated and Backlog (operator, 2026-10-30, sprint 6m).
+**Status:** Review; Estimated and Backlog (operator, 2026-10-30, sprint 6m).
 **Size:** XS - the key in `omp.yaml` and the Porelo version in `pom.xml`, under an hour.
 
 **What must be true.** A person granting Oh My Pi's GitHub Copilot sign-in from a host, at a terminal or in the GUI, is
