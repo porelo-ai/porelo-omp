@@ -102,6 +102,8 @@ provider:
 # Copilot CLI client, which is not declared, so such a host is refused for want of an id. The weekly
 # update holds the pinned binary to this id.
 login:
+    # 'porelo vault authorize github-copilot' takes GitHub's device flow: a code confirmed on GitHub's page.
+    flow: device-code
     grants:
         github-copilot:
             hosts:

@@ -12,6 +12,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Added
 
+- The definition names how its sign-in is answered, `login.flow: device-code`, so a person granting GitHub Copilot on a host over SSH can be told to confirm the code on GitHub's page; Porelo 0.5.0, which this builds against, ignores the key, and a later Porelo reads it.
 - `porelo vault authorize github-copilot` grants GitHub Copilot on github.com through the OAuth app Oh My Pi itself signs in with there, and the weekly update stops when a new pin signs in with another.
 
 ### Changed
