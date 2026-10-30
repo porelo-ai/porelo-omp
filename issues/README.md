@@ -15,6 +15,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
+| <a id="om40"></a>[OM40](OM40-The-Sign-In-Says-How-It-Is-Answered.md) | XS | — | a person granting Oh My Pi's GitHub Copilot sign-in from a host is told to confirm the code on GitHub's device page |
 | <a id="om35"></a>[OM35](OM35-The-Build-Runs-On-The-Local-Forge-As-On-The-Central-One.md) | S | — | the workflows run 1:1 on the local Forgejo and the central forge: snapshots from `MAVEN_SNAPSHOTS_URL`, publishing switched by `PORELO_PUBLISH`, legs asked by kind; the GitHub side built, the Forgejo half once a host exists |
 | <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine |
 
@@ -24,12 +25,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 |---|---|---|---|---|
 | <a id="om19"></a>[OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | S | — | `--thinking` on the five effort levels and a `read-only` mode without edit tools, for a reviewer | 0 |
 | <a id="om32"></a>[OM32](OM32-Report-What-Oh-My-Pi-Finds-Of-Itself-On-The-Host.md) | S | — | Oh My Pi reported set up on the host by its `agent.db`, its sign-in "cannot say" | 0 |
-
-## Accepted
-
-| # | Size | Blocked by | What it covers |
-|---|---|---|---|
-| <a id="om40"></a>[OM40](OM40-The-Sign-In-Says-How-It-Is-Answered.md) | XS | — | a person granting Oh My Pi's GitHub Copilot sign-in from a host is told to confirm the code on GitHub's device page |
 
 ## Idea
 
