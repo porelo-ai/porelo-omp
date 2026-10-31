@@ -11,9 +11,10 @@ once than the task says.
 ## Plan
 
 - **The contract built against:** Porelo's agent interface carries one number, the most subagents an agent may
-  start inside a task, 0 (none) by default, and no depth; each agent definition declares what it can enforce
-  of it - off only, or a count - and Porelo refuses a value the definition cannot enforce with exit code 64
-  instead of enforcing less. Where a CLI needs a depth to make the count hold, the adapter sets it itself.
+  run at the same time inside a task (not a total over the task), 0 (none) by default, and no depth; each
+  agent definition declares what it can enforce of it - off only, or a count - and Porelo refuses a value the
+  definition cannot enforce with exit code 64 instead of enforcing less. Where a CLI needs a depth to make the
+  count hold, the adapter sets it itself.
 - Read and measured headless at the pin 18.12.1, on the VM through OpenRouter with
   `deepseek/deepseek-v4.1-flash` and `--auto-approve`, the settings passed in a `--config` overlay in
   `config.yml` form, nested (`task:` / `  maxRecursionDepth: 0`): by default a subagent starts, and one it starts can start another.
@@ -42,8 +43,8 @@ once than the task says.
 ## Acceptance
 
 - Seen to fail first: a task with the default asks omp to start a subagent, and it does.
-- With the change, the same task starts none; a task allowing N starts at most N at once and refuses the
-  next.
+- With the change, the same task starts none; a task allowing N starts at most N at once, and the next waits
+  until one ends, since omp queues it.
 
 ## Open questions
 
