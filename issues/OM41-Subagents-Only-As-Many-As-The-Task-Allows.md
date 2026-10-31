@@ -1,7 +1,7 @@
 # OM41 — Subagents Only As Many As The Task Allows
 
 **Status:** Analyzed; Accepted (operator, 2026-10-31).
-**Size:** S - one module and its tests, the settings go into a file already written; about two hours.
+**Size:** S - one module and its tests, the settings go into a file already written; about 35 minutes.
 
 **What must be true.** omp in a Porelo task starts no subagent unless the task allows it, and then no more
 at once and no deeper than the task says.
