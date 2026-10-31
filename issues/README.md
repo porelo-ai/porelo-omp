@@ -26,6 +26,12 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om19"></a>[OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | S | — | `--thinking` on the five effort levels and a `read-only` mode without edit tools, for a reviewer | 0 |
 | <a id="om32"></a>[OM32](OM32-Report-What-Oh-My-Pi-Finds-Of-Itself-On-The-Host.md) | S | — | Oh My Pi reported set up on the host by its `agent.db`, its sign-in "cannot say" | 0 |
 
+## Accepted
+
+| # | Size | Blocked by | What it covers |
+|---|---|---|---|
+| <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) |  | — | no subagent in a task unless the task allows it, then at most as many and as deep as it says; read, not yet measured at the pin |
+
 ## Idea
 
 | # | Size | Blocked by | What it covers |
