@@ -30,7 +30,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
-| <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) |  | — | no subagent in a task unless the task allows it, then at most as many and as deep as it says; read, not yet measured at the pin |
+| <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) |  | — | no subagent in a task unless the task allows it, then at most as many and as deep as it says; off (depth 0), count and depth measured to hold at the pin |
 
 ## Idea
 

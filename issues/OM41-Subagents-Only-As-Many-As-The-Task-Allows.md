@@ -11,9 +11,15 @@ at once and no deeper than the task says.
   start inside a task, 0 (none) by default; each agent definition declares what it can enforce - off, a
   concurrent count, a depth - and Porelo refuses a value the definition cannot enforce instead of
   enforcing less.
-- Read in 16.3.11, two major versions below the pin: subagents are the tool `task`; `task.maxConcurrency`
-  (default 32) caps how many run at once, where 0 means unlimited, not none, and `task.maxRecursionDepth`
-  (default 2) caps the depth. Off is a `--tools` list without `task`.
+- Read and measured headless at the pin 18.12.1, on the VM through OpenRouter, the settings passed in a
+  `--config` overlay: by default a subagent starts, and one it starts can start another.
+  - **Off:** `task.maxRecursionDepth: 0` holds - the session has no `task` tool, and `agent()` inside the
+    eval tool is refused with "Cannot spawn another agent at task depth 0; maximum depth is 0".
+  - **Not off:** `tools.approval: {task: deny}` blocks the `task` tool, but the model then started a
+    subagent through `agent()` in the eval tool; a `--tools` list without `task` leaves the same way open.
+  - **Depth:** `task.maxRecursionDepth` (default 2) is the number of levels that may start subagents.
+  - **Concurrent count:** `task.maxConcurrency: 1` holds by queueing - three asked at once all ran, one
+    after the other. 0 means unlimited, not none.
 
 ## Acceptance
 
@@ -23,6 +29,6 @@ at once and no deeper than the task says.
 
 ## To be checked
 
-- Read again at the pinned version first: the setting names, what 0 means, and whether off still needs a
-  whole `--tools` list, which would have to follow every tool a pin bump adds.
-- On the VM, at the pinned version: that each switch holds, attended and headless.
+- Whether the adapter can hand omp these settings other than through a config overlay, and where the
+  overlay lives in a task.
+- The same switches attended, at a terminal.
