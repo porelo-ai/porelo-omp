@@ -1,7 +1,7 @@
 # OM41 — Subagents Only As Many As The Task Allows
 
-**Status:** Analyzed; Accepted (operator, 2026-10-31).
-**Size:** S - one module and its tests, the settings go into a file already written; about 35 minutes.
+**Status:** Estimated (operator, 2026-10-31).
+**Size:** S - one module and its tests, the settings go into a file already written; about 35 minutes: the S median of 24.5, raised by the scenario on the VM, the check that the keys hold in `config.yml` as in the `--config` overlay, and the attended check.
 
 **What must be true.** omp in a Porelo task starts no subagent unless the task allows it, and then no more
 at once and no deeper than the task says.

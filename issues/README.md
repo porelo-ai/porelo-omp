@@ -25,7 +25,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 |---|---|---|---|---|
 | <a id="om19"></a>[OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | S | — | `--thinking` on the five effort levels and a `read-only` mode without edit tools, for a reviewer | 0 |
 | <a id="om32"></a>[OM32](OM32-Report-What-Oh-My-Pi-Finds-Of-Itself-On-The-Host.md) | S | — | Oh My Pi reported set up on the host by its `agent.db`, its sign-in "cannot say" | 0 |
-| <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) | S | — | no subagent in a task unless the task allows it, then at most as many and as deep as it says; off (depth 0), count and depth measured to hold at the pin | 0 |
 
 ## Idea
 
@@ -40,6 +39,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S |  | the Copilot path proven by hand before a release |
+| <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) | S | — | no subagent in a task unless the task allows it, then at most as many and as deep as it says; off (depth 0), count and depth measured to hold at the pin |
 
 ## Finished
 
