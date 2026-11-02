@@ -8,6 +8,10 @@ name: omp
 label: Oh My Pi
 binary: omp
 
+# Where this agent keeps its own files, for 'porelo vault import' and for what it finds of itself on the
+# host. Its sign-ins are in agent.db there, which this package does not read, so an import finds nothing.
+config_dir: "~/.omp/agent"
+
 # What turns this agent's own approval prompts off. Porelo adds these to every run inside a task,
 # attached or not - never conditionally: the container is what makes the answer always yes, and
 # unattended there is nobody to answer. Only the 'how' is declared here, because the flag is this

@@ -47,6 +47,27 @@ class OmpAgentTest {
     }
 
     @Test
+    void declaresWhereOhMyPiKeepsItsFilesAndFindsThem() throws java.io.IOException {
+
+        // Prevents the question never being asked: Porelo asks no agent that declares no directory.
+        assertThat(agent.definition().configDirectory())
+                .as("the directory Porelo passes to the findings")
+                .isEqualTo("~/.omp/agent");
+        assertThat(new OmpAgent().finder())
+                .as("the finder that answers instead of the agent API's default")
+                .isInstanceOf(OmpFindings.class);
+    }
+
+    @Test
+    void namesNoLoginOfItsOwnThoughItNamesWhereItKeepsItsFiles() {
+
+        // Prevents 'vault login' starting a container that leaves nothing Porelo can collect.
+        assertThat(agent.definition().loginArguments())
+                .as("a login section holding only its flow and grants")
+                .isNull();
+    }
+
+    @Test
     void isDiscoveredThroughTheServiceLoader() {
 
         // Nothing names OmpAgent for this to work: it is found through META-INF/services, which
