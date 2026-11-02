@@ -10,7 +10,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 |---|---|---|---|
 | <a id="om38"></a>[OM38](OM38-Snapshots-Resolved-With-A-Read-Only-Token.md) | S | — | on a forge other than the central one, snapshots resolved with the runner's read-only token, the publisher's token in no step, since nothing here deploys to the registry, and a Build without `MAVEN_SNAPSHOTS_URL` refused at its start |
 | <a id="om39"></a>[OM39](OM39-The-Busy-Check-Waits-On-A-Tool-The-Scenario-Ends.md) | S | — | the busy check of `wake.feature`'s message-while-it-works scenario waits on a loop the scenario ends, not on how the model schedules a `sleep 10` |
-| <a id="om40"></a>[OM40](OM40-The-Sign-In-Says-How-It-Is-Answered.md) | XS | — | a person granting Oh My Pi's GitHub Copilot sign-in from a host is told to confirm the code on GitHub's device page |
 
 ## Backlog
 
@@ -45,6 +44,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Title | What was built |
 |---|---|---|
+| <a id="om40"></a>[OM40](README.md#om40) | The Sign-In Says How It Is Answered | `omp.yaml` declares `login.flow: device-code`, so a person granting Oh My Pi's GitHub Copilot sign-in from a host is told to confirm the code on GitHub's device page; tested in sprint 6m: passed. |
 | <a id="om30"></a>[OM30](README.md#om30) | Read Oh My Pi 18.11's Start Screen As Ready | `omp.yaml` declares `📁 /workspace`, the start of the status line under omp's prompt, as the ready marker in place of the welcome box 18.11 dropped, and the check still fails while the setup wizard is up. |
 | <a id="om29"></a>[OM29](README.md#om29) | Take The Legs From A Run That Proved The Same Tree | A Build on `main` asks `porelo-release proven-legs` whether a Build or an update run already proved the pushed tree on both legs within a day and takes those legs instead of renting again, while a tag always runs its own. |
 | <a id="om25"></a>[OM25](README.md#om25) | Declare The App Copilot Is Granted Through | `omp.yaml` declares the OpenCode OAuth app (`Ov23li8tweQw6odWQebz`) Oh My Pi signs in with on `github.com` under `login.grants.github-copilot`, the weekly update stops when a new pin signs in with another, and `doc/index.md` names the app and that Enterprise hosts are not offered. |
