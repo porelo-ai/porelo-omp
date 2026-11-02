@@ -65,14 +65,14 @@ Measured on Ubuntu 26.04 with both packages installed:
 | binary in the container | `omp` | `pi` |
 | adapter on the host | `…/agents/porelo-agent-omp` | `…/agents/porelo-agent-pi` |
 | what the package installs elsewhere | `/usr/share/porelo/sbom/porelo-agent-omp.cdx.json` | `/usr/share/porelo/agents/pi/pi-tree.tar.gz` |
-| where the tool lands in the image | `/home/agent/.local/bin/omp` | `/opt/pi`, `/opt/node`, `/usr/local/bin/pi` |
-| file Porelo writes into the container | `/home/agent/.omp/agent/models.yml` | `/home/agent/.pi/agent/extensions/porelo-route.ts` |
+| where the tool lands in the image | `.local/bin/omp` in the agent's home | `/opt/pi`, `/opt/node`, `/usr/local/bin/pi` |
+| file Porelo writes into the container | `.omp/agent/models.yml` in the agent's home | `.pi/agent/extensions/porelo-route.ts` in the agent's home |
 
 `comm -12` over the two `dpkg -L` listings finds no file claimed by both, and `porelo agents` lists
 each under its own name from its own package.
 
 **One shared name remains, and it is an environment variable.** omp honours `PI_CONFIG_DIR` and
-`PI_PROFILE` from its ancestry. Either one moves its config directory away from `~/.omp/agent`, so the
+`PI_PROFILE` from its ancestry. Either one moves its config directory away from `.omp/agent` in the home, so the
 file Porelo writes is never read and the task talks straight to the provider - measured. Porelo sets
 neither, and nothing in a task image sets them.
 
@@ -83,7 +83,7 @@ Oh My Pi is a fork of Pi, and sharing an origin does not mean sharing a mechanis
 redirect a built-in provider** in 18.1.13. Measured: the extension loads, runs, writes its marker,
 and requests still go to `openrouter.ai`.
 
-What works is `providers.<name>.baseUrl` in `~/.omp/agent/models.yml`, so the container is pointed
+What works is `providers.<name>.baseUrl` in `.omp/agent/models.yml` in the home, so the container is pointed
 at the broker **by a file rather than by a variable or an extension**. The packaging this agent
 shares with Pi matters more than the mechanism it does not.
 
@@ -94,7 +94,7 @@ omp can only be given a URL. A host-side listener is unreachable from a rootless
 there and forwards to the broker's unix socket on the host. The broker itself stays on the host, where
 it keeps the host's DNS and egress and holds the real credential.
 
-What the container gets is one file, `/home/agent/.omp/agent/models.yml`, and no variable:
+What the container gets is one file, `.omp/agent/models.yml` in the agent's home, and no variable:
 
 ```yaml
 providers:
@@ -168,12 +168,12 @@ to the provider the task was started with. Proven by `OmpContainerSetupTest` and
 asks the npm registry or GitHub for a newer release at start and shows a notice. It installs nothing
 by itself. Neither host is reachable from a task, so the check can only fail.
 
-**How it is stopped:** `startup.checkUpdate: false` in `~/.omp/agent/config.yml`, written into every
+**How it is stopped:** `startup.checkUpdate: false` in `.omp/agent/config.yml` in the home, written into every
 container. Measured on 18.1.13: `omp config get startup.checkUpdate` answers `false` with the file
 and `true` without it.
 
 **What is not covered:** `omp update` has no switch, and it would replace
-`/home/agent/.local/bin/omp`, which the agent can write. What keeps it from doing that is that the
+`.local/bin/omp` in the agent's home, which the agent can write. What keeps it from doing that is that the
 task reaches neither host.
 
 **What would change it:** an omp release that installs updates by itself, or a switch for
@@ -197,7 +197,7 @@ provider does. OpenRouter and GitHub Copilot are the ones that have been run.
 
 **A fresh omp opens at a five-step setup wizard** - providers to sign in to, the default model, glyph
 mode, composer layout, theme - **even with a credential in place.** Attended, the task then waits at
-a menu. Skipping every step writes `setupVersion: 2` to `~/.omp/agent/config.yml` and nothing else
+a menu. Skipping every step writes `setupVersion: 2` to `.omp/agent/config.yml` in the home and nothing else
 that changes behavior; the rest is session state. So the config file this adapter writes carries
 that line, and omp starts at its prompt.
 
@@ -248,7 +248,7 @@ Porelo records the session a task's agent ran and passes it back with `--resume`
 again. **`--resume`, not `--session`:** 18.4.1 has no `--session`, and a task started again with it fails
 on an unknown option. Where the id is, `omp.yaml` declares under `session.session_id`. Measured on
 18.4.1: an unattended run's first record, `{"type":"session"}`, carries it as `id`. An attached session is
-kept as `~/.omp/agent/sessions/--workspace--/<timestamp>_<id>.jsonl`, with the same `{"type":"session"}`
+kept as `.omp/agent/sessions/--workspace--/<timestamp>_<id>.jsonl` in the home, with the same `{"type":"session"}`
 record inside it after a title record; Porelo reads the id from inside the newest session file.
 
 **Proven at the version it pins.** `SessionIdDeclarationTest` reads the declaration against the measured

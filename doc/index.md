@@ -70,7 +70,7 @@ or for the status line's spinner to go, before `porelo task stop`.
 ## What the task holds and reaches
 
 - **Not your credential.** The container gets a token that works for this task only, in
-  `~/.omp/agent/models.yml`, and Porelo's broker swaps the real credential in on the way out.
+  `.omp/agent/models.yml` in the home, and Porelo's broker swaps the real credential in on the way out.
 - **Reachable:** the task's provider only (`openrouter.ai`, or `api.githubcopilot.com` with
   `--provider github-copilot`). Oh My Pi needs no host of its own to start. Nothing else resolves.
 - **Refused on purpose:** its model catalogue, model lists of providers the task has no credential

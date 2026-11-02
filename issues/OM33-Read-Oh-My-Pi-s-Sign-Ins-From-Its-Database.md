@@ -13,7 +13,7 @@ things against it:
 
 - **A SQLite reader in the native executable**: a JDBC driver built into the native image, held to `-march=x86-64` and
   the linkage `NativeLinkageCheck` checks, or a reader of the file format for one table.
-- **The schema is not a contract**: the table `auth_credentials` in `~/.omp/agent/agent.db` (`provider`,
+- **The schema is not a contract**: the table `auth_credentials` in `.omp/agent/agent.db` in the home (`provider`,
   `credential_type`, `data` as JSON, `disabled_cause` marking a tombstone, several rows per provider) is Oh My Pi's
   own and may change in any release.
 - **The database is open while Oh My Pi runs**, in WAL mode, so a read must never take a lock Oh My Pi waits on.

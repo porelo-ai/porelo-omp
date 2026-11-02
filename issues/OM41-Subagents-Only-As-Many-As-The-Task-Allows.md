@@ -26,7 +26,7 @@ once than the task says.
   - **Concurrent count:** `task.maxConcurrency: 1` holds by queueing - three asked at once all ran, one
     after the other. 0 means unlimited, not none.
 - **`omp.yaml`** declares off and a count.
-- **`OmpConfigFile.document`**, which already writes `/home/agent/.omp/agent/config.yml` for every task, adds
+- **`OmpConfigFile.document`**, which already writes `.omp/agent/config.yml` in the agent's home for every task, adds
   `task.maxRecursionDepth` - 0 when no subagent is allowed, which is what switches them off, eval's `agent()`
   included - and above 0 `task.maxConcurrency` with the allowed number and `task.maxRecursionDepth: 1`. The
   depth is the adapter's own: only the agent itself starts subagents, so the count holds for the whole task.

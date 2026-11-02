@@ -182,7 +182,7 @@ off unless a host is named, so an ordinary build neither resolves the kit nor co
 ./mvnw -s settings.xml verify \
     -Dporelo.acceptance.host=<machine with porelo and this agent's package installed> \
     -Dporelo.acceptance.user=acceptance \
-    -Dporelo.acceptance.key=$HOME/.ssh/id_ed25519
+    -Dporelo.acceptance.key=<a private key in your SSH folder>
 ```
 
 The report lands in `target/acceptance.html`. The scenarios tagged `@credential` need
