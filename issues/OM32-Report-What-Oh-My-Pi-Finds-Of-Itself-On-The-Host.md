@@ -1,7 +1,7 @@
 # OM32 — Report What Oh My Pi Finds Of Itself On The Host
 
-**Status:** Analyzed; waits for the agent API's method that asks an agent what it finds of itself on the
-host.
+**Status:** Implementing; its adapter part waits for the agent API's method that asks an agent what it finds of
+itself on the host.
 **Size:** S - one class and its tests in this module, reading only whether files exist; the contract it answers is
 porelo's.
 
