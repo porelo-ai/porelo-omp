@@ -10,7 +10,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 |---|---|---|---|
 | <a id="om38"></a>[OM38](OM38-Snapshots-Resolved-With-A-Read-Only-Token.md) | S | — | on a forge other than the central one, snapshots resolved with the runner's read-only token, the publisher's token in no step, since nothing here deploys to the registry, and a Build without `MAVEN_SNAPSHOTS_URL` refused at its start |
 | <a id="om39"></a>[OM39](OM39-The-Busy-Check-Waits-On-A-Tool-The-Scenario-Ends.md) | S | — | the busy check of `wake.feature`'s message-while-it-works scenario waits on a loop the scenario ends, not on how the model schedules a `sleep 10` |
-| <a id="om32"></a>[OM32](OM32-Report-What-Oh-My-Pi-Finds-Of-Itself-On-The-Host.md) | S | — | Oh My Pi reported set up on the host by its `agent.db`, its sign-in "cannot say" |
 
 ## Implementing
 
@@ -42,7 +41,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 |---|---|---|---|
 | <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) |  | [OM35](#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind |
 | <a id="om34"></a>[OM34](OM34-The-Shared-Workflow-Tests-See-Every-Refusal-Red.md) |  | — | the shared workflow tests see every publishing and channel refusal red, and the refused-key scenario runs in CI |
-| <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) |  | [OM32](#om32) | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database |
+| <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) |  | — | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database |
 
 ## Estimated
 
@@ -55,6 +54,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Title | What was built |
 |---|---|---|
+| <a id="om32"></a>[OM32](README.md#om32) | Report What Oh My Pi Finds Of Itself On The Host | The adapter reports Oh My Pi set up on the host by its `agent.db`, which it never opens, with its sign-in "cannot say"; `omp.yaml` names `config_dir`. |
 | <a id="om40"></a>[OM40](README.md#om40) | The Sign-In Says How It Is Answered | `omp.yaml` declares `login.flow: device-code`, so a person granting Oh My Pi's GitHub Copilot sign-in from a host is told to confirm the code on GitHub's device page; tested in sprint 6m: passed. |
 | <a id="om30"></a>[OM30](README.md#om30) | Read Oh My Pi 18.11's Start Screen As Ready | `omp.yaml` declares `📁 /workspace`, the start of the status line under omp's prompt, as the ready marker in place of the welcome box 18.11 dropped, and the check still fails while the setup wizard is up. |
 | <a id="om29"></a>[OM29](README.md#om29) | Take The Legs From A Run That Proved The Same Tree | A Build on `main` asks `porelo-release proven-legs` whether a Build or an update run already proved the pushed tree on both legs within a day and takes those legs instead of renting again, while a tag always runs its own. |

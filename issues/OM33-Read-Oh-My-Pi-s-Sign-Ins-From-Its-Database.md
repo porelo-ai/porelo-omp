@@ -8,7 +8,7 @@ credential's value.
 
 ## Why
 
-Porelo offers `vault import` for what an agent finds of itself; [OM32](README.md#om32) answers "cannot say" for Oh My Pi's sign-in. A nice to have, with three
+Porelo offers `vault import` for what an agent finds of itself; the adapter answers "cannot say" for Oh My Pi's sign-in. A nice to have, with three
 things against it:
 
 - **A SQLite reader in the native executable**: a JDBC driver built into the native image, held to `-march=x86-64` and

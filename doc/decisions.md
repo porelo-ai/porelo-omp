@@ -14,6 +14,7 @@ what it may do in a task, how it is built and updated, and the risks accepted on
 | The package | [Why the package is small and the download is not](#why-the-package-is-small-and-the-download-is-not) - about 6 MB carrying a 200 MB fetch, checked against upstream's digest |
 | The package | [What the acceptance proves, and with what](#what-the-acceptance-proves-and-with-what) - Fedora 44, the installed package, a real credential |
 | The package | [Installed beside Pi, nothing is shared but two variables](#installed-beside-pi-nothing-is-shared-but-two-variables) - no file claimed by both packages; `PI_CONFIG_DIR` and `PI_PROFILE` stay unset |
+| The package | [What the adapter finds of Oh My Pi on the host](#what-the-adapter-finds-of-oh-my-pi-on-the-host) - whether `agent.db` exists, never opened; its sign-in "cannot say" |
 | The broker | [A fork is not a promise: how this agent is pointed at the broker](#a-fork-is-not-a-promise-how-this-agent-is-pointed-at-the-broker) - the extension loads and does not redirect; a file does |
 | The broker | [A relay in the task's namespace, at a literal address](#a-relay-in-the-tasks-namespace-at-a-literal-address) - omp takes only a URL; `127.0.0.1:9419`, the provider's `/api/v1`, a file at `0600` |
 | The broker | [A model id that starts with a provider's name goes to that provider](#a-model-id-that-starts-with-a-providers-name-goes-to-that-provider) - measured on 18.1.13; prefix the provider |
@@ -218,6 +219,20 @@ renders it, and needs the marker there for three seconds on end. Measured on 18.
 taken out of the build, it fails and reports the wizard ("Setup step 1 of 5 … Select provider to login");
 with the line in, the five scenarios that attach pass. 18.11 dropped the "Welcome back!" box the marker read
 before, which is why it is the status line now.
+
+## What the adapter finds of Oh My Pi on the host
+
+The adapter tests whether `agent.db` exists in `.omp/agent` in the home, and never opens it, so a database Oh My Pi holds
+open is not touched. A regular file there is a configuration finding with its path and a sign-in "cannot say": the
+sign-ins are in that database, which this adapter reads none of. No such file is no finding, which reads as not signed in;
+a directory it may not look into is a sign-in "cannot say".
+
+Read in the pinned package 18.12.1, not run. `PI_CODING_AGENT_DIR` moves `.omp/agent` in the home and `PI_CONFIG_DIR` moves
+`.omp` in the home, and `OMP_PROFILE` selects a profile elsewhere. The adapter reads no environment: a moved directory reaches it
+only as the `configDirectory` Porelo passes, so an account that moved it reads as nothing there. A sign-in for Oh My Pi
+is made with `vault put` and `vault authorize github-copilot`. `vault login omp` refuses, and only because no
+directory was named: with `config_dir` it must go on refusing, which needs Porelo to read a `login:` section without
+`arguments` as no login, since the definition's section holds only `flow` and `grants`.
 
 ## Its release cadence is unlike the other two
 
