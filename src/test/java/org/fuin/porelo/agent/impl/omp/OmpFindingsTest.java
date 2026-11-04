@@ -1,6 +1,7 @@
 package org.fuin.porelo.agent.impl.omp;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -77,6 +78,8 @@ class OmpFindingsTest {
         Files.createFile(closed.resolve("agent.db"));
         Files.setPosixFilePermissions(closed, Set.of());
         try {
+            // The forge's runner is root, which reads through any mode.
+            assumeFalse(Files.isReadable(closed), "this account reads through a mode");
             assertThat(find(closed))
                     .as("findings of a directory that cannot be looked into")
                     .containsExactly(cannotSay(closed.resolve("agent.db")));
