@@ -1,6 +1,6 @@
 # OM41 — Subagents Only As Many As The Task Allows
 
-**Status:** Implementing.
+**Status:** Review.
 **Size:** S - one module and its tests, the settings go into a file already written; about 35 minutes: the S
 median of 24.5, raised by the scenario on the VM, the check that the keys hold in `config.yml` as in the
 `--config` overlay, and the attended check.
@@ -53,7 +53,24 @@ off, but this adapter switches nothing off, so omp in such a task still starts a
 
 - None.
 
+## Measured
+
+On the VM at the pin 18.12.1, through OpenRouter with `deepseek/deepseek-v4.1-flash`, the adapter installed in the
+account, against a Porelo older than the one on `main`, so `project remove` in the new scenario's last step was run
+as `project unfollow`:
+
+- **Seen to fail first:** the new `session.feature` scenario against the adapter before the change: the output shows
+  a `[task]` call and the agent answers `STARTED`.
+- **With the change, headless:** the same scenario is green: the agent answers `MISSING` and no `[task]` call
+  appears. So the key holds in `config.yml` itself, which was to be checked.
+- **Attended, at a terminal, one run each, not kept as scenarios:** at the default the agent lists its tools, no
+  `task` among them, and answers that it has none; at `--subagents 1` three asked at once all answered `DONE`, none
+  refused.
+- **At a count of 1, headless, one run not kept as a scenario:** three in one batch, none refused, each about 23 s
+  for a `sleep 20`, as the agent reports.
+
 ## To be checked
 
-- That the keys hold the same in `config.yml` itself as in the `--config` overlay they were measured in.
-- The same switches attended, at a terminal.
+- That the three ran one after another at a count of 1: the runs above show none refused, and do not show the order
+  from outside the agent's report. The suite has no scenario for the count.
+- The depth of 1 from a subagent itself, as measured in this issue's plan, not measured again with this adapter.

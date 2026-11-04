@@ -25,6 +25,13 @@ import org.fuin.porelo.wire.Json;
  * ranks a bare model id's providers, after the models a person has used, which a fresh task has
  * none of. Read in 18.4.1's model resolver.
  *
+ * <p><strong>Subagents only as the task allows.</strong> {@code task.maxRecursionDepth}, 2 by
+ * default, is how many levels may start one: at 0 the session has no {@code task} tool and {@code
+ * agent()} in the eval tool is refused, which denying the tool leaves open. Above 0 the depth is
+ * this adapter's own, 1, so only the agent starts them and the count holds for the whole task; a
+ * further start waits in omp's queue. {@code task.maxConcurrency} of 0 means unlimited, so it is
+ * written only above 0. Measured against 18.12.1, headless.
+ *
  * <p>Kept apart from {@link OmpModelsFile}, which holds a token and is written only when a task is
  * brokered: this file is plain configuration and belongs in every container.
  */
@@ -41,15 +48,17 @@ final class OmpConfigFile {
      * Returns the settings document for a container.
      *
      * @param provider The task's provider, as omp knows it; blank when the task names none.
+     * @param subagents The most subagents the task allows at the same time; 0 for none.
      * @return File content.
      */
-    static String document(final String provider) {
+    static String document(final String provider, final int subagents) {
         final String settings =
                 """
                 startup:
                   checkUpdate: false
                 setupVersion: 2
-                """;
+                """
+                        + subagentSettings(subagents);
         if (provider.isBlank()) {
             return settings;
         }
@@ -59,5 +68,20 @@ final class OmpConfigFile {
                   - %s
                 """
                         .formatted(Json.write(provider));
+    }
+
+    private static String subagentSettings(final int subagents) {
+        if (subagents == 0) {
+            return """
+            task:
+              maxRecursionDepth: 0
+            """;
+        }
+        return """
+        task:
+          maxRecursionDepth: 1
+          maxConcurrency: %d
+        """
+                .formatted(Integer.valueOf(subagents));
     }
 }

@@ -245,4 +245,11 @@ class OmpAgentTest {
                                 "⏎ select · n note · ↑/↓ move · ⎋ cancel\nπ > ◉ GLM 5.3 Flash > 📁 /workspace > ⑂ master"))
                 .isFalse();
     }
+
+    @Test
+    void declaresThatItHoldsATaskToACountOfSubagents() {
+
+        assertThat(new OmpAgent().definition().subagents())
+                .isEqualTo(org.fuin.porelo.agent.api.SubagentLimit.COUNT);
+    }
 }

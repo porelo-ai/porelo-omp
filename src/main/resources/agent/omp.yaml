@@ -12,6 +12,10 @@ binary: omp
 # host. Its sign-ins are in agent.db there, which this package does not read, so an import finds nothing.
 config_dir: "~/.omp/agent"
 
+# What this adapter can hold a task to: a count at the same time, which 0 switches off. OmpConfigFile
+# turns the task's number into omp's own settings.
+subagents: count
+
 # What turns this agent's own approval prompts off. Porelo adds these to every run inside a task,
 # attached or not - never conditionally: the container is what makes the answer always yes, and
 # unattended there is nobody to answer. Only the 'how' is declared here, because the flag is this

@@ -113,6 +113,38 @@ class OmpContainerSetupTest {
                 .containsExactly(OmpConfigFile.PATH);
     }
 
+    private static String settingsAllowing(int subagents) {
+        return named(
+                        new OmpContainerSetup()
+                                .files(
+                                        new SetupContext(
+                                                TOKEN,
+                                                "api-key",
+                                                "/workspace",
+                                                "",
+                                                "openrouter",
+                                                subagents)),
+                        OmpConfigFile.PATH)
+                .content();
+    }
+
+    @Test
+    void switchesSubagentsOffForATaskThatAllowsNone() {
+
+        // Measured on 18.12.1: omp's default of 2 lets them start, and a depth of 0 also refuses
+        // agent() in the eval tool, which denying the task tool leaves open.
+        assertThat(settingsAllowing(0)).contains("task:\n  maxRecursionDepth: 0\n");
+        // omp reads a concurrency of 0 as unlimited.
+        assertThat(settingsAllowing(0)).doesNotContain("maxConcurrency");
+    }
+
+    @Test
+    void holdsATaskToTheSubagentsItAllowsAtOnceAndNoneOfTheirOwn() {
+
+        assertThat(settingsAllowing(2))
+                .contains("task:\n  maxRecursionDepth: 1\n  maxConcurrency: 2\n");
+    }
+
     @Test
     void turnsTheStartupUpdateCheckOff() {
 

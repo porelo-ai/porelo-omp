@@ -20,7 +20,9 @@ public final class OmpContainerSetup implements ContainerSetup {
     public List<ContainerFile> files(SetupContext context) {
 
         final ContainerFile config =
-                ContainerFile.of(OmpConfigFile.PATH, OmpConfigFile.document(context.provider()));
+                ContainerFile.of(
+                        OmpConfigFile.PATH,
+                        OmpConfigFile.document(context.provider(), context.subagents()));
         if (!context.brokered() || !credentialed(context)) {
             // The models file carries both halves, so with either missing it names an endpoint or
             // a token that is not there, and omp fails looking like a wrong credential.
