@@ -35,5 +35,5 @@ Feature: The brokering path works end to end, without an account
             timeout 240 omp --print --mode json --model z-ai/glm-4.6 "Reply with exactly the word PORELOLIVE and nothing else." || true
             """
         Then the task's broker saw a request
-        When a script runs "porelo project unfollow brokercheck --force"
+        When a script runs "porelo project remove brokercheck --force"
         Then it exits zero

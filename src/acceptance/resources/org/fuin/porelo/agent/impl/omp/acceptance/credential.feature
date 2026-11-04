@@ -97,7 +97,7 @@ Feature: A task authenticates without ever holding the credential
         And the task's container environment does not contain the value of "PORELO_E2E_OPENROUTER_API_KEY"
         And no log the task left contains the value of "PORELO_E2E_OPENROUTER_API_KEY"
         And the task's broker saw a request
-        When a script runs "porelo project unfollow broker --force"
+        When a script runs "porelo project remove broker --force"
         Then it exits zero
 
     @slow
@@ -111,7 +111,7 @@ Feature: A task authenticates without ever holding the credential
         And a terminal on the machine
         When I run "porelo task start ready --project ready --repository ready --agent omp --provider openrouter --clearance deny"
         Then the "omp" agent in task "ready" of "ready" reaches work without being asked anything
-        When a script runs "porelo project unfollow ready --force"
+        When a script runs "porelo project remove ready --force"
         Then it exits zero
 
     @slow
@@ -122,7 +122,7 @@ Feature: A task authenticates without ever holding the credential
         And the vault holds the value of "PORELO_E2E_OPENROUTER_API_KEY" as "openrouter" of kind "api-key"
         And a project called "unwatched" of class "guarded" with a file in it
         When a task nobody is watching is started in "unwatched" for the "omp" agent and ends within 120 seconds
-        And a script runs "porelo project unfollow unwatched --force"
+        And a script runs "porelo project remove unwatched --force"
         Then it exits zero
 
     @slow
@@ -137,7 +137,7 @@ Feature: A task authenticates without ever holding the credential
         And a script runs "for i in $(seq 60); do porelo task status porelo-refused-talk | grep -q 'with an error' && break; sleep 5; done; porelo task status porelo-refused-talk"
         Then its output contains "with an error"
         And its output contains "the provider"
-        When a script runs "porelo project unfollow refused --force"
+        When a script runs "porelo project remove refused --force"
         Then it exits zero
 
     @slow
@@ -152,5 +152,5 @@ Feature: A task authenticates without ever holding the credential
         When a script runs "timeout 300 porelo task start talk --project mailbox --repository mailbox --agent omp --provider openrouter --model ${PORELO_E2E_MODEL} --prompt 'Without using any tool: in which directory do new messages for you arrive? Reply with its absolute path only.'"
         And a script runs "for i in $(seq 60); do porelo task status porelo-mailbox-talk | grep -q 'ended' && break; sleep 5; done; LOG=/run/user/$(id -u)/porelo/porelo-mailbox-talk/task.log; if grep -q '\"type\":\"tool_execution_start\"' \"$LOG\"; then echo 'a tool ran, so the answer is not the guide alone'; else grep '\"type\":\"message_end\"' \"$LOG\" | grep '\"role\":\"assistant\"' | grep -o '\"type\":\"text\",\"text\":\"[^\"]*'; fi"
         Then its output contains "/run/porelo/mail/inbox/new"
-        When a script runs "porelo project unfollow mailbox --force"
+        When a script runs "porelo project remove mailbox --force"
         Then it exits zero

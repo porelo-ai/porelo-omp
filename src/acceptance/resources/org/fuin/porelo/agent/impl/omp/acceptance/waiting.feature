@@ -35,5 +35,5 @@ Feature: Porelo shows the agent waiting for a person, read by the agent's own de
             exit 1
             """
         Then porelo shows the "omp" agent in task "asks" of "asks" waiting for a person
-        When a script runs "porelo project unfollow asks --force"
+        When a script runs "porelo project remove asks --force"
         Then it exits zero
