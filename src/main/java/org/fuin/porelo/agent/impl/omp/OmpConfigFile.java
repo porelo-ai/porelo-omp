@@ -32,6 +32,9 @@ import org.fuin.porelo.wire.Json;
  * further start waits in omp's queue. {@code task.maxConcurrency} of 0 means unlimited, so it is
  * written only above 0. Measured against 18.12.1, headless.
  *
+ * <p><strong>No skills.</strong> {@code skills.enabled} off makes a {@code skill://} read fail with
+ * "Unknown skill", whatever subagents the task allows. Measured against 18.14.2, headless.
+ *
  * <p>Kept apart from {@link OmpModelsFile}, which holds a token and is written only when a task is
  * brokered: this file is plain configuration and belongs in every container.
  */
@@ -57,6 +60,8 @@ final class OmpConfigFile {
                 startup:
                   checkUpdate: false
                 setupVersion: 2
+                skills:
+                  enabled: false
                 """
                         + subagentSettings(subagents);
         if (provider.isBlank()) {

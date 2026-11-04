@@ -43,6 +43,12 @@ off, but this adapter switches nothing off, so omp in such a task still starts a
 - **Porelo's version:** `porelo.version` in `pom.xml` is already 0.5.1-SNAPSHOT, and the published snapshot's agent API
   carries the value (`SubagentLimit`, `subagents` in `SetupContext`).
 
+- **Skills are switched off:** `skills.enabled: false`, written by `OmpConfigFile.document` at every number. Red first:
+  `OmpContainerSetupTest` reads it from the settings at 0 and at 2.
+- **Soft bounds:** a model call from eval's `completion()`, `judge()` or `judge_batch()` does not count as a subagent,
+  and eval stays. The agent can also start another copy of its CLI from its shell, and read a skill's file as any file.
+  A hard bound is Porelo's own, outside this repository.
+
 ## Acceptance
 
 - Seen to fail first: a task with the default asks omp to start a subagent, and it does.
@@ -68,6 +74,15 @@ as `project unfollow`:
   refused.
 - **At a count of 1, headless, one run not kept as a scenario:** three in one batch, none refused, each about 23 s
   for a `sleep 20`, as the agent reports.
+
+On the VM at the pin 18.14.2, omp alone with the adapter's settings written by hand, not through Porelo, one run each:
+
+- **Skills:** with the default a skill in the home was read through `skill://`; with `skills.enabled: false` the read
+  ended in "Unknown skill". No scenario covers it, so a pin that renames the setting is not seen by the suite.
+- **No second way to a subagent at depth 0:** `agent()` in eval was refused in Python and JavaScript, with "Cannot spawn
+  another agent at task depth 0".
+- **A way to a model stays, as the soft bound above:** eval's `completion()` answered, and `judge()` and `judge_batch()`
+  also ran. With `eval.py` and `eval.js` false the eval tool is gone.
 
 ## To be checked
 

@@ -146,6 +146,19 @@ class OmpContainerSetupTest {
     }
 
     @Test
+    void leavesATaskNoSkillsAtAnyCountOfSubagents() {
+
+        // Measured on 18.14.2: without this a skill placed in the home is read through skill://;
+        // with it the read fails with "Unknown skill".
+        for (final int subagents : new int[] {0, 2}) {
+            final Map<?, ?> settings = new Yaml().load(settingsAllowing(subagents));
+            assertThat(settings.get("skills"))
+                    .as("a task has its skills switched off, whatever subagents it allows")
+                    .isEqualTo(Map.of("enabled", Boolean.FALSE));
+        }
+    }
+
+    @Test
     void turnsTheStartupUpdateCheckOff() {
 
         // Measured on 18.1.13: with this file 'omp config get startup.checkUpdate' answers false,
