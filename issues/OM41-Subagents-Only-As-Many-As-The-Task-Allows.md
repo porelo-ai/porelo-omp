@@ -1,6 +1,6 @@
 # OM41 — Subagents Only As Many As The Task Allows
 
-**Status:** Estimated.
+**Status:** Implementing.
 **Size:** S - one module and its tests, the settings go into a file already written; about 35 minutes: the S
 median of 24.5, raised by the scenario on the VM, the check that the keys hold in `config.yml` as in the
 `--config` overlay, and the attended check.
