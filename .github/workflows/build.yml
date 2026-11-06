@@ -225,7 +225,7 @@ jobs:
                   # A published release is never replaced, as on Central; an index that cannot be read stops it,
                   # since read as "not published" it would replace one.
                   if [ "$CHANNEL" = releases ]; then
-                      curl -sfL -o target/released-index "${JF_URL}/artifactory/porelo-dist-deb/dists/releases/main/binary-amd64/Packages" \
+                      curl -sfL --retry 5 --retry-all-errors -o target/released-index "${JF_URL}/artifactory/porelo-dist-deb/dists/releases/main/binary-amd64/Packages" \
                           || { echo "::error::the release index could not be read, so whether this release is published is unknown"; exit 1; }
                       if grep -qF "Filename: pool/main/p/porelo-agent-omp/$(basename target/*.deb)" target/released-index; then
                           echo "::error::this release is published already"; exit 1
@@ -255,7 +255,7 @@ jobs:
                   # -L: Artifactory answers a file with a redirect to its cloud storage, and without it the
                   # body is empty - every package then reads as "not indexed" although it is.
                   while [ "$tries" -lt 20 ]; do
-                      if curl -sfL "${JF_URL}/artifactory/porelo-dist-deb/dists/${CHANNEL}/main/binary-amd64/Packages" \
+                      if curl -sfL --retry 5 --retry-all-errors "${JF_URL}/artifactory/porelo-dist-deb/dists/${CHANNEL}/main/binary-amd64/Packages" \
                           | grep -qF "Filename: pool/main/p/porelo-agent-omp/$DEB"; then
                           echo "  OK    the Debian index lists $DEB"
                           exit 0
@@ -452,7 +452,7 @@ jobs:
                   # A published release is never replaced, as on Central; an index that cannot be read stops it,
                   # since read as "not published" it would replace one.
                   if [ "$CHANNEL" = releases ]; then
-                      curl -sfL -o target/released-index "${JF_URL}/artifactory/porelo-dist-deb/dists/releases/main/binary-amd64/Packages" \
+                      curl -sfL --retry 5 --retry-all-errors -o target/released-index "${JF_URL}/artifactory/porelo-dist-deb/dists/releases/main/binary-amd64/Packages" \
                           || { echo "::error::the release index could not be read, so whether this release is published is unknown"; exit 1; }
                       if grep -qF "Filename: pool/main/p/porelo-agent-omp/$(basename target/*.deb)" target/released-index; then
                           echo "::error::this release is published already"; exit 1
@@ -481,7 +481,7 @@ jobs:
                   # -L: Artifactory answers a file with a redirect to its cloud storage, and without it the
                   # body is empty - every package then reads as "not indexed" although it is.
                   while [ "$tries" -lt 20 ]; do
-                      if curl -sfL "${JF_URL}/artifactory/porelo-dist-deb/dists/${CHANNEL}/main/binary-amd64/Packages" \
+                      if curl -sfL --retry 5 --retry-all-errors "${JF_URL}/artifactory/porelo-dist-deb/dists/${CHANNEL}/main/binary-amd64/Packages" \
                           | grep -qF "Filename: pool/main/p/porelo-agent-omp/$DEB"; then
                           echo "  OK    the Debian index lists $DEB"
                           exit 0
