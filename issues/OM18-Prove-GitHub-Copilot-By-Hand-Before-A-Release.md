@@ -1,6 +1,6 @@
 # OM18 — Prove GitHub Copilot by hand before a release
 
-**Status:** Estimated.
+**Status:** Backlog.
 **Size:** S - one acceptance scenario, run by hand on the VM, and a step in the release's checklist; no CI
 secret and no way into the vault without a person.
 
