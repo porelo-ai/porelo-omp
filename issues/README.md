@@ -13,11 +13,16 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om38"></a>[OM38](OM38-Snapshots-Resolved-With-A-Read-Only-Token.md) | S | — | on a forge other than the central one, snapshots resolved with the runner's read-only token, the publisher's token in no step, since nothing here deploys to the registry, and a Build without `MAVEN_SNAPSHOTS_URL` refused at its start |
 | <a id="om39"></a>[OM39](OM39-The-Busy-Check-Waits-On-A-Tool-The-Scenario-Ends.md) | S | — | the busy check of `wake.feature`'s message-while-it-works scenario waits on a loop the scenario ends, not on how the model schedules a `sleep 10` |
 
-## Backlog
+## Implementing
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
 | <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine |
+
+## Backlog
+
+| # | Size | Blocked by | What it covers |
+|---|---|---|---|
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S | — | the Copilot path proven by hand before a release |
 
 ## Analyzed

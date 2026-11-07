@@ -1,6 +1,6 @@
 # OM36 — The Repository's Agent Works In A Porelo Task
 
-**Status:** Backlog; blocked by [OM35](README.md#om35); waits for its turn in the project's procedure for an agent's move.
+**Status:** Implementing; blocked by [OM35](README.md#om35), in Review.
 **Size:** S - no code here beyond `porelo.yml`, the move itself done by the procedure; about 2 hours of the agent's
 work, plus the operator's attended start of the task.
 
