@@ -8,6 +8,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
+| <a id="om45"></a>[OM45](OM45-Snapshots-Not-Published-On-The-Forge-Come-From-Upstream.md) | S | — | on a forge whose registry holds only its organization's packages, the other Porelo snapshots come from the anonymous repository `MAVEN_UPSTREAM_SNAPSHOTS_URL` names, the forge's token sent to the forge alone, a tag still built from releases only |
 | <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) | S | — | no subagent in a task unless the task allows it, then at most as many and as deep as it says; off (depth 0), count and depth measured to hold at the pin |
 | <a id="om35"></a>[OM35](OM35-The-Build-Runs-On-The-Local-Forge-As-On-The-Central-One.md) | S | — | the workflows run 1:1 on the local Forgejo and the central forge: snapshots from `MAVEN_SNAPSHOTS_URL`, publishing switched by `PORELO_PUBLISH`, legs asked by kind, green on a local Forgejo |
 | <a id="om38"></a>[OM38](OM38-Snapshots-Resolved-With-A-Read-Only-Token.md) | S | — | on a forge other than the central one, snapshots resolved with the runner's read-only token, the publisher's token in no step, since nothing here deploys to the registry, and a Build without `MAVEN_SNAPSHOTS_URL` refused at its start |
