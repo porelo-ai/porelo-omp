@@ -1,6 +1,6 @@
 # OM44 — The Update Request Test Stands Alone In A Task
 
-**Status:** Idea.
+**Status:** Backlog.
 
 **What must be true.** `UpdateRequestTest` passes the same way on a developer's machine, on the forge's runner and in a
 Porelo task: its scripts run with an environment the test builds itself, so git configuration the caller passes
