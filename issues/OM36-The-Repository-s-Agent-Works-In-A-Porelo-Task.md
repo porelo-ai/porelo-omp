@@ -1,6 +1,6 @@
 # OM36 — The Repository's Agent Works In A Porelo Task
 
-**Status:** Review; blocked by [OM35](README.md#om35), in Review.
+**Status:** Implementing; blocked by [OM35](README.md#om35), in Review.
 **Size:** S - no code here beyond `porelo.yml`, the move itself done by the procedure; about 2 hours of the agent's
 work, plus the operator's attended start of the task.
 
@@ -20,8 +20,8 @@ image*) and `doc/running.md` (the agent's layer), and porelo-project's `project.
   CLI comes from its package's own layer, not from `porelo.yml`. The acceptance legs do not run in a task (no container
   inside it, no rented machine); they run in the forge's Build ([OM35](README.md#om35)).
 - **What the task reaches while it runs:** Maven Central, Sonatype or the forge's registry, `fuinorg.jfrog.io` for
-  the skills, `github.com` for `check-citations`, and the forge's address as a host service. That egress is the
-  project's, in porelo-project's `project.yml`; the image, the agent's CLI with it, is built on the host outside the
+  the skills, `raw.githubusercontent.com` for `check-citations`, and the forge's address as a host service. That
+  egress is the project's, in porelo-project's `project.yml`; the image, the agent's CLI with it, is built on the host outside the
   task's firewall. The task's build reads Sonatype's snapshots: the forge's registry refuses a task today (the organization is private), and nothing sets
   `MAVEN_SNAPSHOTS_URL` in a task yet, so the `forge` profile stays off there until both are in.
 - **The sub-agent reading:** no sub-agent CLI is in the task's image, since a project file names one
@@ -67,17 +67,19 @@ image*) and `doc/running.md` (the agent's layer), and porelo-project's `project.
 - **The suite does not stand alone in a task:** the task sets git's configuration through `GIT_CONFIG_COUNT`,
   `GIT_CONFIG_KEY_<n>` and `GIT_CONFIG_VALUE_<n>` for the gate's credential, and the `gh` stub of `UpdateRequestTest`
   reads `GIT_CONFIG_VALUE_0` from the inherited environment and takes it for a leaked header. The test passes with the
-  variables unset; its environment should be built from a clean one, not inherited.
+  variables unset; [OM44](README.md#om44) builds its environment from a clean one.
 - **Egress:** Maven Central and the skills' host are reachable and all seven skills passed their sha256; the host
   `raw.githubusercontent.com` is not, so `check-citations` cannot run in a task and is left to the forge's
-  *Shared rules check*. No Sonatype snapshot was needed by these runs, so that route is not shown either way.
+  *Shared rules check*. The build resolved `porelo-parent` 0.2.1-SNAPSHOT, which in a task only Sonatype's
+  snapshots hold, so that route was used; no separate check of it ran.
 - **Context:** the brief names the agent, the room in place of the channel, the operator's language and time zone,
   that skills are read as files, that the checks run before a push, and that a fix is an amend pushed with `--force`
   to the task's own branch. The checkout has a `porelo` remote and no `origin`, so `origin/main` reads as
   `porelo/main`; no `forgejo` reader is in the task, so builds are read from the operator's relay.
 - **The local forge's build:** both the Build and the *Shared rules check* stopped at their first Maven call, since
-  the parent pom's snapshot is not in the local forge's registry, so no check or test ran there. The parent snapshot
-  must be published to that registry (or the build pointed at Sonatype) before either can be green on the local forge.
+  the parent pom's snapshot is not in the local forge's registry, so no check or test ran there. Either can be green on
+  the local forge once the forge reads the Porelo snapshots its registry does not hold from an upstream snapshot
+  repository.
 - **The forge's copy:** the task's remote answered fetch and listing, so the forge holds a copy of the repository.
 - **Commit trailer:** the task's commit hook ends the message with `Assisted-by: Claude Code, <model>` taken from
   the session and removes a Claude `Co-Authored-By` line.
@@ -85,11 +87,13 @@ image*) and `doc/running.md` (the agent's layer), and porelo-project's `project.
 
 ## To be checked
 
+- That the forge's Build and *Shared rules check* pass on this issue's commits, once the forge reads the Porelo
+  snapshots its registry does not hold.
+- That the task reads its builds through the `forgejo` reader; in the trial none was in the task.
+- That the project's egress lets the task reach `raw.githubusercontent.com`, which `check-citations` reads.
 - That the outside reader can fetch `porelo/<task>` from the host's forge, not only from GitHub.
 - The way back, rehearsed once: the task's open work fetched from the host's forge into the checkout here.
 - That a revoked sign-in is renewed with `porelo vault login claude --force` and a stop and start of the task: a
   running task keeps the credential it started with.
 - That the outside reader may join the room from its harness; otherwise it posts its findings in the channel and the
   operator relays them.
-- That `project.yml` lets a task reach `raw.githubusercontent.com` for `check-citations`, and that `UpdateRequestTest`
-  runs in a task with its own clean environment.

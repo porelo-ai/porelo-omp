@@ -8,11 +8,16 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
-| <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine |
 | <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) | S | — | no subagent in a task unless the task allows it, then at most as many and as deep as it says; off (depth 0), count and depth measured to hold at the pin |
 | <a id="om35"></a>[OM35](OM35-The-Build-Runs-On-The-Local-Forge-As-On-The-Central-One.md) | S | — | the workflows run 1:1 on the local Forgejo and the central forge: snapshots from `MAVEN_SNAPSHOTS_URL`, publishing switched by `PORELO_PUBLISH`, legs asked by kind, green on a local Forgejo |
 | <a id="om38"></a>[OM38](OM38-Snapshots-Resolved-With-A-Read-Only-Token.md) | S | — | on a forge other than the central one, snapshots resolved with the runner's read-only token, the publisher's token in no step, since nothing here deploys to the registry, and a Build without `MAVEN_SNAPSHOTS_URL` refused at its start |
 | <a id="om39"></a>[OM39](OM39-The-Busy-Check-Waits-On-A-Tool-The-Scenario-Ends.md) | S | — | the busy check of `wake.feature`'s message-while-it-works scenario waits on a loop the scenario ends, not on how the model schedules a `sleep 10` |
+
+## Implementing
+
+| # | Size | Blocked by | What it covers |
+|---|---|---|---|
+| <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine |
 
 ## Backlog
 
@@ -40,6 +45,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om34"></a>[OM34](OM34-The-Shared-Workflow-Tests-See-Every-Refusal-Red.md) |  | — | the shared workflow tests see every publishing and channel refusal red, and the refused-key scenario runs in CI |
 | <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) |  | — | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database |
 | <a id="om43"></a>[OM43](OM43-Depend-On-The-Agent-Protocol-Porelo-Provides.md) |  | — | the agent contract named at install time |
+| <a id="om44"></a>[OM44](OM44-The-Update-Request-Test-Stands-Alone-In-A-Task.md) |  | — | `UpdateRequestTest` runs its scripts in an environment of its own, so a task's `GIT_CONFIG_*` variables are not taken for a leaked header |
 
 ## Finished
 
