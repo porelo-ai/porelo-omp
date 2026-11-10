@@ -1,6 +1,18 @@
 # OM34 — The Shared Workflow Tests See Every Refusal Red
 
-**Status:** Idea.
+```json
+{
+  "$schema": "issue-1.json",
+  "id": "OM34",
+  "title": "The Shared Workflow Tests See Every Refusal Red",
+  "state": "Idea",
+  "size": "-",
+  "priority": "Medium",
+  "rank": 4,
+  "blockedBy": [],
+  "covers": "the shared workflow tests see every publishing and channel refusal red, and the refused-key scenario runs in CI"
+}
+```
 
 **What must be true.** Each refusal of the Build's publishing and channel steps is seen to fail by a test that
 runs the step, and the refused-key acceptance scenario runs in CI. One fix is carried byte for byte to every

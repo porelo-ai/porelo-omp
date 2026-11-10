@@ -1,7 +1,22 @@
 # OM39 — The Busy Check Waits On A Tool The Scenario Ends
 
-**Status:** Review; three runs on the VM green, the legs on ubuntu and fedora are the Build's.
-**Size:** S - one scenario of `wake.feature` in this repository, no contract another repository reads.
+```json
+{
+  "$schema": "issue-1.json",
+  "id": "OM39",
+  "title": "The Busy Check Waits On A Tool The Scenario Ends",
+  "state": "Review",
+  "size": "S",
+  "priority": "Medium",
+  "rank": 6,
+  "blockedBy": [],
+  "covers": "the busy check of `wake.feature`'s message-while-it-works scenario waits on a loop the scenario ends, not on how the model schedules a `sleep 10`"
+}
+```
+
+**Why this size.** one scenario of `wake.feature` in this repository, no contract another repository reads.
+
+**How it stands.** Three runs on the VM green, the legs on ubuntu and fedora are the Build's.
 
 **What must be true.** In `wake.feature`'s scenario *a message that arrives while the agent works wakes it once it
 is at rest*, the check that omp is busy no longer depends on how the model schedules its tools. The tool call

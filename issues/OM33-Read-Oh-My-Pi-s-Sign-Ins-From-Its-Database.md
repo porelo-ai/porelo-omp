@@ -1,6 +1,18 @@
 # OM33 — Read Oh My Pi's Sign-Ins From Its Database
 
-**Status:** Idea.
+```json
+{
+  "$schema": "issue-1.json",
+  "id": "OM33",
+  "title": "Read Oh My Pi's Sign-Ins From Its Database",
+  "state": "Idea",
+  "size": "-",
+  "priority": "Medium",
+  "rank": 5,
+  "blockedBy": [],
+  "covers": "a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database"
+}
+```
 
 **What must be true.** `porelo vault import` takes a sign-in Oh My Pi already holds on the host, for the provider asked
 for, and the adapter's findings name which providers Oh My Pi is signed in to, by kind and with the path, never a

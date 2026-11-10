@@ -1,8 +1,23 @@
 # OM19 — Declare a thinking level and a read-only mode
 
-**Status:** Analyzed; waits for a definition's thinking-level key under `headless:`, named modes, and a
-start's `--mode <name>`.
-**Size:** S - entries in `omp.yaml` and their unit and VM tests; the keys a definition may declare, and the start's options for them, are Porelo's.
+```json
+{
+  "$schema": "issue-1.json",
+  "id": "OM19",
+  "title": "Declare a thinking level and a read-only mode",
+  "state": "Analyzed",
+  "size": "S",
+  "priority": "Medium",
+  "rank": 1,
+  "blockedBy": [],
+  "covers": "`--thinking` on the five effort levels and a `read-only` mode without edit tools, for a reviewer",
+  "openQuestions": 0
+}
+```
+
+**Why this size.** entries in `omp.yaml` and their unit and VM tests; the keys a definition may declare, and the start's options for them, are Porelo's.
+
+**How it stands.** Waits for a definition's thinking-level key under `headless:`, named modes, and a start's `--mode <name>`.
 
 **What must be true.** A task start can set Oh My Pi's thinking level on Porelo's five effort levels, and can ask
 by name for a `read-only` mode in which Oh My Pi has no tool that edits files, without being able to pass any

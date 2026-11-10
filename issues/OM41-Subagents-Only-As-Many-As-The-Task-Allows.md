@@ -1,7 +1,20 @@
 # OM41 — Subagents Only As Many As The Task Allows
 
-**Status:** Review.
-**Size:** S - one module and its tests, the settings go into a file already written; about 35 minutes: the S
+```json
+{
+  "$schema": "issue-1.json",
+  "id": "OM41",
+  "title": "Subagents Only As Many As The Task Allows",
+  "state": "Review",
+  "size": "S",
+  "priority": "Medium",
+  "rank": 3,
+  "blockedBy": [],
+  "covers": "no subagent in a task unless the task allows it, then at most as many and as deep as it says; off (depth 0), count and depth measured to hold at the pin"
+}
+```
+
+**Why this size.** one module and its tests, the settings go into a file already written; about 35 minutes: the S
 median of 24.5, raised by the scenario on the VM, the check that the keys hold in `config.yml` as in the
 `--config` overlay, and the attended check.
 

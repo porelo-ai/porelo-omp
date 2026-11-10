@@ -1,6 +1,18 @@
 # OM44 — The Update Request Test Stands Alone In A Task
 
-**Status:** Backlog.
+```json
+{
+  "$schema": "issue-1.json",
+  "id": "OM44",
+  "title": "The Update Request Test Stands Alone In A Task",
+  "state": "Backlog",
+  "size": "-",
+  "priority": "Medium",
+  "rank": 2,
+  "blockedBy": [],
+  "covers": "`UpdateRequestTest` runs its scripts in an environment of its own, so a task's `GIT_CONFIG_*` variables are not taken for a leaked header"
+}
+```
 
 **What must be true.** `UpdateRequestTest` passes the same way on a developer's machine, on the forge's runner and in a
 Porelo task: its scripts run with an environment the test builds itself, so git configuration the caller passes

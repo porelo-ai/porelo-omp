@@ -1,7 +1,20 @@
 # OM18 — Prove GitHub Copilot by hand before a release
 
-**Status:** Backlog.
-**Size:** S - one acceptance scenario, run by hand on the VM, and a step in the release's checklist; no CI
+```json
+{
+  "$schema": "issue-1.json",
+  "id": "OM18",
+  "title": "Prove GitHub Copilot by hand before a release",
+  "state": "Backlog",
+  "size": "S",
+  "priority": "Medium",
+  "rank": 1,
+  "blockedBy": [],
+  "covers": "the Copilot path proven by hand before a release"
+}
+```
+
+**Why this size.** one acceptance scenario, run by hand on the VM, and a step in the release's checklist; no CI
 secret and no way into the vault without a person.
 
 **What must be true.** Before a release, a task started with the GitHub Copilot provider is seen to work and
