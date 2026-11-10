@@ -16,6 +16,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 - The adapter says what it finds of Oh My Pi on the host: set up by its `agent.db`, which it never opens, and its sign-in as "cannot say"; the definition names `config_dir`.
 - The definition names how its sign-in is answered, `login.flow: device-code`, so a person granting GitHub Copilot on a host over SSH can be told to confirm the code on GitHub's page; the Porelo it builds against reads the key, and its agent listing names the flow.
 - `porelo vault authorize github-copilot` grants GitHub Copilot on github.com through the OAuth app Oh My Pi itself signs in with there, and the weekly update stops when a new pin signs in with another.
+- The package carries the full license texts of what its executable compiles in from outside Porelo - SnakeYAML, JSpecify and the GraalVM runtime - in `THIRD-PARTY-NOTICES`, in its doc directory and as an RPM license file, and its Debian copyright names them.
 
 ### Changed
 
