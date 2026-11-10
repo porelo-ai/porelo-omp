@@ -14,6 +14,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om34"></a>[OM34](OM34-The-Shared-Workflow-Tests-See-Every-Refusal-Red.md) | - | - | the shared workflow tests see every publishing and channel refusal red, and the refused-key scenario runs in CI |
 | <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) | - | - | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database |
 | <a id="om43"></a>[OM43](OM43-Depend-On-The-Agent-Protocol-Porelo-Provides.md) | - | - | the agent contract named at install time |
+| <a id="om49"></a>[OM49](OM49-Third-Party-Notices-Ship-With-The-Package.md) | - | - | the license and notice texts of what the executable compiles in - SnakeYAML, JSpecify, the agent API, the wire classes, the GraalVM runtime - in one THIRD-PARTY-NOTICES file, in the deb's doc directory and as `%license` in the rpm |
 
 ## Accepted
 
