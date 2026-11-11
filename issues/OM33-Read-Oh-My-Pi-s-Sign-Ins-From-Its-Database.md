@@ -5,13 +5,13 @@
   "$schema": "issue-1.json",
   "id": "OM33",
   "title": "Read Oh My Pi's Sign-Ins From Its Database",
-  "state": "Analyzed",
+  "state": "Estimated",
   "size": "M",
   "priority": "Medium",
   "rank": 5,
   "blockedBy": [],
   "covers": "a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database",
-  "openQuestions": 1
+  "openQuestions": 0
 }
 ```
 
@@ -104,11 +104,11 @@ The provider asked for comes through Porelo's `ExtractCredential`, as for Pi.
 - A reader of the file format of our own would need B-tree pages, overflow pages and the WAL's frames and
   checksums: L, not M.
 
-## Open questions
 
-- May the package compile in `sqlite-jdbc` (Apache-2.0, a native library loaded at run time, about 1 MB per
-  architecture), or should the adapter carry its own reader of SQLite's file format for one table, which makes this
-  issue L?
+## Decisions
+
+- The operator, 2026-11-11: the package may carry `sqlite-jdbc` (Apache-2.0). The decision "the adapter never opens
+  Oh My Pi's database" is reversed for reading sign-ins.
 
 ## To be checked
 
