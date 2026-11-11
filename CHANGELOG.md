@@ -21,6 +21,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Changed
 
+- The CI takes the runner's distribution packages and the Oh My Pi binary the update job checks from the Actions cache, keyed by the package list's hash and the binary's digest, each file checked against its hash before use, so an outage of a package mirror or the release host fails only a run on a new pin.
 - The package says that the `porelo-wire` classes in its executable are under Apache-2.0, in its
   Debian copyright and its RPM license, with the license's text beside the GPL's in the RPM.
 - Oh My Pi pinned to 18.14.2 (was 18.4.1).

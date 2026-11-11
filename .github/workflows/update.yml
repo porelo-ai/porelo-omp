@@ -140,28 +140,56 @@ jobs:
                   java -cp "$(cat target/cp.txt)" org.fuin.porelo.release.Main check-pin \
                       || echo "STOP=the pinned version and digest disagree" >> "$GITHUB_ENV"
 
+            # The pin is the pom property; omp.yaml names the download with it in place of the version.
+            - name: The pinned CLI's download
+              id: cli
+              if: steps.plan.outputs.proceed == 'yes' && !env.STOP
+              run: |
+                  set -eu
+                  DEFINITION=src/main/resources/agent/omp.yaml
+                  VERSION="$(sed -n 's|^        <agent.cli.version>\(.*\)</agent.cli.version>$|\1|p' pom.xml | head -1)"
+                  TEMPLATE="$(sed -n 's|^        - url: \(.*\)$|\1|p' "$DEFINITION" | head -1)"
+                  SHA256="$(sed -n 's|^          sha256: "\(.*\)"$|\1|p' "$DEFINITION" | head -1)"
+                  if [ -z "$VERSION" ] || [ -z "$TEMPLATE" ] || [ -z "$SHA256" ]; then
+                      echo "STOP=the pinned download could not be read" >> "$GITHUB_ENV"
+                      exit 0
+                  fi
+                  {
+                      echo "version=$VERSION"
+                      echo "url=${TEMPLATE//'${agent.cli.version}'/$VERSION}"
+                      echo "sha256=$SHA256"
+                  } >> "$GITHUB_OUTPUT"
+
+            # From the Actions cache on a pin a run has seen before; its release host only on a new one, with the
+            # job's token for a download from https://github.com alone.
+            - name: The pinned CLI
+              id: download
+              if: steps.plan.outputs.proceed == 'yes' && !env.STOP
+              continue-on-error: true
+              uses: ./.github/actions/agent-downloads
+              with:
+                  url: ${{ steps.cli.outputs.url }}
+                  sha256: ${{ steps.cli.outputs.sha256 }}
+                  name: omp
+
             # Porelo grants GitHub Copilot through the app omp.yaml names for github.com. A release that signs in
             # with another app would be handed a token for an app it does not use, while every other gate stays green.
             - name: The pinned CLI still signs in with the app the adapter grants
               if: steps.plan.outputs.proceed == 'yes' && !env.STOP
               env:
-                  # The job's token, for a download from https://github.com alone; none on a host's forge.
-                  PORELO_PINNED_GITHUB_TOKEN: ${{ github.server_url == 'https://github.com' && github.token || '' }}
+                  VERSION: ${{ steps.cli.outputs.version }}
+                  BIN: ${{ steps.download.outputs.file }}
+                  DOWNLOADED: ${{ steps.download.outcome }}
               run: |
                   set -eu
-                  DEFINITION=src/main/resources/agent/omp.yaml
-                  CLIENT_ID="$(sed -n 's|^                github\.com: \(.*\)$|\1|p' "$DEFINITION" | head -1)"
-                  VERSION="$(sed -n 's|^        <agent.cli.version>\(.*\)</agent.cli.version>$|\1|p' pom.xml | head -1)"
-                  TEMPLATE="$(sed -n 's|^        - url: \(.*\)$|\1|p' "$DEFINITION" | head -1)"
-                  SHA256="$(sed -n 's|^          sha256: "\(.*\)"$|\1|p' "$DEFINITION" | head -1)"
-                  if [ -z "$CLIENT_ID" ] || [ -z "$VERSION" ] || [ -z "$TEMPLATE" ] || [ -z "$SHA256" ]; then
-                      echo "STOP=the Copilot client id or the pinned download could not be read" >> "$GITHUB_ENV"
+                  if [ "$DOWNLOADED" != success ]; then
+                      echo "STOP=Oh My Pi $VERSION could not be downloaded as pinned" >> "$GITHUB_ENV"
                       exit 0
                   fi
-                  BIN="target/omp-$VERSION"
-                  . .github/actions/pinned-jdk/pinned.sh
-                  if ! pinned_fetch "${TEMPLATE//'${agent.cli.version}'/$VERSION}" "$SHA256" "$BIN"; then
-                      echo "STOP=Oh My Pi $VERSION could not be downloaded as pinned" >> "$GITHUB_ENV"
+                  DEFINITION=src/main/resources/agent/omp.yaml
+                  CLIENT_ID="$(sed -n 's|^                github\.com: \(.*\)$|\1|p' "$DEFINITION" | head -1)"
+                  if [ -z "$CLIENT_ID" ]; then
+                      echo "STOP=the Copilot client id could not be read" >> "$GITHUB_ENV"
                       exit 0
                   fi
                   if LC_ALL=C grep -aqF "$CLIENT_ID" "$BIN" && LC_ALL=C grep -aqF 'read:user' "$BIN"; then

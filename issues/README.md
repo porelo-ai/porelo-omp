@@ -40,12 +40,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S | - | the Copilot path proven by hand before a release |
 | <a id="om44"></a>[OM44](OM44-The-Update-Request-Test-Stands-Alone-In-A-Task.md) | - | - | `UpdateRequestTest` runs its scripts in an environment of its own, so a task's `GIT_CONFIG_*` variables are not taken for a leaked header |
 
-## Implementing
-
-| # | Size | Blocked by | What it covers |
-|---|---|---|---|
-| <a id="om52"></a>[OM52](OM52-The-Build-Takes-Its-Downloads-From-A-Cache.md) | S | - | the Oh My Pi binary the update job checks and the runner's packages come from the Actions cache, keyed by digest or package manifest, so an outage of their hosts no longer fails a run that already ran once; what must stay live is named, and an entry nobody reads for 7 days is removed by GitHub |
-
 ## Review
 
 | # | Size | Blocked by | What it covers | Open questions |
@@ -55,6 +49,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](README.md#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine | - |
 | <a id="om45"></a>[OM45](OM45-Snapshots-Not-Published-On-The-Forge-Come-From-Upstream.md) | S | - | on a forge whose registry holds only its organization's packages, the other Porelo snapshots come from the anonymous repository `MAVEN_UPSTREAM_SNAPSHOTS_URL` names, the forge's token sent to the forge alone, a tag still built from releases only | - |
 | <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) | S | - | no subagent in a task unless the task allows it, then at most as many and as deep as it says; off (depth 0), count and depth measured to hold at the pin | - |
+| <a id="om52"></a>[OM52](OM52-The-Build-Takes-Its-Downloads-From-A-Cache.md) | S | - | the Oh My Pi binary the update job checks and the runner's packages come from the Actions cache, keyed by digest or package manifest, so an outage of their hosts no longer fails a run that already ran once; what must stay live is named, and an entry nobody reads for 7 days is removed by GitHub | - |
 | <a id="om35"></a>[OM35](OM35-The-Build-Runs-On-The-Local-Forge-As-On-The-Central-One.md) | S | - | the workflows run 1:1 on the local Forgejo and the central forge: snapshots from `MAVEN_SNAPSHOTS_URL`, publishing switched by `PORELO_PUBLISH`, legs asked by kind, green on a local Forgejo | - |
 | <a id="om38"></a>[OM38](OM38-Snapshots-Resolved-With-A-Read-Only-Token.md) | S | - | on a forge other than the central one, snapshots resolved with the runner's read-only token, the publisher's token in no step, since nothing here deploys to the registry, and a Build without `MAVEN_SNAPSHOTS_URL` refused at its start | - |
 | <a id="om39"></a>[OM39](OM39-The-Busy-Check-Waits-On-A-Tool-The-Scenario-Ends.md) | S | - | the busy check of `wake.feature`'s message-while-it-works scenario waits on a loop the scenario ends, not on how the model schedules a `sleep 10` | - |
