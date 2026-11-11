@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM51",
   "title": "The Adapter Reports Each Tool Call With Its Time",
-  "state": "Implementing",
+  "state": "Review",
   "size": "M",
   "priority": "High",
   "rank": 1,
@@ -32,7 +32,8 @@ its own time gets, the masking of a command line and where the entry is kept are
   (`toolCallId`, `toolName`, `args`, `intent`) is START; `tool_execution_end` (`toolCallId`, `isError`) is END.
   `OmpJsonFormatter` reads the same events today.
 - No tool line has a clock time; `at` stays empty. A job's or a sub-agent's END passes `durationMs`: the job's
-  `durationMs` in the async-result, a sub-agent's `totalDurationMs`; porelod dates the start from it.
+  `durationMs` in the async-result or a `wait` call's report, a sub-agent's own `durationMs` in its progress entry, else
+  the call's `totalDurationMs`; porelod dates the start from it.
 - `OmpAgent` overrides `Agent#toolEvents(String line)`; `OmpToolEvents` maps one output line to its
   `ToolEvent(line, id, phase, tool, kind, command, background, jobId, at, name, parent, durationMs)`. It keeps no state between
   lines: Porelo joins a start to its end by `id`, a background job's by `jobId`, and a call to its sub-agent by
@@ -43,10 +44,13 @@ its own time gets, the masking of a command line and where the entry is kept are
 - Sub-agents: a `task` call may start several, one per `args.tasks[]` entry: each is a START with `id` =
   `<toolCallId>/<name>`, `name` = the entry's `name`, `jobId` = that name (Oh My Pi's job id). The call itself ends at
   once ("Spawned agent ... (job ...)"). A sub-agent ends with the `tool_execution_update` of that call whose
-  `details.progress[]` entry turns completed or failed. Its own calls are not in the stream, so `parent` stays empty.
+  `partialResult.details.progress[]` entry turns completed or failed, or with the call's own end when it reports it
+  there. Its own calls are not in the stream, so `parent` stays empty.
 - Background: a `bash` call Oh My Pi moves to a job ends at once with "Backgrounded as job `bg_N`"; START and END
   of the call as usual, and the job is `background` with `jobId` = the end's `details.async.jobId`. The job ends with a `message_end` whose
-  message has `role: custom`, `customType: async-result` and `details.jobs[{jobId, status, durationMs}]`. A command
+  message has `role: custom`, `customType: async-result` and `details.jobs[{jobId, status, durationMs}]`; a job the agent waits for
+  with the `wait` tool is reported only in that call's end, `details.jobs[{id, type, status, durationMs}]`, and ends
+  there. A command
   started with `&` inside a shell is not seen.
 - Red first: `OmpToolEventsTest` feeds recorded lines (a shell call, a shell moved to job `bg_1` and its async-result end, a `task` call with a named entry and its progress end, a failed call, and a line that is not JSON) and expects the events above; it fails while
   `toolEvents` still answers the API's default, nothing.
@@ -71,7 +75,3 @@ its own time gets, the masking of a command line and where the entry is kept are
 - A shell call keeps its whole command line, not only its program. Porelo masks it before it is stored; the adapter
   passes the line as the stream gives it.
 - A task gives each issue a sub-agent of its own, named by the issue's id; an issue's time is its sub-agent's span.
-
-## To be checked
-
-- The agent API with `name`, `parent` and `durationMs` on `ToolEvent`, installed locally to build against.

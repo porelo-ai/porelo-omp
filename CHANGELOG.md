@@ -12,6 +12,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Added
 
+- Unattended tasks report tool calls, shell command lines, background job completion times, and named sub-agent spans to Porelo.
 - A task's agent starts no subagent unless the task allows it, and then no more at once than it says, with none of their own. A task's skills are switched off.
 - The adapter says what it finds of Oh My Pi on the host: set up by its `agent.db`, which it never opens, and its sign-in as "cannot say"; the definition names `config_dir`.
 - The definition names how its sign-in is answered, `login.flow: device-code`, so a person granting GitHub Copilot on a host over SSH can be told to confirm the code on GitHub's page; the Porelo it builds against reads the key, and its agent listing names the flow.

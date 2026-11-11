@@ -1,20 +1,21 @@
 package org.fuin.porelo.agent.impl.omp;
 
+import java.util.List;
 import org.fuin.porelo.agent.api.AgentEnd;
 import org.fuin.porelo.agent.api.AgentMain;
 import org.fuin.porelo.agent.api.ContainerSetup;
 import org.fuin.porelo.agent.api.Finder;
 import org.fuin.porelo.agent.api.LogFormatter;
+import org.fuin.porelo.agent.api.ToolEvent;
 import org.fuin.porelo.agent.api.YamlAgent;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Oh My Pi.
  *
- * <p>Three overrides: the endpoint and the token go into the models file omp reads at start-up,
- * because it has no variable for either; its JSON events are rendered as readable lines; and what
- * it finds of itself on the host depends on a file being there. Everything else is {@code
- * omp.yaml}.
+ * <p>The endpoint and the token go into the models file omp reads at start-up, because it has no
+ * variable for either; its JSON events provide readable lines and tool calls; and what it finds of
+ * itself on the host depends on a file being there. Everything else is {@code omp.yaml}.
  */
 public final class OmpAgent extends YamlAgent {
 
@@ -47,6 +48,17 @@ public final class OmpAgent extends YamlAgent {
     @Override
     public @Nullable AgentEnd ended(String line) {
         return OmpJsonFormatter.ended(line);
+    }
+
+    /**
+     * Reads tool calls from Oh My Pi's unattended JSON output.
+     *
+     * @param line One raw output line.
+     * @return Tool events for Porelo to join, or none for an unrelated line.
+     */
+    @Override
+    public List<ToolEvent> toolEvents(String line) {
+        return OmpToolEvents.read(line);
     }
 
     /**
