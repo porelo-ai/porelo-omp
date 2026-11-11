@@ -31,9 +31,10 @@ its own time gets, the masking of a command line and where the entry is kept are
 - Source: Oh My Pi's JSON mode, measured with the pinned Oh My Pi (CC57 and CC59 in porelo-claude-code). `tool_execution_start`
   (`toolCallId`, `toolName`, `args`, `intent`) is START; `tool_execution_end` (`toolCallId`, `isError`) is END.
   `OmpJsonFormatter` reads the same events today.
-- No tool line has a clock time or a duration; `at` stays empty and Porelo stamps the line when it arrives.
+- No tool line has a clock time; `at` stays empty. A job's or a sub-agent's END passes `durationMs`: the job's
+  `durationMs` in the async-result, a sub-agent's `totalDurationMs`; porelod dates the start from it.
 - `OmpAgent` overrides `Agent#toolEvents(String line)`; `OmpToolEvents` maps one output line to its
-  `ToolEvent(line, id, phase, tool, kind, command, background, jobId, at, name, parent)`. It keeps no state between
+  `ToolEvent(line, id, phase, tool, kind, command, background, jobId, at, name, parent, durationMs)`. It keeps no state between
   lines: Porelo joins a start to its end by `id`, a background job's by `jobId`, and a call to its sub-agent by
   `parent`.
 - Kinds: `bash` -> shell (`command` = `args.command`), `edit`/`write` -> edit, `read` -> read, `grep`/`find`/`ls` -> search, `task` -> sub-agent, `fetch`/`web_search` -> web, `mcp_*` -> mcp, any other (`todo`, `wait`, ...) -> other.
@@ -73,4 +74,4 @@ its own time gets, the masking of a command line and where the entry is kept are
 
 ## To be checked
 
-- The agent API with `name` and `parent` on `ToolEvent`, installed locally to build against.
+- The agent API with `name`, `parent` and `durationMs` on `ToolEvent`, installed locally to build against.
