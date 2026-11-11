@@ -32,18 +32,18 @@ Feature: An agent at rest is woken by a message for it
         # The model's answer, not the typed line, which has the word in it too.
         Then within 120 seconds this script exits zero:
             """
-            podman exec porelo-wake-wake tmux capture-pane -p -t porelo | grep -v 'single word PONG' | grep -qw PONG
+            podman exec "$(porelo task status wake --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -t porelo | grep -v 'single word PONG' | grep -qw PONG
             """
         # An answer is on the screen a moment before its turn ends. At rest is what omp.yaml's at_rest reads, so the
         # message below comes to an agent at rest, not to one still finishing its turn.
         Then within 60 seconds this script exits zero:
             """
-            screen=$(podman exec porelo-wake-wake tmux capture-pane -p -t porelo)
+            screen=$(podman exec "$(porelo task status wake --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -t porelo)
             printf '%s\n' "$screen" | grep -qF 'π > ' || exit 1
             printf '%s\n' "$screen" | grep -qF '📁 /workspace' || exit 1
             ! printf '%s\n' "$screen" | grep -qF '↑/↓ move · ⎋ cancel'
             """
-        When a script runs "echo 'What is 1234 plus 4321? Reply with the digits only.' | porelo talk tell porelo-wake-wake"
+        When a script runs "echo 'What is 1234 plus 4321? Reply with the digits only.' | porelo talk tell wake"
         Then it exits zero
         And within 120 seconds the terminal shows "A message for you waits"
         # The guide has a message answered with a message, so the answer counts either way the agent gives it:
@@ -51,16 +51,16 @@ Feature: An agent at rest is woken by a message for it
         # the wait at once when the agent loops.
         Then within 240 seconds this script exits zero:
             """
-            held=$(porelo talk held porelo-wake-wake)
+            held=$(porelo talk held wake)
             for id in $(printf '%s\n' "$held" | awk '$1 ~ /\.json$/ && $2 == "held" {print $1}'); do
-              porelo talk read porelo-wake-wake "$id" | grep -qE '5,?555' && exit 0
+              porelo talk read wake "$id" | grep -qE '5,?555' && exit 0
             done
-            screen=$(podman exec porelo-wake-wake tmux capture-pane -p -S - -t porelo)
+            screen=$(podman exec "$(porelo task status wake --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -S - -t porelo)
             printf '%s\n' "$screen" | grep -qE '5,?555' && exit 0
             printf 'held: %s\nscreen, last lines:\n' "$held"; printf '%s\n' "$screen" | grep -v '^ *$' | tail -15
             exit 1
             """
-        When a script runs "porelo task remove porelo-wake-wake --force"
+        When a script runs "porelo task remove wake --force"
         And a script runs "porelo project remove wake --force"
         Then it exits zero
 
@@ -89,8 +89,8 @@ Feature: An agent at rest is woken by a message for it
         # the screen is never older than what the file said.
         Then within 120 seconds this script exits zero:
             """
-            started=no; podman exec porelo-busy-busy test -e /tmp/porelo-busy-started && started=yes
-            screen=$(podman exec porelo-busy-busy tmux capture-pane -p -S - -t porelo)
+            started=no; podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" test -e /tmp/porelo-busy-started && started=yes
+            screen=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -S - -t porelo)
             rest=no
             printf '%s\n' "$screen" | tail -n 20 | grep -qF 'π > ' && rest=yes
             backgrounded=no
@@ -100,17 +100,17 @@ Feature: An agent at rest is woken by a message for it
             printf 'screen, last lines:\n'; printf '%s\n' "$screen" | grep -v '^ *$' | tail -25
             exit 1
             """
-        When a script runs "echo 'What is 1234 plus 4321? Reply with the digits only.' | porelo talk tell porelo-busy-busy"
+        When a script runs "echo 'What is 1234 plus 4321? Reply with the digits only.' | porelo talk tell busy"
         Then it exits zero
         # The message waits in inbox/new, so the loop may end and the turn with it; but only if the loop still runs
         # and omp still works now, after the message came.
         Then within 10 seconds this script exits zero:
             """
-            podman exec porelo-busy-busy test -e /tmp/porelo-busy-started || { printf 'the loop ended before the message came\n'; exit 1; }
-            if podman exec porelo-busy-busy tmux capture-pane -p -t porelo | tail -n 20 | grep -qF 'π > '; then
+            podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" test -e /tmp/porelo-busy-started || { printf 'the loop ended before the message came\n'; exit 1; }
+            if podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -t porelo | tail -n 20 | grep -qF 'π > '; then
               printf 'omp came to rest before the message came\n'; exit 1
             fi
-            podman exec porelo-busy-busy touch /tmp/porelo-busy-done
+            podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" touch /tmp/porelo-busy-done
             """
         # Read on the task's own screen, so a wake not seen shows what omp showed instead of the terminal's stream.
         # A wake is owed only to a message still in inbox/new when the agent comes to rest, which is what Porelo's wake
@@ -119,16 +119,16 @@ Feature: An agent at rest is woken by a message for it
         # waits at rest, only the wake passes.
         And within 240 seconds this script exits zero:
             """
-            screen=$(podman exec porelo-busy-busy tmux capture-pane -p -S - -t porelo)
+            screen=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -S - -t porelo)
             printf '%s\n' "$screen" | grep -qF 'A message for you waits' && exit 0
-            now=$(podman exec porelo-busy-busy tmux capture-pane -p -t porelo)
-            waits=$(podman exec porelo-busy-busy sh -c 'ls /run/porelo/mail/inbox/new/' | grep '\.json$')
+            now=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -t porelo)
+            waits=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" sh -c 'ls /run/porelo/mail/inbox/new/' | grep '\.json$')
             rest=no
             printf '%s\n' "$now" | grep -qF 'π > ' && printf '%s\n' "$now" | grep -qF '📁 /workspace' && rest=yes
             printf '%s\n' "$now" | grep -qF '↑/↓ move · ⎋ cancel' && rest=no
             [ "$rest" = yes ] && [ -z "$waits" ] && { printf 'read while it worked, so no wake is due\n'; exit 0; }
             printf 'at rest: %s, waiting: %s\n' "$rest" "${waits:-none}"
-            printf 'status:\n'; porelo task status porelo-busy-busy | grep -E '^(state|activity|screen)'
+            printf 'status:\n'; porelo task status busy | grep -E '^(state|activity|screen)'
             printf 'screen, last lines:\n'; printf '%s\n' "$screen" | grep -v '^ *$' | tail -25
             exit 1
             """
@@ -137,15 +137,15 @@ Feature: An agent at rest is woken by a message for it
         # the wait at once when the agent loops.
         Then within 240 seconds this script exits zero:
             """
-            held=$(porelo talk held porelo-busy-busy)
+            held=$(porelo talk held busy)
             for id in $(printf '%s\n' "$held" | awk '$1 ~ /\.json$/ && $2 == "held" {print $1}'); do
-              porelo talk read porelo-busy-busy "$id" | grep -qE '5,?555' && exit 0
+              porelo talk read busy "$id" | grep -qE '5,?555' && exit 0
             done
-            screen=$(podman exec porelo-busy-busy tmux capture-pane -p -S - -t porelo)
+            screen=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -S - -t porelo)
             printf '%s\n' "$screen" | grep -qE '5,?555' && exit 0
             printf 'held: %s\nscreen, last lines:\n' "$held"; printf '%s\n' "$screen" | grep -v '^ *$' | tail -15
             exit 1
             """
-        When a script runs "porelo task remove porelo-busy-busy --force"
+        When a script runs "porelo task remove busy --force"
         And a script runs "porelo project remove busy --force"
         Then it exits zero

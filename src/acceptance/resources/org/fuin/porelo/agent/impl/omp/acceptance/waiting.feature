@@ -29,7 +29,7 @@ Feature: Porelo shows the agent waiting for a person, read by the agent's own de
         # it is asked after, as before.
         Then within 60 seconds this script exits zero:
             """
-            screen=$(podman exec porelo-asks-asks tmux capture-pane -p -t porelo)
+            screen=$(podman exec "$(porelo task status asks --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -t porelo)
             printf '%s\n' "$screen" | grep -qF '↑/↓ move · ⎋ cancel' && exit 0
             printf 'screen, last lines:\n'; printf '%s\n' "$screen" | grep -v '^ *$' | tail -25
             exit 1

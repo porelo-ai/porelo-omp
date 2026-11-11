@@ -20,7 +20,7 @@ Feature: A task that comes back continues the conversation it was having
         When a script runs "timeout 300 porelo task start talk --project cont --repository cont --agent omp --provider openrouter --model ${PORELO_E2E_MODEL} --prompt 'Remember the word PAPAYA. Reply with OK only.'"
         Then it exits zero
         And porelo says task "talk" of "cont" has a session to continue
-        When a script runs "porelo task stop porelo-cont-talk"
+        When a script runs "porelo task stop talk"
         And a script runs "timeout 300 porelo task start talk --project cont --repository cont --agent omp --provider openrouter --model ${PORELO_E2E_MODEL} --prompt 'Which word did I ask you to remember? Reply with the word only.'"
         Then it exits zero
         And its output contains "session   continuing"
@@ -58,15 +58,15 @@ Feature: A task that comes back continues the conversation it was having
         # write during its first turn, and a stop before the turn ends leaves none to continue.
         Then within 120 seconds this script exits zero:
             """
-            podman exec porelo-back-back tmux capture-pane -p -t porelo | grep -v 'Reply with OK' | grep -qw OK
+            podman exec "$(porelo task status back --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -t porelo | grep -v 'Reply with OK' | grep -qw OK
             """
         # And once omp has written that turn: 18.11 shows its answer before the turn ends and writes the
         # session at the end. Measured, the file came 6 s after the answer, and a stop between left none.
         Then within 60 seconds this script exits zero:
             """
-            podman exec porelo-back-back sh -c 'ls /home/agent/.omp/agent/sessions/--workspace--/*.jsonl' >/dev/null 2>&1
+            podman exec "$(porelo task status back --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" sh -c 'ls /home/agent/.omp/agent/sessions/--workspace--/*.jsonl' >/dev/null 2>&1
             """
-        When a script runs "sleep 3; porelo task stop porelo-back-back"
+        When a script runs "sleep 3; porelo task stop back"
         Then porelo says task "back" of "back" has a session to continue
         Given a terminal on the machine
         When I run "porelo task start back --project back --repository back --agent omp --provider openrouter --model ${PORELO_E2E_MODEL} --clearance deny"

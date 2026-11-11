@@ -35,16 +35,11 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S | - | the Copilot path proven by hand before a release |
 | <a id="om44"></a>[OM44](OM44-The-Update-Request-Test-Stands-Alone-In-A-Task.md) | - | - | `UpdateRequestTest` runs its scripts in an environment of its own, so a task's `GIT_CONFIG_*` variables are not taken for a leaked header |
 
-## Implementing
-
-| # | Size | Blocked by | What it covers |
-|---|---|---|---|
-| <a id="om50"></a>[OM50](OM50-The-Acceptance-Takes-A-Task-s-Container-Name-From-Porelo.md) | XS | - | the acceptance scenarios name a task by its own name in Porelo's commands and take its container's name from `porelo task status --json`, never built as `porelo-<project>-<task>` |
-
 ## Review
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
+| <a id="om50"></a>[OM50](OM50-The-Acceptance-Takes-A-Task-s-Container-Name-From-Porelo.md) | XS | - | the acceptance scenarios name a task by its own name in Porelo's commands and take its container's name from `porelo task status --json`, never built as `porelo-<project>-<task>` |
 | <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](README.md#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine |
 | <a id="om45"></a>[OM45](OM45-Snapshots-Not-Published-On-The-Forge-Come-From-Upstream.md) | S | - | on a forge whose registry holds only its organization's packages, the other Porelo snapshots come from the anonymous repository `MAVEN_UPSTREAM_SNAPSHOTS_URL` names, the forge's token sent to the forge alone, a tag still built from releases only |
 | <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) | S | - | no subagent in a task unless the task allows it, then at most as many and as deep as it says; off (depth 0), count and depth measured to hold at the pin |
