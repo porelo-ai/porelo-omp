@@ -15,24 +15,24 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
-| <a id="om47"></a>[OM47](OM47-The-Clean-Up-Says-When-Nothing-Was-Rented.md) | - | - | a leg that failed before resolving the machine tooling rented nothing, and its clean-up says so instead of failing on a missing class |
 | <a id="om48"></a>[OM48](OM48-The-Tests-Follow-The-Pyramid.md) | S | - | the suites by level with measured times, no flow of the adapter only above the unit level; five end-to-end scenarios that test only Porelo leave the legs, and the timeout test waits 100 ms |
 | <a id="om42"></a>[OM42](OM42-Mutation-Testing-With-PIT.md) | - | - | mutation testing by hand: a `pit` profile outside CI with no threshold, and a report sorting survivors into real gaps and harmless ones |
-| <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) | - | [OM35](README.md#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind |
-| <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) | - | - | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database |
-| <a id="om43"></a>[OM43](OM43-Depend-On-The-Agent-Protocol-Porelo-Provides.md) | - | - | the agent contract named at install time |
 
 ## Analyzed
 
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
 | <a id="om19"></a>[OM19](OM19-Declare-A-Thinking-Level-And-A-Read-Only-Mode.md) | S | - | `--thinking` on the five effort levels and a `read-only` mode without edit tools, for a reviewer | 0 |
+| <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) | M | - | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database | 1 |
 
 ## Estimated
 
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
 | <a id="om51"></a>[OM51](OM51-The-Adapter-Reports-Each-Tool-Call-With-Its-Time.md) | M | - | the adapter reads each tool call from its agent's output and hands Porelo its tool, kind, start, end, a shell call's command line, whether it ran in the background, and a sub-agent's name and the calls made under it, in Porelo's common entry | 0 |
+| <a id="om47"></a>[OM47](OM47-The-Clean-Up-Says-When-Nothing-Was-Rented.md) | XS | - | a leg that failed before resolving the machine tooling rented nothing, and its clean-up says so instead of failing on a missing class | 0 |
+| <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) | S | [OM35](README.md#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind | 0 |
+| <a id="om43"></a>[OM43](OM43-Depend-On-The-Agent-Protocol-Porelo-Provides.md) | S | - | the agent contract named at install time | 0 |
 
 ## Backlog
 

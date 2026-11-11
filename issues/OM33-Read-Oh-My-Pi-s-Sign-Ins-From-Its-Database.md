@@ -5,18 +5,29 @@
   "$schema": "issue-1.json",
   "id": "OM33",
   "title": "Read Oh My Pi's Sign-Ins From Its Database",
-  "state": "Accepted",
-  "size": "-",
+  "state": "Analyzed",
+  "size": "M",
   "priority": "Medium",
   "rank": 5,
   "blockedBy": [],
-  "covers": "a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database"
+  "covers": "a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database",
+  "openQuestions": 1
 }
 ```
 
+**Why this size.** One module: a new `OmpCredentialExtractor`, `OmpFindings` reading rows instead of the file's
+existence, the override in `OmpAgent`, the decision in `doc/decisions.md`, and their tests. What makes it a day and
+not hours is the SQLite reader in the native executable: a JDBC driver with a JNI library, its native-image
+configuration, and a check that the built binary really reads a database. Porelo's side is there already:
+`ExtractCredential` with a provider, as Pi's adapter uses it. A reader of the file format of our own instead would
+be L (see *Open questions*).
+
+**Estimate.** M: 53 min, the measured median of M over all repositories (n=113).
+
 **What must be true.** `porelo vault import` takes a sign-in Oh My Pi already holds on the host, for the provider asked
 for, and the adapter's findings name which providers Oh My Pi is signed in to, by kind and with the path, never a
-credential's value.
+credential's value. A database the adapter cannot read, or one of a schema it does not know, is a sign-in "cannot
+say", never "not signed in".
 
 ## Why
 
@@ -31,3 +42,78 @@ things against it:
 - **The database is open while Oh My Pi runs**, in WAL mode, so a read must never take a lock Oh My Pi waits on.
 
 The provider asked for comes through Porelo's `ExtractCredential`, as for Pi.
+
+## Plan
+
+- What Oh My Pi keeps, read in its source at 18.12.6 (`packages/ai/src/auth/sqlite-credential-store.ts`), not yet in
+  the pinned 18.14.2: `auth_credentials(id, provider, credential_type, data, disabled_cause, identity_key, created_at,
+  updated_at)`; `credential_type` is `api_key` (`data` = `{key, source?}`) or `oauth` (`data` = `{access, refresh,
+  expires, email?, accountId?, enterpriseUrl?, orgId?, ...}`); a row with `disabled_cause` set is a tombstone; Oh My
+  Pi lists the live ones `ORDER BY id`. The table's own version is `auth_schema_version` (id 1): 8 in 18.12.6, 5 in
+  an older 16.3 database. The journal is WAL, and on a host measured all rows sat in `agent.db-wal` while `agent.db`
+  held a bare 4 KB page: a reader that ignores the WAL sees nothing.
+- **Reader**: `org.xerial:sqlite-jdbc` (Apache-2.0), new to this repository and to every Porelo repository's
+  build. It ships `META-INF/native-image` with its own `SqliteJdbcFeature`; its Linux x86-64 library needs
+  GLIBC 2.3 at most (3.49.1.0, readelf), under the package's floor of 2.34. Opened as
+  `file:<path>?mode=ro` with a short `busy_timeout`, never `immutable=1` (that skips the WAL), one `SELECT` of
+  the two tables, closed at once. A WAL reader blocks no writer; at worst it holds back a checkpoint for the length of
+  one query.
+- `OmpAuthDatabase` (package-private): opens the file, checks `auth_schema_version` against the version(s) read in
+  the pinned package, and returns the live rows as `(provider, type, Map data)`, or a state `ABSENT`,
+  `UNREADABLE`, `UNKNOWN_SCHEMA`, like Pi's `JsonFile`. A value never leaves the package but through the extractor.
+- `OmpFindings`: configuration finding as today; then one sign-in finding per provider with a live row, in the order
+  Porelo names (`anthropic`, `openai`, `google`, `github-copilot`, `openrouter`, then the rest), each with the path,
+  provider, kind (`oauth` -> subscription, except OpenRouter's -> API key; `api_key` -> API key) and importable when
+  Porelo has the provider and the row's shape is one it can take. A Copilot row with `enterpriseUrl`, an OAuth row whose
+  refresh is the remote broker's placeholder, and a provider Porelo does not have are signed in, not importable. Any
+  state other than a readable known schema is one finding "cannot say", as today.
+- `OmpCredentialExtractor`: like `PiCredentialExtractor`, filtered on the findings: the provider asked for, or the
+  first importable; of several live rows the first by `id`, the one Oh My Pi lists first. Anthropic OAuth carries
+  its refresh token, token URL and client id as read in the pinned package; Copilot's GitHub token as
+  `access-token`; an API key as `api-key`. A database that cannot be read throws `AgentException`.
+- `OmpAgent#credentialExtractor()`, `omp.yaml`'s comment on `config_dir`, `doc/decisions.md` ("What the adapter finds
+  of Oh My Pi on the host" and the paragraph saying `vault import` has nothing to read), the changelog, and the third-
+  party notices `PackageNoticesCheck` checks (sqlite-jdbc, and SQLite, public domain).
+- Red first: `OmpFindingsTest#aSignInInTheDatabaseIsNamedByProviderAndKind`, over a database the test writes in a
+  temporary directory with the pinned schema and WAL on, its writer connection still open; today it yields
+  "cannot say". Then `OmpCredentialExtractorTest` (provider asked for, none asked, tombstone skipped, unknown schema
+  version, broken `data`, a file that is not SQLite).
+- Level: unit tests over such databases for all logic. The native binary: one check in the dist build, next to
+  `NativeLinkageCheck`, that the built executable answers `ExtractCredential` from such a database, since only the
+  binary shows the JNI library loads.
+
+## Acceptance
+
+- With Oh My Pi signed in to Copilot and OpenRouter, the findings name both with path and kind, and `vault import omp`
+  for each provider takes its credential; the other provider's row is not touched.
+- Oh My Pi running and writing during the read: neither side fails nor waits; seen in a test with an open writer.
+- A database of an unknown schema version, a file that is not SQLite, or one that cannot be opened: "cannot say", and
+  an import refuses; never "not signed in".
+- No finding, log line or error message holds a value from `data`.
+- The native executable built with `-march=x86-64` passes `NativeLinkageCheck` and reads a database.
+
+## What makes it uncertain
+
+- The schema moves: version 5 to 8 between 16.3 and 18.12. Each pin bump may make the reader answer "cannot say"
+  until the version is read again; the weekly update could check the pinned package's `AUTH_SCHEMA_VERSION`.
+- The JNI library is loaded at run time, so `NativeLinkageCheck`, which reads the binary's `NEEDED`, does not see
+  it; where the feature puts it (beside the binary or extracted to a temporary directory) decides what the package
+  installs and whether `/tmp` with `noexec` breaks it.
+- Oh My Pi rotates Anthropic refresh tokens about every 8 hours; once imported, Porelo and Oh My Pi hold one grant,
+  and the first to renew may end the other's. Pi's import has the same exposure.
+- A reader of the file format of our own would need B-tree pages, overflow pages and the WAL's frames and
+  checksums: L, not M.
+
+## Open questions
+
+- May the package compile in `sqlite-jdbc` (Apache-2.0, a native library loaded at run time, about 1 MB per
+  architecture), or should the adapter carry its own reader of SQLite's file format for one table, which makes this
+  issue L?
+
+## To be checked
+
+- The schema, the version in `auth_schema_version`, the `data` shapes, and the Anthropic token URL and client id in
+  the pinned 18.14.2, not only in the 18.12.6 source read here.
+- That `mode=ro` reads a database whose `-shm` is missing or whose directory is not writable, and never creates a file
+  beside it.
+- Where `SqliteJdbcFeature` puts the library in a native image, and the binary's size with it.
