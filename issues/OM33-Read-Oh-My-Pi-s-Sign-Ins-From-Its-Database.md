@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM33",
   "title": "Read Oh My Pi's Sign-Ins From Its Database",
-  "state": "Idea",
+  "state": "Accepted",
   "size": "-",
   "priority": "Medium",
   "rank": 5,
