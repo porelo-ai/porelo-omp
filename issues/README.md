@@ -37,9 +37,14 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
-| <a id="om53"></a>[OM53](OM53-An-Attended-Session-Takes-An-Opening-Text.md) | XS | - | an attended session of Oh My Pi opens on the person's opening text as its first turn and then waits for the person, the form (positional) declared in the agent definition and measured in a task |
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S | - | the Copilot path proven by hand before a release |
 | <a id="om44"></a>[OM44](OM44-The-Update-Request-Test-Stands-Alone-In-A-Task.md) | - | - | `UpdateRequestTest` runs its scripts in an environment of its own, so a task's `GIT_CONFIG_*` variables are not taken for a leaked header |
+
+## Implementing
+
+| # | Size | Blocked by | What it covers |
+|---|---|---|---|
+| <a id="om53"></a>[OM53](OM53-An-Attended-Session-Takes-An-Opening-Text.md) | XS | - | an attended session of Oh My Pi opens on the person's opening text as its first turn and then waits for the person, the form (positional) declared in the agent definition and measured in a task |
 
 ## Review
 
