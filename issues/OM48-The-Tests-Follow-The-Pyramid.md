@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM48",
   "title": "The Tests Follow The Pyramid",
-  "state": "Accepted",
+  "state": "Analyzed",
   "size": "S",
   "priority": "Medium",
   "rank": 1,
@@ -71,6 +71,10 @@ reason the next section names.
   end-to-end run.
 - The end-to-end legs hold 23 scenarios, none of which tests only Porelo.
 - `WorkflowStepsTest` takes under 0.5 s.
+
+## Open questions
+
+- None. The five scenarios that test only Porelo leave the suite only where Porelo's own suite is confirmed to cover them (under *To be checked*); one it does not cover goes to Porelo's agent first, so no coverage is dropped.
 
 ## To be checked
 
