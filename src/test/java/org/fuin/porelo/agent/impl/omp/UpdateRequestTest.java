@@ -254,7 +254,8 @@ class UpdateRequestTest {
         builder.command().addAll(List.of(args));
         builder.directory(dir.toFile()).redirectErrorStream(true);
         builder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-        builder.environment().putAll(gitEnv());
+        builder.environment().clear();
+        builder.environment().putAll(WorkflowSteps.environment(System.getenv(), gitEnv()));
         final Process process = builder.start();
         assertThat(process.waitFor(30, TimeUnit.SECONDS)).as("git %s ends", List.of(args)).isTrue();
         return process.exitValue();

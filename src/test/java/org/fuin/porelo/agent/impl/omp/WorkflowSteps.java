@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +33,30 @@ final class WorkflowSteps {
      * @param output What it wrote to standard output and standard error, together.
      */
     record Run(int exit, String output) {}
+
+    /**
+     * Returns the environment a test's process starts with: the caller's, minus the git
+     * configuration it passes through variables, then the test's own. A Porelo task passes its
+     * gate's credential that way, which a test would otherwise read as a header the workflow
+     * leaked.
+     *
+     * @param caller The environment of the process that runs the test.
+     * @param own The test's own variables, which win.
+     * @return A new map.
+     */
+    static Map<String, String> environment(
+            final Map<String, String> caller, final Map<String, String> own) {
+        final Map<String, String> result = new HashMap<>(caller);
+        result.keySet()
+                .removeIf(
+                        name ->
+                                name.equals("GIT_CONFIG_COUNT")
+                                        || name.equals("GIT_CONFIG_PARAMETERS")
+                                        || name.startsWith("GIT_CONFIG_KEY_")
+                                        || name.startsWith("GIT_CONFIG_VALUE_"));
+        result.putAll(own);
+        return result;
+    }
 
     /**
      * Returns the run block of each step with the given name, its indentation removed.
@@ -101,7 +126,8 @@ final class WorkflowSteps {
                         .directory(dir.toFile())
                         .redirectErrorStream(true)
                         .redirectOutput(log.toFile());
-        builder.environment().putAll(env);
+        builder.environment().clear();
+        builder.environment().putAll(environment(System.getenv(), env));
         final Process process = builder.start();
         final boolean ended = process.waitFor(limit.toMillis(), TimeUnit.MILLISECONDS);
         if (!ended) {

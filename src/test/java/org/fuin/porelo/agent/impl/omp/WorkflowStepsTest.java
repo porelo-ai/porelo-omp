@@ -13,6 +13,34 @@ import org.junit.jupiter.api.io.TempDir;
 class WorkflowStepsTest {
 
     @Test
+    void aStepTakesNoGitConfigurationTheCallerPassesThrough() {
+
+        // A Porelo task passes its gate's credential to git through these variables; a step's test
+        // that inherited them would read the credential as a header the workflow leaked.
+        final Map<String, String> caller =
+                Map.of(
+                        "PATH", "/usr/bin",
+                        "GIT_CONFIG_GLOBAL", "/dev/null",
+                        "GIT_CONFIG_COUNT", "2",
+                        "GIT_CONFIG_KEY_0", "http.https://github.com/.extraheader",
+                        "GIT_CONFIG_VALUE_0", "AUTHORIZATION: basic x",
+                        "GIT_CONFIG_KEY_1", "user.name",
+                        "GIT_CONFIG_VALUE_1", "task",
+                        "GIT_CONFIG_PARAMETERS", "'core.askpass'='x'");
+
+        assertThat(WorkflowSteps.environment(caller, Map.of("TARGET", "1.2.3")))
+                .as("the caller's environment without its git configuration, then the test's own")
+                .containsExactlyInAnyOrderEntriesOf(
+                        Map.of(
+                                "PATH", "/usr/bin",
+                                "GIT_CONFIG_GLOBAL", "/dev/null",
+                                "TARGET", "1.2.3"));
+        assertThat(WorkflowSteps.environment(caller, Map.of("GIT_CONFIG_COUNT", "0")))
+                .as("a test that sets one itself keeps it")
+                .containsEntry("GIT_CONFIG_COUNT", "0");
+    }
+
+    @Test
     void aStepThatHangsFailsAtTheLimitInsteadOfHoldingTheSuite(@TempDir final Path dir) {
 
         // A step stuck on a stub or a prompt would otherwise hold the whole suite until the

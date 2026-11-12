@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM44",
   "title": "The Update Request Test Stands Alone In A Task",
-  "state": "Implementing",
+  "state": "Review",
   "size": "S",
   "priority": "Medium",
   "rank": 2,
@@ -37,4 +37,9 @@ is not read as a header the workflow leaked.
 
 ## To be checked
 
-- Which other tests in this repository start a process with an inherited environment that git reads.
+- Which other tests in this repository start a process with an inherited environment that git reads: only
+  `WorkflowSteps.run`, which every step's test goes through, and `UpdateRequestTest`'s own `git`; both now take
+  `WorkflowSteps.environment`. `PublishTokenTest`, `SnapshotTokenTest` and `WorkflowCommitsTest` clear the environment
+  before they set theirs, and the `*Check` classes start `readelf` and the built package, not git. With the caller's
+  `GIT_CONFIG_COUNT`, `GIT_CONFIG_KEY_0` and `GIT_CONFIG_VALUE_0` set as above, all 188 tests pass, as they do without
+  them.
