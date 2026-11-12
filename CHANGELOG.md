@@ -36,7 +36,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Fixed
 
-- An attended task on Oh My Pi 18.18 starts at its prompt again: the adapter marks the setup wizard done at version 3, which 18.18 raised with a step about updates.
+- An attended task on Oh My Pi 18.18.1 starts at its prompt again: the adapter marks the setup wizard done at version 3, which 18.18.1 asks for with a step about updates.
 - A task on Oh My Pi 18.11 is seen at work: the adapter reads the start of the status line under omp's prompt, since 18.11 no longer draws the welcome box it read before, and the setup wizard still hides it.
 - A log line cut to its readable length is cut between characters, never inside one that takes two UTF-16 units, such as an emoji.
 - The log formatter and the run's end drop every terminal control character but a newline and a tab, so an escape sequence from a model, a tool or a provider cannot act on the terminal that shows the log.

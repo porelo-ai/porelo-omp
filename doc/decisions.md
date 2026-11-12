@@ -21,7 +21,7 @@ what it may do in a task, how it is built and updated, and the risks accepted on
 | The broker | [GitHub Copilot is brokered by one header, because omp exchanges no token](#github-copilot-is-brokered-by-one-header-because-omp-exchanges-no-token) - a person's grant on the host, a task token in the container, the provider ranked first |
 | The task | [omp does not check for a newer version in a task](#omp-does-not-check-for-a-newer-version-in-a-task) - the check could only fail, and never installs anything |
 | The task | [No host of its own, and six refused](#no-host-of-its-own-and-six-refused) - what 18.1.13 resolved and did not need |
-| The task | [omp starts at its prompt: the setup wizard is marked done](#omp-starts-at-its-prompt-the-setup-wizard-is-marked-done) - a wizard opens even with a credential; setupVersion: 3 answers it since 18.18 |
+| The task | [omp starts at its prompt: the setup wizard is marked done](#omp-starts-at-its-prompt-the-setup-wizard-is-marked-done) - a wizard opens even with a credential; setupVersion: 3 answers it on 18.18.1 |
 | The task | [Reaching work is checked on the rendered screen, because omp draws its prompt first](#reaching-work-is-checked-on-the-rendered-screen-because-omp-draws-its-prompt-first) - a declared marker, three seconds on screen; the byte stream passes wrongly |
 | The task | [Waiting for a person is read from the question's own last line](#waiting-for-a-person-is-read-from-the-questions-own-last-line) - `↑/↓ move · ⎋ cancel` in the last 5 lines, attended only |
 | The task | [A task that comes back continues its conversation](#a-task-that-comes-back-continues-its-conversation) - `--resume` with the id from the session record |
@@ -208,9 +208,10 @@ prompt - with a credential, and without one (omp started by hand in a task with 
 since Porelo does not start the agent without a credential; it then warns that no model is
 available). **Headless**, a prompt run answers and exits either way: the wizard is attended only.
 
-**18.18.1 raised the wizard to version 3** with one more step, how new releases reach you (update
-automatically or notify), and opens at that step for a file at version 2; `startup.checkUpdate: false`
-does not keep it away. Skipping it writes `setupVersion: 3` and nothing else, so the line is now 3.
+**18.18.1 asks for version 3**, with one more step, how new releases reach you (update automatically
+or notify), and opens at that step for a file at version 2; `startup.checkUpdate: false` does not keep it
+away. Which release since 18.14.2 added it was not measured. Skipping it writes `setupVersion: 3` and
+nothing else that matters, so the line is now 3.
 Measured in a task of the 18.18.1 pin with a copy of the written file at 2 and at 3. A pin that raises
 the version again stops every attended task at a menu, as this one did.
 
@@ -225,7 +226,9 @@ byte stream passes while the wizard is up - measured, it did. The step reads the
 renders it, and needs the marker there for three seconds on end. Measured on 18.11.0 with `setupVersion: 2`
 taken out of the build, it fails and reports the wizard ("Setup step 1 of 5 … Select provider to login");
 with the line in, the five scenarios that attach pass. 18.11 dropped the "Welcome back!" box the marker read
-before, which is why it is the status line now.
+before, which is why it is the status line now. **Not yet explained:** the 18.18.1 pin passed its acceptance
+legs, though that release opens attended at a setup step for a file at version 2; whether the legs read
+that screen as work or never reached the step is still to be found.
 
 ## What the adapter finds of Oh My Pi on the host
 

@@ -42,7 +42,8 @@ Measured on 2026-11-12 on the VM `smith`, in a task of porelo main c43062468 wit
 ## Acceptance
 
 - An attended omp 18.18.1 task reaches its prompt without being asked anything, on the VM.
-- The unit test fails with `setupVersion: 2`.
+- The unit test fails with `setupVersion: 2`; it holds the value against an edit, and only the acceptance run on
+  the VM shows that omp takes it.
 
 ## To be checked
 
@@ -57,4 +58,7 @@ Measured on 2026-11-12 on the VM `smith`, in a task of porelo main c43062468 wit
 
 - Why the acceptance legs of the 18.18.1 pin (#9) passed, though four features start omp attended and expect it to
   reach work without being asked. If the step reads a wizard as work, it needs to fail on one, or the next raised
-  setup version lands on `main` the same way.
+  setup version lands on `main` the same way. Read by a second model (gemini-4-argon-high): its wording points are
+  taken (18.18.1, not 18.18; "at version 2", not "below 3"; "nothing else that matters"), and it rates this open
+  question high - `doc/decisions.md` now says it is unexplained. Holding the next raised version in the weekly
+  update job waits on that answer.

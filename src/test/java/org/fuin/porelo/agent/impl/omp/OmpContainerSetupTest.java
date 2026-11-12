@@ -170,10 +170,8 @@ class OmpContainerSetupTest {
     @Test
     void marksTheSetupWizardDone() {
 
-        // Measured on 18.1.13: a fresh task opens at a five-step setup wizard - providers, default
-        // model, glyphs, layout, theme - even with a credential in place. 18.18.1 added a step,
-        // how updates arrive, and opens at it below version 3. Skipping writes setupVersion: 3
-        // here and nothing else that matters; with that line the prompt comes first.
+        // The version omp 18.18.1 writes when every setup step is skipped; below it, an attended
+        // task opens at the wizard (OmpConfigFile says what was measured).
         assertThat(named(files(""), OmpConfigFile.PATH).content()).contains("setupVersion: 3\n");
     }
 
