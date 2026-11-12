@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM54",
   "title": "A Finished Run Answers Its Last Message",
-  "state": "Implementing",
+  "state": "Review",
   "size": "S",
   "priority": "High",
   "rank": 1,
@@ -42,3 +42,19 @@ definition declares no last message.
 ## To be checked
 
 - The record and field the agent's last reply stands in, read in a recorded unattended run at the pinned version.
+  Read in a run of 18.18.1 recorded unattended in a Porelo task on 2026-11-12 (`src/test/resources/streams/unattended-run-18.18.1.jsonl`,
+  without the streamed `message_update` and `tool_execution_update` records): `message_end` of role `assistant`
+  holds `message.content` as a list of parts, as the plan expected - the first `thinking`, `text` "I will look at the
+  directory now." and `toolCall` `bash`; the last `thinking` and `text` "ALL DONE". `turn_end` and `agent_end` repeat
+  the messages. The declaration names `message_end` of role `assistant`, `message.content`, and its `text` parts.
+- Over the recording the answer is `ALL DONE`; cut after the first message it is that message's sentence alone, and
+  cut before it nothing; cut after the tool's result, whose text part holds the output, still the sentence (seen to
+  fail without `message.role: assistant`); a later message of the recorded tool call alone leaves `ALL DONE`. The
+  screen rules are unchanged, compared whole.
+- A run on an unknown model is refused before it starts (`Model "…" not found`, no record written, measured the same
+  day) and answers nothing. Not seen: an API error during a run, a turn limit, a sub-agent's messages in the stream.
+  A last message holding a text part with empty text answers an empty text; the declaration cannot leave it out.
+- Read-only review by a Claude Code sub-agent, Sonnet: confirmed from the contract's bytecode that the last matching
+  message holding a text part answers; found the claims on a text-less message and on a tool's output untested, now
+  tested, and an empty text part and a sub-agent unmentioned, now written down. Not taken: loading the records from
+  the classpath, as the adapters' tests read them by path.

@@ -94,6 +94,14 @@ session:
             - contains: "↑/↓ move · ⎋ cancel"
               in_last_lines: 5
               for: "an answer to its question"
+        # 18.18.1 ends each message with a message_end record whose message.content is a list of
+        # parts - thinking, text, toolCall; the text parts of the last assistant message holding any
+        # are the answer, an empty one included. turn_end and agent_end repeat the message under
+        # other types.
+        last_message:
+            record: { type: message_end, message.role: assistant }
+            text: message.content
+            part: { record: { type: text }, text: text }
 
 provider:
     # OpenRouter's half - upstream, bearer header, the /api/v1 the OpenAI dialect is served under -

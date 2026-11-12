@@ -450,6 +450,24 @@ opened as a pull request.
 **What would change the answer:** a release that cannot wait three days. Dispatching the job with the
 version named takes it at once - that is the way round the rule, not a change to it.
 
+## A finished run's last message
+
+An unattended run of 18.18.1 ends each message in a `message_end` record whose `message.content` is
+a list of parts: `thinking`, `text` and `toolCall`. Read in a run recorded in a Porelo task on
+2026-11-12, its first assistant message held a reasoning, a sentence and a tool call, its last a
+reasoning and the reply; `turn_end` and `agent_end` repeat the messages under their own types. The
+definition answers the text parts of the last assistant `message_end` that holds any, joined by a
+newline, as Pi's does: a later message of a tool call alone leaves the reply before it standing. A
+text part whose text is empty still counts and answers an empty text, which the declaration cannot
+leave out; no such part was seen, though the recorded thinking parts were empty. A run without an
+assistant reply answers nothing.
+
+Not seen: a run stopped at a turn limit, an API error during a run, and a run with a sub-agent,
+whose messages might stand in the same stream after the last reply.
+
+**What would change it:** a release that moves the parts, or one of the runs not seen ending
+otherwise than this says.
+
 ## NullAway comes from `porelo-parent`
 
 The compiler configuration that runs NullAway - Error Prone with only NullAway, `OnlyNullMarked`, the

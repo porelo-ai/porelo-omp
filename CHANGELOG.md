@@ -12,6 +12,8 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Added
 
+- A finished unattended run answers its last reply, `session.waiting.last_message`: the text parts of the
+  last assistant `message_end`, never its reasoning or a tool's output; a run without a reply answers nothing.
 - The definition says how an attended session takes an opening text, `session.opening_flag: ""`, so Porelo
   opens a discussion on Oh My Pi with the person's text as its first turn, after which it waits for them.
 - Unattended tasks report tool calls, shell command lines, background job completion times, and named sub-agent spans to Porelo.
