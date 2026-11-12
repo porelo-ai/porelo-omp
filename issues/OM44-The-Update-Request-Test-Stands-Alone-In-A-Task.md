@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM44",
   "title": "The Update Request Test Stands Alone In A Task",
-  "state": "Backlog",
+  "state": "Implementing",
   "size": "S",
   "priority": "Medium",
   "rank": 2,
