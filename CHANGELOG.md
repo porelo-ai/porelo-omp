@@ -12,6 +12,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Added
 
+- The daily shared rules check also holds every issue head to its schema and each index to its heads.
 - A finished unattended run answers its last reply, `session.waiting.last_message`: the text parts of the
   last assistant `message_end`, never its reasoning or a tool's output; a run without a reply answers nothing.
 - The definition says how an attended session takes an opening text, `session.opening_flag: ""`, so Porelo
