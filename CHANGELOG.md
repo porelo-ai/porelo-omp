@@ -27,6 +27,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Changed
 
+- Central's snapshots (`central.sonatype.snapshots`) are asked only for `org.fuin.porelo`, the group listed in `.mvn/rrf/`, through the switch in the now committed `.mvn/maven.config`, on a forge too, where they are read beside its registry and the newest wins; the forge's own repository stays unfiltered. The daily shared rules check refuses a filter that would let another name out.
 - The CI takes the runner's distribution packages and the Oh My Pi binary the update job checks from the Actions cache, keyed by the package list's hash and the binary's digest, each file checked against its hash before use, so an outage of a package mirror or the release host fails only a run on a new pin.
 - The package says that the `porelo-wire` classes in its executable are under Apache-2.0, in its
   Debian copyright and its RPM license, with the license's text beside the GPL's in the RPM.
