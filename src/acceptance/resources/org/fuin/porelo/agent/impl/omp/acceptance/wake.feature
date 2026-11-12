@@ -84,9 +84,9 @@ Feature: An agent at rest is woken by a message for it
         And I press Enter
         # Working, seen rather than assumed: the loop runs, which its file in the task says whatever omp draws, and
         # omp is not at rest, which omp.yaml's at_rest reads from the last 20 lines: "π > " stands there only at rest.
-        # omp runs a command inside its own process, so the loop shows among no processes. A loop sent to the
-        # background is not the case this scenario proves, and a try says so. The file is read before the screen, so
-        # the screen is never older than what the file said.
+        # omp runs a command inside its own process, so the loop shows among no processes. omp may send the loop to
+        # the background itself and wait on the job, which is work too: it holds either way, and says which. The file
+        # is read before the screen, so the screen is never older than what the file said.
         Then within 120 seconds this script exits zero:
             """
             started=no; podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" test -e /tmp/porelo-busy-started && started=yes
@@ -95,7 +95,7 @@ Feature: An agent at rest is woken by a message for it
             printf '%s\n' "$screen" | tail -n 20 | grep -qF 'π > ' && rest=yes
             backgrounded=no
             printf '%s\n' "$screen" | grep -qF 'Backgrounded:' && backgrounded=yes
-            [ "$started" = yes ] && [ "$rest" = no ] && [ "$backgrounded" = no ] && exit 0
+            [ "$started" = yes ] && [ "$rest" = no ] && { printf 'loop started, backgrounded: %s\n' "$backgrounded"; exit 0; }
             printf 'loop started: %s, at rest: %s, backgrounded: %s\n' "$started" "$rest" "$backgrounded"
             printf 'screen, last lines:\n'; printf '%s\n' "$screen" | grep -v '^ *$' | tail -25
             exit 1
@@ -103,12 +103,15 @@ Feature: An agent at rest is woken by a message for it
         When a script runs "echo 'What is 1234 plus 4321? Reply with the digits only.' | porelo talk tell busy"
         Then it exits zero
         # The message waits in inbox/new, so the loop may end and the turn with it; but only if the loop still runs
-        # and omp still works now, after the message came.
+        # and omp still works now, after the message came. A backgrounded loop may let omp end its turn first; the
+        # message then waits at rest, and the wake below is owed all the same.
         Then within 10 seconds this script exits zero:
             """
             podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" test -e /tmp/porelo-busy-started || { printf 'the loop ended before the message came\n'; exit 1; }
-            if podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -t porelo | tail -n 20 | grep -qF 'π > '; then
-              printf 'omp came to rest before the message came\n'; exit 1
+            screen=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -S - -t porelo)
+            if printf '%s\n' "$screen" | tail -n 20 | grep -qF 'π > '; then
+              printf '%s\n' "$screen" | grep -qF 'Backgrounded:' || { printf 'omp came to rest before the message came\n'; exit 1; }
+              printf 'the loop runs in the background and omp is at rest; the message waits for its wake\n'
             fi
             podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" touch /tmp/porelo-busy-done
             """
