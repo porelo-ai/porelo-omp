@@ -8,6 +8,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
+| <a id="om55"></a>[OM55](OM55-The-Agent-s-Own-Telemetry-Goes-To-Porelo.md) | - | - | the adapter declares Oh My Pi's own OpenTelemetry export pointed at Porelo's local receiver in the task, with every switch that would carry content - prompts, tool arguments and output, responses - set explicitly off |
 | <a id="om46"></a>[OM46](OM46-The-Acceptance-Legs-Run-Side-By-Side.md) | - | - | a Build's acceptance legs run at the same time, two machines held at once instead of one, the Build done about one leg sooner |
 | <a id="om34"></a>[OM34](OM34-The-Shared-Workflow-Tests-See-Every-Refusal-Red.md) | - | - | the shared workflow tests see every publishing and channel refusal red, and the refused-key scenario runs in CI |
 
