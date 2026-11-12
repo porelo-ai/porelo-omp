@@ -29,3 +29,4 @@ What is known today, to be confirmed at the pinned version:
 
 - Its content switches, if any, and what its events carry by default.
 - Whether Porelo's receiver takes HTTP/protobuf, which this agent needs.
+- The product is Oh My Pi, as the operator confirmed.
