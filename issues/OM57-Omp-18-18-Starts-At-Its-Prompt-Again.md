@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM57",
   "title": "Omp 18.18 Starts At Its Prompt Again",
-  "state": "Implementing",
+  "state": "Review",
   "size": "S",
   "priority": "High",
   "rank": 1,
@@ -25,7 +25,7 @@ text, with no menu in between.
 Measured on 2026-11-12 on the VM `smith`, in a task of porelo main c43062468 with the adapter of `main` (omp 18.18.1):
 
 - The attended task stops at "Setup step 1 of 1 - Keep omp up to date" (update automatically or notify me). The
-  opening text never reaches omp. That blocked OM53's re-measure.
+  opening text never reaches omp. That blocked the re-measure of how an attended session takes its opening text.
 - The adapter writes `setupVersion: 2` to `.omp/agent/config.yml`, measured against 18.1.13. In the same container,
   with a copy of that file, omp 18.18.1 shows the update step with `setupVersion: 2` and starts at its prompt with
   `setupVersion: 3`. So 18.18 added a setup step and raised its version to 3.
@@ -45,6 +45,15 @@ Measured on 2026-11-12 on the VM `smith`, in a task of porelo main c43062468 wit
 - The unit test fails with `setupVersion: 2`.
 
 ## To be checked
+
+- Skipping the new step by hand in 18.18.1 writes `setupVersion: 3` and nothing else (the config diffed before and
+  after; one list item came back unquoted).
+- The full acceptance suite against the VM `smith` (porelo main c43062468, the built adapter in the account,
+  `deepseek/deepseek-v4.1-flash`), 2026-11-12: 26 of 28 passed, among them "a person's fresh task reaches work
+  without being asked anything" and the three attached sessions. Two failed for reasons outside this issue:
+  `installed.feature`'s bill check reads the system package (18.14.2), since the adapter sits in the account; and
+  `wake.feature`'s second scenario, whose wake and answer passed, failed at its end, where `porelo project remove`
+  refused after `porelo task remove --force` with "task busy has an unfinished start". That is Porelo's, passed on.
 
 - Why the acceptance legs of the 18.18.1 pin (#9) passed, though four features start omp attended and expect it to
   reach work without being asked. If the step reads a wizard as work, it needs to fail on one, or the next raised

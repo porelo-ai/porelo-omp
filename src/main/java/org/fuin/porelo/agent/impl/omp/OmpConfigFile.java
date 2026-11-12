@@ -16,7 +16,9 @@ import org.fuin.porelo.wire.Json;
  * model, glyphs, layout, theme - even with a credential in place, and a task started attended then
  * waits at a menu. Skipping every step writes {@code setupVersion: 2} to this file and nothing else
  * that matters, and with that line omp starts at its prompt. Measured against 18.1.13 at a
- * terminal, in a fresh task, with and without the line.
+ * terminal, in a fresh task, with and without the line. 18.18.1 added a step, how updates arrive,
+ * and opens at it below version 3; skipping it writes {@code setupVersion: 3} and nothing else, so
+ * the file carries 3. Measured in a task with a copy of this file at 2 and at 3.
  *
  * <p><strong>The task's provider first.</strong> Several providers offer the same model id - {@code
  * gpt-4.1} is both {@code openai}'s and {@code github-copilot}'s - and omp then picks by its own
@@ -59,7 +61,7 @@ final class OmpConfigFile {
                 """
                 startup:
                   checkUpdate: false
-                setupVersion: 2
+                setupVersion: 3
                 skills:
                   enabled: false
                 """
