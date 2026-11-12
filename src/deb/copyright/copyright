@@ -10,15 +10,18 @@ Files: usr/libexec/porelo/agents/porelo-agent-omp
 Copyright: 2026 Michael Schnell <michael@fuin.org>
  the SnakeYAML authors
  the JSpecify authors
+ Taro L. Saito, David Crawshaw and the sqlite-jdbc authors
  Oracle and/or its affiliates, and the GraalVM contributors
-License: GPL-3.0-or-later and Apache-2.0 and GPL-2.0-only with Classpath exception
+License: GPL-3.0-or-later and Apache-2.0 and GPL-2.0-only with Classpath exception and public-domain
 Comment: This executable is compiled whole from the program, Porelo's agent API and
- the classes of porelo-wire (org.fuin.porelo.wire), SnakeYAML, JSpecify and the
- GraalVM runtime. porelo-wire's classes are under Apache-2.0, and the program and
- the agent API under GPL-3.0-or-later. The license texts of SnakeYAML and JSpecify
- (Apache-2.0) and of the GraalVM runtime (GPL-2.0-only with the Classpath
- exception, and the licenses of what it includes) are in full in
- /usr/share/doc/porelo-agent-omp/THIRD-PARTY-NOTICES.
+ the classes of porelo-wire (org.fuin.porelo.wire), SnakeYAML, JSpecify,
+ sqlite-jdbc and the GraalVM runtime, and carries SQLite, which sqlite-jdbc loads
+ as a native library at run time. porelo-wire's classes are under Apache-2.0, and
+ the program and the agent API under GPL-3.0-or-later. The license texts of
+ SnakeYAML, JSpecify and sqlite-jdbc (Apache-2.0) and of the GraalVM runtime
+ (GPL-2.0-only with the Classpath exception, and the licenses of what it includes)
+ are in full in /usr/share/doc/porelo-agent-omp/THIRD-PARTY-NOTICES. SQLite is in
+ the public domain.
 
 License: GPL-3.0-or-later
  This program is free software: you can redistribute it and/or modify it under
@@ -47,6 +50,12 @@ License: Apache-2.0
  .
  On Debian systems the complete text of the Apache License, Version 2.0 can be
  found in "/usr/share/common-licenses/Apache-2.0".
+
+License: public-domain
+ SQLite: the author disclaims copyright to its source code. In place of a legal
+ notice, here is a blessing: May you do good and not evil. May you find
+ forgiveness for yourself and forgive others. May you share freely, never taking
+ more than you give.
 
 License: GPL-2.0-only with Classpath exception
  The GraalVM runtime is under the GNU General Public License version 2, with the

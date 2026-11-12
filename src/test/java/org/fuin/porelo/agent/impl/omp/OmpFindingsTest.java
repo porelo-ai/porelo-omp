@@ -10,6 +10,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.List;
 import java.util.Set;
 import org.fuin.porelo.agent.api.Finding;
+import org.fuin.porelo.agent.api.Finding.Kind;
 import org.fuin.porelo.agent.api.Finding.SignedIn;
 import org.fuin.porelo.agent.api.Finding.What;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,46 @@ class OmpFindingsTest {
                         new Finding(
                                 What.CONFIGURATION, database.toString(), null, null, null, null),
                         cannotSay(database));
+    }
+
+    @Test
+    void aSignInInTheDatabaseIsNamedByProviderAndKind() throws Exception {
+
+        // Prevents an account signed in to Oh My Pi being offered nothing to import. Written while
+        // Oh My Pi's own connection is open, so the rows are only in the WAL.
+        final Path database = home.resolve("agent.db");
+        try (AuthDatabaseFixture db = AuthDatabaseFixture.create(database, 8)) {
+            db.add("openrouter", "api_key", "{\"key\":\"sk-or-test\"}")
+                    .add(
+                            "github-copilot",
+                            "oauth",
+                            "{\"access\":\"gho_test\",\"refresh\":\"gho_test\",\"expires\":1}");
+
+            assertThat(find(home))
+                    .as("set up, then each provider by Porelo's order")
+                    .containsExactly(
+                            new Finding(
+                                    What.CONFIGURATION,
+                                    database.toString(),
+                                    null,
+                                    null,
+                                    null,
+                                    null),
+                            new Finding(
+                                    What.SIGN_IN,
+                                    database.toString(),
+                                    SignedIn.SIGNED_IN,
+                                    true,
+                                    "github-copilot",
+                                    Kind.SUBSCRIPTION),
+                            new Finding(
+                                    What.SIGN_IN,
+                                    database.toString(),
+                                    SignedIn.SIGNED_IN,
+                                    true,
+                                    "openrouter",
+                                    Kind.API_KEY));
+        }
     }
 
     @Test

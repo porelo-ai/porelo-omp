@@ -9,7 +9,8 @@ label: Oh My Pi
 binary: omp
 
 # Where this agent keeps its own files, for 'porelo vault import' and for what it finds of itself on the
-# host. Its sign-ins are in agent.db there, which this package does not read, so an import finds nothing.
+# host. Its sign-ins are in agent.db there, which this package reads read-only: the providers, and the
+# credential an import takes.
 config_dir: "~/.omp/agent"
 
 # What this adapter can hold a task to: a count at the same time, which 0 switches off. OmpConfigFile

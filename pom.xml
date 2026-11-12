@@ -48,6 +48,8 @@
              the package description, so 'dpkg -s' and 'rpm -qi' answer it. Bumping it means the
              new digest from that release's SHA256SUMS.txt. Not part of the package version. -->
         <agent.cli.version>18.18.1</agent.cli.version>
+        <!-- The reader of Oh My Pi's sign-in database; Apache-2.0, SQLite itself public domain. -->
+        <sqlite-jdbc.version>3.49.1.0</sqlite-jdbc.version>
 
         <!-- What this agent's update differs in, read by Porelo's release tool beside the pin. -->
         <porelo.release.agent>Oh My Pi</porelo.release.agent>
@@ -126,7 +128,8 @@
 
     <dependencies>
 
-        <!-- compile: the agent contract, and nothing else. Never another agent. -->
+        <!-- compile: the agent contract, and the reader of Oh My Pi's sign-in database (the operator's
+             decision of 2026-11-11). Never another agent. -->
 
         <dependency>
             <groupId>org.fuin.porelo</groupId>
@@ -141,6 +144,14 @@
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
+        </dependency>
+
+        <!-- Reads the database read-only, WAL included; ships its own native-image configuration. -->
+
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>${sqlite-jdbc.version}</version>
         </dependency>
 
         <!-- test: versions come from the org.fuin parent, as they do in the porelo repository -->
@@ -407,6 +418,7 @@
                                 <configuration>
                                     <includes>
                                         <include>**/NativeLinkageCheck.java</include>
+                                        <include>**/NativeDatabaseCheck.java</include>
                                     </includes>
                                     <systemPropertyVariables>
                                         <porelo.native.binary>${project.build.directory}/${project.artifactId}</porelo.native.binary>

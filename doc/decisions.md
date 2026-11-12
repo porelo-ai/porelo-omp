@@ -14,7 +14,7 @@ what it may do in a task, how it is built and updated, and the risks accepted on
 | The package | [Why the package is small and the download is not](#why-the-package-is-small-and-the-download-is-not) - about 6 MB carrying a 200 MB fetch, checked against upstream's digest |
 | The package | [What the acceptance proves, and with what](#what-the-acceptance-proves-and-with-what) - Fedora 44, the installed package, a real credential |
 | The package | [Installed beside Pi, nothing is shared but two variables](#installed-beside-pi-nothing-is-shared-but-two-variables) - no file claimed by both packages; `PI_CONFIG_DIR` and `PI_PROFILE` stay unset |
-| The package | [What the adapter finds of Oh My Pi on the host](#what-the-adapter-finds-of-oh-my-pi-on-the-host) - whether `agent.db` exists, never opened; its sign-in "cannot say" |
+| The package | [What the adapter finds of Oh My Pi on the host](#what-the-adapter-finds-of-oh-my-pi-on-the-host) - `agent.db` read read-only: each provider's sign-in by kind, and what an import takes |
 | The broker | [A fork is not a promise: how this agent is pointed at the broker](#a-fork-is-not-a-promise-how-this-agent-is-pointed-at-the-broker) - the extension loads and does not redirect; a file does |
 | The broker | [A relay in the task's namespace, at a literal address](#a-relay-in-the-tasks-namespace-at-a-literal-address) - omp takes only a URL; `127.0.0.1:9419`, the provider's `/api/v1`, a file at `0600` |
 | The broker | [A model id that starts with a provider's name goes to that provider](#a-model-id-that-starts-with-a-providers-name-goes-to-that-provider) - measured on 18.1.13; prefix the provider |
@@ -156,8 +156,8 @@ approval from Copilot's.
 ranks above it, and the adapter writes the endpoint and the task's token there for Copilot as for any
 provider. A base that is not Copilot's own is kept as given, with Copilot's headers and per-model paths
 under it, and omp does not then ask `api.github.com` for an endpoint; none was asked in the run.
-The same store is why this adapter declares no `config_dir`: `porelo vault import` has nothing to read,
-and Oh My Pi's other `/login` services are not brokered.
+`porelo vault import` reads that store (see "What the adapter finds of Oh My Pi on the host"); Oh My
+Pi's other `/login` services are not brokered.
 
 **The task's provider is ranked first.** Several providers offer the same model id - `gpt-4.1` is
 `openai`'s too - and without an order omp picks `openai`, which the task has no key for. So the
@@ -232,10 +232,35 @@ Keep omp up to date".
 
 ## What the adapter finds of Oh My Pi on the host
 
-The adapter tests whether `agent.db` exists in `.omp/agent` in the home, and never opens it, so a database Oh My Pi holds
-open is not touched. A regular file there is a configuration finding with its path and a sign-in "cannot say": the
-sign-ins are in that database, which this adapter reads none of. No such file is no finding, which reads as not signed in;
-a directory it may not look into is a sign-in "cannot say".
+**The database is read, read-only** (the operator's decision of 2026-11-11 reversed "never opened"). A regular
+`agent.db` in `.omp/agent` in the home is a configuration finding with its path. Its sign-ins are in table
+`auth_credentials`: a provider, `credential_type` `api_key` or `oauth`, `data` as JSON, and `disabled_cause` set on a
+tombstone. One finding per provider with a live row, in Porelo's order (`anthropic`, `openai`, `google`,
+`github-copilot`, `openrouter`, then the rest), each with the path, provider and kind, never a value: `api_key` is an API
+key, `oauth` a subscription, except OpenRouter's, which ends in a key. A row is importable when Porelo has the provider and
+can take its shape; not a Copilot row with `enterpriseUrl`, nor one whose refresh token is a remote broker's
+`__remote__`. Of several live rows of a provider, the first by id, as Oh My Pi lists them. A readable database without a
+live row is "not signed in". No such file is no finding; a directory it may not look into, a file that is no SQLite
+database, or a schema version other than the pinned package's is a sign-in "cannot say", and an import refuses it.
+
+**Never in Oh My Pi's way.** The database is open while Oh My Pi runs, in WAL mode, and its rows may be only in
+`agent.db-wal`: on a host measured, `agent.db` held a bare 4 KB page. So the reader is `sqlite-jdbc` (Apache-2.0; SQLite
+is public domain), opened read-only and never `immutable` (which skips the WAL), with a one-second busy timeout, one query
+per table, and closed at once. It is opened by a `file:` URI: sqlite-jdbc reads what follows a `?` in a plain path as
+connection settings, so a directory named with one would have changed how the file is opened. A WAL reader blocks no writer; at worst it holds a checkpoint back for one query. A unit
+test reads a database whose writer is still open, and checks that no file appears beside it.
+
+**The schema is Oh My Pi's, not a contract.** `auth_schema_version` says which: 8 in 18.18.1 (5 in a 16.3 database),
+read in `packages/ai/src/auth/sqlite-credential-store.ts` and in a database 18.18.1 wrote. A pin that moves it makes the
+findings "cannot say" until the reader knows the new version. What the extractor sends is read in the same release:
+Copilot's GitHub token is the row's `refresh`; Anthropic renews at `https://api.anthropic.com/v1/oauth/token` with the
+client `9d1c250a-e61b-44d9-88ed-5944d1962f5e` (kept there in base64), from
+`packages/catalog/src/compat/rules/auth/anthropic.kdl`. Once imported, Porelo and Oh My Pi hold one Anthropic grant,
+and the first to renew may end the other's; Pi's import has the same exposure.
+
+**Only the binary shows the library loads.** SQLite comes as a JNI library the reader loads at run time, which the
+linkage check of the binary's `NEEDED` does not see. `NativeDatabaseCheck` starts the built binary as Porelo does and
+asks it what it finds and what an import takes, from such a database.
 
 Read in the pinned package 18.12.1, not run. `PI_CODING_AGENT_DIR` moves `.omp/agent` in the home and `PI_CONFIG_DIR` moves
 `.omp` in the home, and `OMP_PROFILE` selects a profile elsewhere. The adapter reads no environment: a moved directory reaches it

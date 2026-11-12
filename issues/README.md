@@ -43,12 +43,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) | S | [OM35](README.md#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind | 0 |
 | <a id="om58"></a>[OM58](OM58-The-Issue-Heads-Are-Checked-Every-Day.md) | XS | - | a daily run checks this repository's issue heads and index with the released porelo-release, as buildtools' shared rules do | - |
 
-## Implementing
-
-| # | Size | Blocked by | What it covers | Open questions |
-|---|---|---|---|---|
-| <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) | M | - | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database | 0 |
-
 ## Review
 
 | # | Size | Blocked by | What it covers | Open questions |
@@ -62,6 +56,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) | S | - | no subagent in a task unless the task allows it, then at most as many and as deep as it says; off (depth 0), count and depth measured to hold at the pin | - |
 | <a id="om52"></a>[OM52](OM52-The-Build-Takes-Its-Downloads-From-A-Cache.md) | S | - | the Oh My Pi binary the update job checks and the runner's packages come from the Actions cache, keyed by digest or package manifest, so an outage of their hosts no longer fails a run that already ran once; what must stay live is named, and an entry nobody reads for 7 days is removed by GitHub | - |
 | <a id="om35"></a>[OM35](OM35-The-Build-Runs-On-The-Local-Forge-As-On-The-Central-One.md) | S | - | the workflows run 1:1 on the local Forgejo and the central forge: snapshots from `MAVEN_SNAPSHOTS_URL`, publishing switched by `PORELO_PUBLISH`, legs asked by kind, green on a local Forgejo | - |
+| <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) | M | - | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database | 0 |
 | <a id="om38"></a>[OM38](OM38-Snapshots-Resolved-With-A-Read-Only-Token.md) | S | - | on a forge other than the central one, snapshots resolved with the runner's read-only token, the publisher's token in no step, since nothing here deploys to the registry, and a Build without `MAVEN_SNAPSHOTS_URL` refused at its start | - |
 | <a id="om39"></a>[OM39](OM39-The-Busy-Check-Waits-On-A-Tool-The-Scenario-Ends.md) | S | - | the busy check of `wake.feature`'s message-while-it-works scenario waits on a loop the scenario ends, not on how the model schedules a `sleep 10` | - |
 | <a id="om49"></a>[OM49](OM49-Third-Party-Notices-Ship-With-The-Package.md) | S | - | the license texts of what the executable compiles in from outside Porelo - SnakeYAML, JSpecify, the GraalVM runtime - in one THIRD-PARTY-NOTICES file, in the deb's doc directory and as `%license` in the rpm | - |

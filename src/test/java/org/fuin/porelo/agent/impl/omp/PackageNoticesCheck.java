@@ -23,10 +23,10 @@ import org.yaml.snakeyaml.Yaml;
  * Whether the packages the build made carry the license texts of what the executable compiles in
  * from outside Porelo, read from the packages.
  *
- * <p>A package that ships SnakeYAML, JSpecify or the GraalVM runtime without the texts their
- * licenses ask for is distributed against those licenses; a new dependency must not slip in without
- * its section. The file and the bill are read from the built deb, and the rpm's file is compared
- * with the deb's, so a mapping that drops or replaces the file in one package shows here.
+ * <p>A package that ships SnakeYAML, JSpecify, sqlite-jdbc or the GraalVM runtime without the texts
+ * their licenses ask for is distributed against those licenses; a new dependency must not slip in
+ * without its section. The file and the bill are read from the built deb, and the rpm's file is
+ * compared with the deb's, so a mapping that drops or replaces the file in one package shows here.
  *
  * <p>Not a unit test: the packages exist only after jdeb and the rpm plugin, which run at {@code
  * verify}. The {@code dist} profile runs this class by name after both, beside {@link
@@ -60,7 +60,8 @@ class PackageNoticesCheck {
         assertThat(components)
                 .as("the Maven components of the deb's bill that are not Porelo's own")
                 .anyMatch(c -> c.startsWith("org.yaml:snakeyaml:"))
-                .anyMatch(c -> c.startsWith("org.jspecify:jspecify:"));
+                .anyMatch(c -> c.startsWith("org.jspecify:jspecify:"))
+                .anyMatch(c -> c.startsWith("org.xerial:sqlite-jdbc:"));
         assertThat(sectionHeadings(notices))
                 .as("the section headings of %s in the deb", FILE)
                 .containsAll(components)

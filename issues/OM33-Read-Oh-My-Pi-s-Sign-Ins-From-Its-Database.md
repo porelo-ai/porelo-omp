@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM33",
   "title": "Read Oh My Pi's Sign-Ins From Its Database",
-  "state": "Implementing",
+  "state": "Review",
   "size": "M",
   "priority": "Medium",
   "rank": 5,
@@ -112,8 +112,30 @@ The provider asked for comes through Porelo's `ExtractCredential`, as for Pi.
 
 ## To be checked
 
-- The schema, the version in `auth_schema_version`, the `data` shapes, and the Anthropic token URL and client id in
-  the pinned 18.14.2, not only in the 18.12.6 source read here.
-- That `mode=ro` reads a database whose `-shm` is missing or whose directory is not writable, and never creates a file
-  beside it.
-- Where `SqliteJdbcFeature` puts the library in a native image, and the binary's size with it.
+- Read in 18.18.1 (the pin), in its source and in a database it wrote on the VM: `auth_schema_version` is 8, table
+  `auth_credentials` as in 18.12.6, journal WAL. An `api_key` row holds `{key, source?}`, an `oauth` row the
+  credential without its type. Copilot keeps the GitHub token as `refresh` (and `access`) with `enterpriseUrl`.
+  OpenRouter's sign-in is stored as an `api_key` row. A remote broker's refresh token is `__remote__`. Anthropic renews
+  at `https://api.anthropic.com/v1/oauth/token` (not Pi's `platform.claude.com`) with the client
+  `9d1c250a-e61b-44d9-88ed-5944d1962f5e`, kept in base64 in `packages/catalog/src/compat/rules/auth/anthropic.kdl`.
+- The host's own Oh My Pi is 16.3.11, whose database is at version 5: the findings for it are "cannot say" until a
+  version other than the pin's is read and accepted.
+- A read opens read-only with a one-second busy timeout and leaves no file beside the database (unit test, with the
+  writer's connection open). Oh My Pi writes between reads without waiting (unit test, 20 rounds).
+- The native binary loads SQLite's JNI library from a resource. sqlite-jdbc unpacks it to `/tmp` under a UUID name
+  (`TMPDIR` does not move it) and removes it on exit. Measured on the host; `/tmp` is not `noexec` on the host or
+  the VM. On a `noexec` `/tmp` the import would fail; `org.sqlite.tmpdir` would move it, which nothing sets yet.
+  `NativeDatabaseCheck` runs the built binary over such a database in the dist build: it finds the sign-in and
+  extracts it. The binary grows from 15 to 19.7 MB. The linkage check is unchanged and passes.
+- On the VM `smith` (porelo main c43062468, the adapter built before the `file:` URI change below in the account, 2026-11-12; `NativeDatabaseCheck` ran the final binary): Oh My Pi 18.18.1 stored
+  an OpenRouter key and a Copilot sign-in with its own `omp auth import` in a home of their own. `porelo vault import
+  omp --config-dir … --provider github-copilot` stored Copilot's GitHub token as `access-token`, `--provider
+  openrouter` the 73-character key as `api-key`; without a provider Porelo took Copilot, the first in its order, and
+  refused to replace the entry it already held. The Copilot entry was removed after. No library was left in `/tmp`.
+  An Anthropic sign-in was read only in unit tests: no real one was at hand.
+- Full native dist build: 176 unit tests, `NativeLinkageCheck`, `NativeDatabaseCheck`, `PackageVersionCheck` and
+  `PackageNoticesCheck` (which now requires sqlite-jdbc's section) passed.
+- Read by a second model (gemini-4-argon-high), which found nothing to change. Asked by the brief whether an unusual
+  path breaks the JDBC URL, it said no; a test showed it does: sqlite-jdbc cut `?journal_mode=delete&` out of a
+  directory's name and took it as a setting. The database is now opened by a percent-encoded `file:` URI, and
+  `aDirectoryWhoseNameHoldsUrlCharactersIsReadAsItIs` holds it.
