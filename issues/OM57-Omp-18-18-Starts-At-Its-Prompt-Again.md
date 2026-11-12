@@ -56,9 +56,10 @@ Measured on 2026-11-12 on the VM `smith`, in a task of porelo main c43062468 wit
   `wake.feature`'s second scenario, whose wake and answer passed, failed at its end, where `porelo project remove`
   refused after `porelo task remove --force` with "task busy has an unfinished start". That is Porelo's, passed on.
 
-- Why the acceptance legs of the 18.18.1 pin (#9) passed, though four features start omp attended and expect it to
-  reach work without being asked. If the step reads a wizard as work, it needs to fail on one, or the next raised
-  setup version lands on `main` the same way. Read by a second model (gemini-4-argon-high): its wording points are
-  taken (18.18.1, not 18.18; "at version 2", not "below 3"; "nothing else that matters"), and it rates this open
-  question high - `doc/decisions.md` now says it is unexplained. Holding the next raised version in the weekly
-  update job waits on that answer.
+- The 18.18.1 pin (#9), read in its run logs by the coordinator: its pull request ran Build and the unit tests only,
+  since `build.yml` runs the legs on a dispatch, a push to `main` or a tag. The push to `main` (run 43241115287) ran
+  them, and Acceptance - ubuntu failed "reaches work without being asked anything" (credential.feature, session.feature,
+  waiting.feature and the wake scenario) on the screen "Setup step 1 of 1 / Keep omp up to date"; the run was then
+  cancelled. So the acceptance check holds, and the pin reached `main` without a leg. Read by a second model
+  (gemini-4-argon-high): its wording points are taken (18.18.1, not 18.18; "at version 2", not "below 3"; "nothing
+  else that matters").

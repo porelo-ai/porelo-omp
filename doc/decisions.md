@@ -226,9 +226,9 @@ byte stream passes while the wizard is up - measured, it did. The step reads the
 renders it, and needs the marker there for three seconds on end. Measured on 18.11.0 with `setupVersion: 2`
 taken out of the build, it fails and reports the wizard ("Setup step 1 of 5 … Select provider to login");
 with the line in, the five scenarios that attach pass. 18.11 dropped the "Welcome back!" box the marker read
-before, which is why it is the status line now. **Not yet explained:** the 18.18.1 pin passed its acceptance
-legs, though that release opens attended at a setup step for a file at version 2; whether the legs read
-that screen as work or never reached the step is still to be found.
+before, which is why it is the status line now. The 18.18.1 pin shows it: its pull request ran no leg, as no pull
+request does, and the legs of its push to `main` failed "reaches work" on the screen "Setup step 1 of 1 /
+Keep omp up to date".
 
 ## What the adapter finds of Oh My Pi on the host
 
