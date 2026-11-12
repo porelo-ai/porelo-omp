@@ -147,7 +147,7 @@ install:
     version: "${agent.cli.version}"
     artifacts:
         - url: https://github.com/can1357/oh-my-pi/releases/download/v${agent.cli.version}/omp-linux-x64
-          sha256: "cde0bc4ac8ec333c4880039a5242ff33dbfc6544747d67aeb99bb077874aeec1"
+          sha256: "2a75e16550676783b3bc8be0e06513478dd5881efc647954642ab30db8f9be06"
           license: "MIT"
           target: /home/agent/.local/bin/omp
           mode: "0755"
