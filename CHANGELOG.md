@@ -12,6 +12,8 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Added
 
+- The definition says how an attended session takes an opening text, `session.opening_flag: ""`, so Porelo
+  opens a discussion on Oh My Pi with the person's text as its first turn, after which it waits for them.
 - Unattended tasks report tool calls, shell command lines, background job completion times, and named sub-agent spans to Porelo.
 - A task's agent starts no subagent unless the task allows it, and then no more at once than it says, with none of their own. A task's skills are switched off.
 - The adapter says what it finds of Oh My Pi on the host: set up by its `agent.db`, which it never opens, and its sign-in as "cannot say"; the definition names `config_dir`.

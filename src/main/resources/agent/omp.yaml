@@ -52,6 +52,10 @@ session:
     # a session (by ID prefix, path, or picker if omitted)"), so a task started again with it failed on an
     # unknown option instead of continuing. Measured: '--resume <id>' continues the session.
     resume_flag: "--resume"
+    # How an attended session takes its opening text: last and positional, as its headless prompt is, without
+    # --print. Measured on 18.14.2 in an attended task: it answers the text as its first turn, then rests at
+    # its prompt.
+    opening_flag: ""
     # Where it names the session it runs. Measured on 18.4.1: an unattended run's first record,
     # {"type":"session"}, carries the id. An attended session is kept as
     # ~/.omp/agent/sessions/--workspace--/<timestamp>_<id>.jsonl, with the same {"type":"session"} record

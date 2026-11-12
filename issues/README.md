@@ -42,18 +42,13 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om44"></a>[OM44](OM44-The-Update-Request-Test-Stands-Alone-In-A-Task.md) | - | - | `UpdateRequestTest` runs its scripts in an environment of its own, so a task's `GIT_CONFIG_*` variables are not taken for a leaked header | - |
 | <a id="om33"></a>[OM33](OM33-Read-Oh-My-Pi-s-Sign-Ins-From-Its-Database.md) | M | - | a nice to have: `vault import` and the findings read Oh My Pi's sign-ins from its SQLite database | 0 |
 
-## Implementing
-
-| # | Size | Blocked by | What it covers |
-|---|---|---|---|
-| <a id="om53"></a>[OM53](OM53-An-Attended-Session-Takes-An-Opening-Text.md) | XS | - | an attended session of Oh My Pi opens on the person's opening text as its first turn and then waits for the person, the form (positional) declared in the agent definition and measured in a task |
-
 ## Review
 
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
 | <a id="om50"></a>[OM50](OM50-The-Acceptance-Takes-A-Task-s-Container-Name-From-Porelo.md) | XS | - | the acceptance scenarios name a task by its own name in Porelo's commands and take its container's name from `porelo task status --json`, never built as `porelo-<project>-<task>` | - |
 | <a id="om51"></a>[OM51](OM51-The-Adapter-Reports-Each-Tool-Call-With-Its-Time.md) | M | - | the adapter reads each tool call from its agent's output and hands Porelo its tool, kind, start, end, a shell call's command line, whether it ran in the background, and a sub-agent's name and the calls made under it, in Porelo's common entry | 0 |
+| <a id="om53"></a>[OM53](OM53-An-Attended-Session-Takes-An-Opening-Text.md) | XS | - | an attended session of Oh My Pi opens on the person's opening text as its first turn and then waits for the person, the form (positional) declared in the agent definition and measured in a task | - |
 | <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](README.md#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine | - |
 | <a id="om45"></a>[OM45](OM45-Snapshots-Not-Published-On-The-Forge-Come-From-Upstream.md) | S | - | on a forge whose registry holds only its organization's packages, the other Porelo snapshots come from the anonymous repository `MAVEN_UPSTREAM_SNAPSHOTS_URL` names, the forge's token sent to the forge alone, a tag still built from releases only | - |
 | <a id="om41"></a>[OM41](OM41-Subagents-Only-As-Many-As-The-Task-Allows.md) | S | - | no subagent in a task unless the task allows it, then at most as many and as deep as it says; off (depth 0), count and depth measured to hold at the pin | - |
