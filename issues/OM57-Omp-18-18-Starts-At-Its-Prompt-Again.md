@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM57",
   "title": "Omp 18.18 Starts At Its Prompt Again",
-  "state": "Backlog",
+  "state": "Implementing",
   "size": "S",
   "priority": "High",
   "rank": 1,
