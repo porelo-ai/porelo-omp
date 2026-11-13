@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM60",
   "title": "Omp Is Installed Root-Owned",
-  "state": "Backlog",
+  "state": "Implementing",
   "size": "M",
   "priority": "High",
   "rank": 1,

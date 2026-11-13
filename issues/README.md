@@ -37,7 +37,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers |
 |---|---|---|---|
-| <a id="om60"></a>[OM60](OM60-Omp-Is-Installed-Root-Owned.md) | M | - | the omp binary a task starts is installed by root and owned by root, so the agent in a task cannot replace what Porelo starts as omp next time; its version stays pinned by the definition and moves only through the update job, and a self-update inside a task fails |
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S | - | the Copilot path proven by hand before a release |
 | <a id="om59"></a>[OM59](OM59-The-Word-Check-Skips-The-First-Turn.md) | XS | - | session.feature's check that the continued omp session knows the word leaves out the first turn's own line, so that line on the screen is never taken for the answer |
 
@@ -45,6 +44,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
+| <a id="om60"></a>[OM60](OM60-Omp-Is-Installed-Root-Owned.md) | M | - | the omp binary a task starts is installed by root and owned by root, so the agent in a task cannot replace what Porelo starts as omp next time; its version stays pinned by the definition and moves only through the update job, and a self-update inside a task fails | - |
 | <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) | S | [OM35](README.md#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind | 0 |
 
 ## Review
