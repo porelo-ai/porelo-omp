@@ -7,7 +7,7 @@
   "title": "The Shared Workflow Tests See Every Refusal Red",
   "state": "Idea",
   "size": "-",
-  "priority": "Medium",
+  "priority": "Low",
   "rank": 4,
   "blockedBy": [],
   "covers": "the shared workflow tests see every publishing and channel refusal red, and the refused-key scenario runs in CI"
