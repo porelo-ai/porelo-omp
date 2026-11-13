@@ -162,5 +162,8 @@ install:
         - url: https://github.com/can1357/oh-my-pi/releases/download/v${agent.cli.version}/omp-linux-x64
           sha256: "2a75e16550676783b3bc8be0e06513478dd5881efc647954642ab30db8f9be06"
           license: "MIT"
-          target: /home/agent/.local/bin/omp
+          # Root's, outside the home: what the agent in a task writes never picks what the next start
+          # runs, and 'omp update' fails to write over it.
+          target: /usr/local/bin/omp
           mode: "0755"
+          owner: root

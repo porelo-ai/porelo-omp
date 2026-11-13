@@ -67,7 +67,7 @@ Measured on Ubuntu 26.04 with both packages installed:
 | binary in the container | `omp` | `pi` |
 | adapter on the host | `…/agents/porelo-agent-omp` | `…/agents/porelo-agent-pi` |
 | what the package installs elsewhere | `/usr/share/porelo/sbom/porelo-agent-omp.cdx.json` | `/usr/share/porelo/agents/pi/pi-tree.tar.gz` |
-| where the tool lands in the image | `.local/bin/omp` in the agent's home | `/opt/pi`, `/opt/node`, `/usr/local/bin/pi` |
+| where the tool lands in the image | `/usr/local/bin/omp`, root's | `/opt/pi`, `/opt/node`, `/usr/local/bin/pi` |
 | file Porelo writes into the container | `.omp/agent/models.yml` in the agent's home | `.pi/agent/extensions/porelo-route.ts` in the agent's home |
 
 `comm -12` over the two `dpkg -L` listings finds no file claimed by both, and `porelo agents` lists
@@ -174,9 +174,8 @@ by itself. Neither host is reachable from a task, so the check can only fail.
 container. Measured on 18.1.13: `omp config get startup.checkUpdate` answers `false` with the file
 and `true` without it.
 
-**What is not covered:** `omp update` has no switch, and it would replace
-`.local/bin/omp` in the agent's home, which the agent can write. What keeps it from doing that is that the
-task reaches neither host.
+**What is not covered:** `omp update` has no switch. It cannot replace the binary, which is root's at
+`/usr/local/bin/omp`, and the task reaches neither host it would download from.
 
 **What would change it:** an omp release that installs updates by itself, or a switch for
 `omp update`.

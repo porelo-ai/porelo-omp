@@ -165,7 +165,14 @@ class OmpAgentTest {
                             assertThat(artifact.url()).endsWith("omp-linux-x64");
                             assertThat(artifact.sha256()).matches("[a-f0-9]{64}");
                             assertThat(artifact.unverified()).isFalse();
-                            assertThat(artifact.target()).isEqualTo("/home/agent/.local/bin/omp");
+                            // Root's, so the agent in a task cannot replace what the next start
+                            // runs, and `omp update` fails to write over it.
+                            assertThat(artifact.rootOwned())
+                                    .as("the binary is installed by root")
+                                    .isTrue();
+                            assertThat(artifact.target())
+                                    .as("root's directory on the task's path")
+                                    .isEqualTo("/usr/local/bin/omp");
                         });
         assertThat(definition.unverifiedArtifacts()).isEmpty();
     }
@@ -173,7 +180,7 @@ class OmpAgentTest {
     @Test
     void contributesAnImageLayerThatChecksBeforeItInstalls() {
 
-        final List<String> lines = agent.imageLayer().asAgent();
+        final List<String> lines = agent.imageLayer().asRoot();
 
         assertThat(agent.imageLayer().isEmpty()).isFalse();
 
@@ -181,6 +188,20 @@ class OmpAgentTest {
         final int install = indexOf(lines, "install -D");
         assertThat(check).isNotNegative();
         assertThat(install).isGreaterThan(check);
+        assertThat(lines.get(install))
+                .as("root installs the binary on the task's path")
+                .contains("install -D -m 0755 ")
+                .endsWith(" /usr/local/bin/omp; \\");
+    }
+
+    @Test
+    void writesNothingTheAgentStartsAsTheAgent() {
+
+        // What the agent's user writes, the agent in a task can write again.
+        assertThat(agent.imageLayer().asAgent())
+                .as("no fetch or install as the agent")
+                .noneMatch(line -> line.contains("curl ") || line.contains("install -D"))
+                .noneMatch(line -> line.contains("/usr/local/bin/"));
     }
 
     @Test

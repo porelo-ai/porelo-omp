@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM60",
   "title": "Omp Is Installed Root-Owned",
-  "state": "Implementing",
+  "state": "Review",
   "size": "M",
   "priority": "High",
   "rank": 1,
@@ -48,5 +48,4 @@ built into the image.
 
 ## To be checked
 
-- The contract change for a root-owned artifact, agreed with Porelo's agent in the channel.
 - Whether omp writes anything beside its own binary at start, measured at the pin.
