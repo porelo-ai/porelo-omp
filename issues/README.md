@@ -44,7 +44,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
-| <a id="om61"></a>[OM61](OM61-A-Leg-Installs-What-Its-Run-Built.md) | S | - | every acceptance leg of a run that publishes nothing - a dispatch, a tag - installs the packages that run built, so its result speaks for its own commit; only a push to main, which publishes its snapshot first, installs from the package repository | - |
 | <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) | S | [OM35](README.md#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind | 0 |
 
 ## Review
@@ -57,6 +56,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om54"></a>[OM54](OM54-A-Finished-Run-Answers-Its-Last-Message.md) | S | - | a finished unattended Oh My Pi run answers the text of its last message, declared in session.waiting.last_message, so a reader's answer is not empty; the declaration adds no screen rule and so changes nothing in how Porelo wakes the agent | - |
 | <a id="om57"></a>[OM57](OM57-Omp-18-18-Starts-At-Its-Prompt-Again.md) | S | - | an attended omp task on the pinned 18.18.1 starts at its prompt, not at the setup wizard's update step | - |
 | <a id="om60"></a>[OM60](OM60-Omp-Is-Installed-Root-Owned.md) | M | - | the omp binary a task starts is installed by root and owned by root, so the agent in a task cannot replace what Porelo starts as omp next time; its version stays pinned by the definition and moves only through the update job, and a self-update inside a task fails | - |
+| <a id="om61"></a>[OM61](OM61-A-Leg-Installs-What-Its-Run-Built.md) | S | - | every acceptance leg of a run that publishes nothing - a dispatch, a tag - installs the packages that run built, so its result speaks for its own commit; only a push to main, which publishes its snapshot first, installs from the package repository | - |
 | <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](README.md#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine | - |
 | <a id="om44"></a>[OM44](OM44-The-Update-Request-Test-Stands-Alone-In-A-Task.md) | S | - | `UpdateRequestTest` runs its scripts in an environment of its own, so a task's `GIT_CONFIG_*` variables are not taken for a leaked header | - |
 | <a id="om45"></a>[OM45](OM45-Snapshots-Not-Published-On-The-Forge-Come-From-Upstream.md) | S | - | on a forge whose registry holds only its organization's packages, the other Porelo snapshots come from the anonymous repository `MAVEN_UPSTREAM_SNAPSHOTS_URL` names, the forge's token sent to the forge alone, a tag still built from releases only | - |
