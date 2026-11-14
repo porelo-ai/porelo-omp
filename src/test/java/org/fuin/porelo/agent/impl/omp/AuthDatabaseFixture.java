@@ -110,6 +110,26 @@ final class AuthDatabaseFixture implements AutoCloseable {
         return add(provider, type, data, null);
     }
 
+    /**
+     * Sets when Oh My Pi last wrote each row of a provider, as it does at every write.
+     *
+     * @param provider Oh My Pi's provider id.
+     * @param epochSecond The time, in epoch seconds.
+     * @return This.
+     * @throws SQLException If it cannot be written.
+     */
+    AuthDatabaseFixture updatedAt(final String provider, final long epochSecond)
+            throws SQLException {
+        try (PreparedStatement update =
+                connection.prepareStatement(
+                        "UPDATE auth_credentials SET updated_at = ? WHERE provider = ?")) {
+            update.setLong(1, epochSecond);
+            update.setString(2, provider);
+            update.executeUpdate();
+        }
+        return this;
+    }
+
     @Override
     public void close() throws SQLException {
         connection.close();

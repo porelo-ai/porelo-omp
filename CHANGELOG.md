@@ -20,6 +20,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 - Unattended tasks report tool calls, shell command lines, background job completion times, and named sub-agent spans to Porelo.
 - A task's agent starts no subagent unless the task allows it, and then no more at once than it says, with none of their own. A task's skills are switched off.
 - The adapter says what it finds of Oh My Pi on the host: set up by its `agent.db`, and its sign-ins by provider and kind, read from that database read-only; the definition names `config_dir`.
+- Each sign-in the adapter finds in Oh My Pi's database that an import can take says, for a person choosing one to carry to a host, the account its row names, when the access token carried expires and when Oh My Pi last wrote the row, never a value; a sign-in a remote broker holds is not offered.
 - `porelo vault import omp` takes a sign-in Oh My Pi holds, for the provider asked for: an API key, Copilot's GitHub token, or an Anthropic subscription with what renews it.
 - The definition names how its sign-in is answered, `login.flow: device-code`, so a person granting GitHub Copilot on a host over SSH can be told to confirm the code on GitHub's page; the Porelo it builds against reads the key, and its agent listing names the flow.
 - `porelo vault authorize github-copilot` grants GitHub Copilot on github.com through the OAuth app Oh My Pi itself signs in with there, and the weekly update stops when a new pin signs in with another.

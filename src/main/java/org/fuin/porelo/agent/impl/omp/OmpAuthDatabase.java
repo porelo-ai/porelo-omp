@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +22,11 @@ import org.sqlite.SQLiteConfig;
  *
  * <p><strong>What is read.</strong> Oh My Pi keeps its sign-ins in {@code agent.db}, table {@code
  * auth_credentials}: a provider, {@code credential_type} {@code api_key} or {@code oauth}, {@code
- * data} as JSON, and {@code disabled_cause}, set on a row it keeps as a tombstone. It lists the
- * live rows {@code ORDER BY id}, and so does this. The table's own version stands in {@code
- * auth_schema_version}; a version other than the ones read in the pinned package is a schema this
- * reader does not know, which says nothing about a sign-in. Read in 18.18.1's {@code
+ * data} as JSON, {@code updated_at} in epoch seconds, set at each write of the row, and {@code
+ * disabled_cause}, set on a row it keeps as a tombstone. It lists the live rows {@code ORDER BY
+ * id}, and so does this. The table's own version stands in {@code auth_schema_version}; a version
+ * other than the ones read in the pinned package is a schema this reader does not know, which says
+ * nothing about a sign-in. Read in 18.18.1's {@code
  * packages/ai/src/auth/sqlite-credential-store.ts}, and in a database it wrote.
  *
  * <p><strong>Never in Oh My Pi's way.</strong> The database is open while Oh My Pi runs, with its
@@ -70,8 +72,14 @@ record OmpAuthDatabase(Path path, State state, List<Row> rows) {
      * @param provider Oh My Pi's provider id.
      * @param type {@code api_key} or {@code oauth}.
      * @param data The row's JSON object, or null when it is none.
+     * @param updated When Oh My Pi last wrote the row, or null when it holds no time.
      */
-    record Row(long id, String provider, String type, @Nullable Map<?, ?> data) {}
+    record Row(
+            long id,
+            String provider,
+            String type,
+            @Nullable Map<?, ?> data,
+            @Nullable Instant updated) {}
 
     /**
      * Reads the database in a config directory.
@@ -127,8 +135,9 @@ record OmpAuthDatabase(Path path, State state, List<Row> rows) {
         final List<Row> rows = new ArrayList<>();
         try (PreparedStatement query =
                         connection.prepareStatement(
-                                "SELECT id, provider, credential_type, data FROM auth_credentials"
-                                        + " WHERE disabled_cause IS NULL ORDER BY id ASC");
+                                "SELECT id, provider, credential_type, data, updated_at"
+                                        + " FROM auth_credentials WHERE disabled_cause IS NULL"
+                                        + " ORDER BY id ASC");
                 ResultSet result = query.executeQuery()) {
             while (result.next()) {
                 rows.add(
@@ -136,10 +145,16 @@ record OmpAuthDatabase(Path path, State state, List<Row> rows) {
                                 result.getLong(1),
                                 String.valueOf(result.getString(2)),
                                 String.valueOf(result.getString(3)),
-                                object(result.getString(4))));
+                                object(result.getString(4)),
+                                epochSecond(result.getLong(5))));
             }
         }
         return List.copyOf(rows);
+    }
+
+    private static @Nullable Instant epochSecond(final long seconds) {
+        // A NULL reads as 0, which is no time Oh My Pi wrote.
+        return seconds > 0 ? Instant.ofEpochSecond(seconds) : null;
     }
 
     private static @Nullable Map<?, ?> object(final @Nullable String data) {

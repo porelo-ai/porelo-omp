@@ -5,7 +5,7 @@
   "$schema": "issue-1.json",
   "id": "OM63",
   "title": "The Local Sign-In Goes To A Host",
-  "state": "Backlog",
+  "state": "Review",
   "size": "M",
   "priority": "High",
   "rank": 1,
@@ -50,3 +50,17 @@ the fields and the carrying by stdin or environment; Agent Frontend files the wi
 - **Two machines on one sign-in.** An OAuth sign-in whose refresh token is replaced at each renewal works on one
   machine at a time: the first to renew signs the other out. Whether a carried sign-in is said to sign the person's
   machine out, or is carried only as a kind that does not rotate, is the operator's call.
+
+## What was built
+
+- `OmpSignInFacts` says, for each sign-in `OmpFindings` finds that an import can take, the account (an `oauth` row's
+  `email`), the access token's expiry (`expires`, epoch milliseconds; an Anthropic subscription, not Copilot, whose
+  GitHub token does not expire, nor a key) and the row's last change (`updated_at`, epoch seconds, set at each write).
+  An account with a control character or past 320 characters is none; no token is decoded.
+- The row described is the one the extractor takes, the provider's first live row by id, read through
+  `OmpAuthDatabase`, which now reads `updated_at` too.
+- Carriable is the finding's `importable`, as before: a row a remote broker holds, or one of a provider Porelo does
+  not name, has no facts and is not offered.
+- The value goes to Porelo only through `OmpCredentialExtractor`, the one an import already uses.
+- Tests: `OmpSignInFactsTest`, 9, each route, no account or expiry guessed, and no fixture value in any fact.
+- Open until Porelo's half is in: the facts mapped onto Porelo's listing, and the third acceptance point.
