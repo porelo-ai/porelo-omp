@@ -153,8 +153,12 @@ record OmpAuthDatabase(Path path, State state, List<Row> rows) {
     }
 
     private static @Nullable Instant epochSecond(final long seconds) {
-        // A NULL reads as 0, which is no time Oh My Pi wrote.
-        return seconds > 0 ? Instant.ofEpochSecond(seconds) : null;
+        // A NULL reads as 0, which is no time Oh My Pi wrote; nor is one past what an Instant
+        // holds,
+        // which must not fail the findings or the import that read the same rows.
+        return seconds > 0 && seconds <= Instant.MAX.getEpochSecond()
+                ? Instant.ofEpochSecond(seconds)
+                : null;
     }
 
     private static @Nullable Map<?, ?> object(final @Nullable String data) {

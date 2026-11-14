@@ -69,6 +69,48 @@ class OmpSignInFactsTest {
     }
 
     @Test
+    void aTimeOutOfRangeIsNoTimeAndBreaksNoReader() throws Exception {
+
+        // Prevents a row's odd updated_at from failing the findings and the import, which read it
+        // too.
+        try (AuthDatabaseFixture db = database()) {
+            db.add("anthropic", "oauth", anthropic(SECRET, EXPIRES, ACCOUNT))
+                    .updatedAt("anthropic", Long.MAX_VALUE);
+
+            assertThat(facts()).singleElement().extracting(OmpSignInFacts::changed).isNull();
+            assertThat(new OmpCredentialExtractor().extract(home, "anthropic")).isPresent();
+        }
+    }
+
+    @Test
+    void aBlankAccountIsNoAccount() throws Exception {
+
+        // Prevents an empty name from reaching the person's dialog as an account.
+        try (AuthDatabaseFixture db = database()) {
+            db.add("anthropic", "oauth", anthropic(SECRET, EXPIRES, "   "));
+
+            assertThat(facts()).singleElement().extracting(OmpSignInFacts::account).isNull();
+        }
+    }
+
+    @Test
+    void anAccountPastItsLengthIsNoAccount() throws Exception {
+
+        // Prevents an endless text from reaching the person's dialog as an account.
+        try (AuthDatabaseFixture db = database()) {
+            db.add(
+                    "anthropic",
+                    "oauth",
+                    anthropic(
+                            SECRET,
+                            EXPIRES,
+                            "a".repeat(OmpSignInFacts.LONGEST_ACCOUNT - 11) + "@example.org"));
+
+            assertThat(facts()).singleElement().extracting(OmpSignInFacts::account).isNull();
+        }
+    }
+
+    @Test
     void anApiKeySaysNoAccountAndNoExpiry() throws Exception {
 
         // Prevents a key from claiming an account or an expiry its row does not hold.
