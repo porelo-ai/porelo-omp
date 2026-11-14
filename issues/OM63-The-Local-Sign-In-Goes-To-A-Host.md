@@ -51,8 +51,9 @@ the fields and the carrying by stdin or environment; Agent Frontend files the wi
 
 ## To be checked
 
-- **Porelo's half.** Porelo seals the value it takes through this adapter's extractor, as an import does; the
-  listing that shows these facts is still to come from Porelo, and the facts are mapped onto it then.
+- **The facts on the wire.** Porelo's listing of what can be carried names agent, provider and kind, asked of this
+  adapter's extractor per provider; it carries no account, expiry or last change, so the facts stay in the adapter
+  until a listing takes them, and the third acceptance point is Porelo's walk.
 
 ## What was built
 
@@ -66,7 +67,8 @@ the fields and the carrying by stdin or environment; Agent Frontend files the wi
   not name, has no facts and is not offered.
 - The value goes to Porelo only through `OmpCredentialExtractor`, the one an import already uses.
 - Tests: `OmpSignInFactsTest`, 9, each route, no account or expiry guessed, and no fixture value in any fact.
-- Open until Porelo's half is in: the facts mapped onto Porelo's listing, and the third acceptance point.
+- Mapped onto Porelo's listing of what can be carried, which asks the extractor per provider: each sign-in with facts
+  is one the extractor answers for its provider, named, by a test.
 - The reading by another model found a row's `updated_at` past what a time holds failing the findings and the
   import, and tests that passed with the account's guards gone; fixed. Noted, not fixed: the facts read the database
   again after the findings, so a row changed in between is described as it is then, and an `api_key` row's or

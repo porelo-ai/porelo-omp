@@ -245,4 +245,29 @@ class OmpSignInFactsTest {
             assertThat(facts.toString()).as("no value in any field").doesNotContain(SECRET);
         }
     }
+
+    @Test
+    void eachSignInWithFactsIsOneTheExtractorAnswersForItsProvider() throws Exception {
+
+        // Prevents offering a sign-in Porelo's listing of what can be carried would not hold: it
+        // asks the extractor per provider and keeps only an answer that names that provider.
+        try (AuthDatabaseFixture db = database()) {
+            db.add("anthropic", "oauth", anthropic(SECRET, EXPIRES, ACCOUNT));
+            db.add("openrouter", "api_key", "{\"key\":\"" + SECRET + "\"}");
+
+            final List<OmpSignInFacts> facts = facts();
+
+            assertThat(facts).as("the fixture holds sign-ins to carry").hasSize(2);
+            assertThat(facts)
+                    .allSatisfy(
+                            fact ->
+                                    assertThat(
+                                                    new OmpCredentialExtractor()
+                                                            .extract(
+                                                                    home,
+                                                                    fact.finding().provider()))
+                                            .map(found -> found.provider())
+                                            .contains(fact.finding().provider()));
+        }
+    }
 }
