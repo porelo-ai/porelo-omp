@@ -18,8 +18,8 @@ What the second command leaves in `target/`:
 
 ```
 porelo-agent-omp                              the adapter, 15 MB, run by Porelo on the host
-porelo-agent-omp_0.4.0~SNAPSHOT_amd64.deb     6.2 MB
-porelo-agent-omp-0.4.0~SNAPSHOT-1.x86_64.rpm  6.2 MB
+porelo-agent-omp_0.5.5~snapshot.0_amd64.deb     6.2 MB
+porelo-agent-omp-0.5.5~snapshot.0-1.x86_64.rpm  6.2 MB
 ```
 
 Measured on one machine: 2 s for the unit build, 25 s with the native image and
@@ -36,9 +36,10 @@ The trade that buys: a task image build for this agent needs network access to
 
 **The package version is this agent's own**, not Porelo's and not Oh My Pi's. An
 agent released against an unchanged CLI is still an upgrade, and a Porelo release
-does not move it. `~` rather than `-` before `SNAPSHOT` because dpkg and rpm sort
-`~` below everything; left as `-SNAPSHOT` it would sort *above* the release and
-apt would refuse the upgrade.
+does not move it. A snapshot's `-SNAPSHOT` becomes `~snapshot.<run>`, the build's run
+number (`agent.snapshot.run`, 0 in a local build), so every build of `main` is an upgrade.
+`~` rather than `-` because dpkg and rpm sort `~` below everything; left as `-SNAPSHOT`
+it would sort *above* the release and apt would refuse the upgrade.
 
 The Oh My Pi version the image installs is carried in the package description
 instead, so `dpkg -s porelo-agent-omp` and `rpm -qi` still answer it.
@@ -126,7 +127,8 @@ it; requiring one is Porelo's changelog check - see [`doc/decisions.md`](doc/dec
 ## Following Oh My Pi without watching it
 
 `.github/workflows/update.yml` runs once a week, on Wednesday at 05:17 UTC. It asks GitHub for the newest
-release and, if that is not what this module pins, does what a person would: the release tool's
+release and, once that is three days old (`porelo.release.min-age`) and not what this module pins,
+does what a person would: the release tool's
 `update`, rebuild, and prove the result on a real Ubuntu machine and a real Fedora one **before anything
 is published**.
 
@@ -154,23 +156,26 @@ network, so the release tool's `check-pin` still checks both on every push, agai
 
 ## Publishing
 
-A push to `main` uploads the two packages to Artifactory, into the **same repositories
+Where `PORELO_PUBLISH` is `true`, a push to `main` uploads the two packages to Artifactory, into the **same repositories
 Porelo itself publishes to** - `porelo-dist-deb` and `porelo-dist-rpm`. They belong
 together: this package declares `Depends: porelo`, so split across repositories an
 operator would have to configure both for the dependency to resolve.
 
 A pull request builds and packages but publishes nothing.
 
-Two repository settings are needed, the same ones Porelo uses: the variable `JF_URL`
-(the platform url, **without** `/artifactory`) and the secret `JF_ACCESS_TOKEN`. The
+Three repository settings are needed, the same ones Porelo uses: the variable
+`PORELO_PUBLISH`, `true` to publish and `false` to build without publishing (anything else
+fails the build), the variable `JF_URL` (the platform url, **without** `/artifactory`) and
+the secret `JF_ACCESS_TOKEN`. The
 token needs Read, Deploy/Cache, **Annotate** and **Delete** on both repositories -
-Annotate because the Debian index is driven by properties, Delete because the snapshot
-file name is stable and every build overwrites it.
+Annotate because the Debian index is driven by properties, Delete because the bill's
+file name, `porelo-agent-omp.cdx.json`, is stable and every build overwrites it.
 
 Uploading is not the same as being installable: indexing is asynchronous, and a
 package with missing or wrong properties is stored happily and never listed. The
-workflow polls the Debian index for its own package name afterwards and fails the
-run if it never appears.
+workflow polls the Debian index for the exact file it uploaded, so its version, afterwards
+and fails the run if it never appears: the package's name alone is there after the first
+publish.
 
 ## Acceptance, as a person at a terminal
 
@@ -198,5 +203,6 @@ Ubuntu 26.04's shell integration prints `user=acceptance` in its escape sequence
 `acceptance` reads as echoed and fails the scenario - on the rented machines only, where the account
 has that name.
 
-In CI the same suite runs from the runner against the rented machine on every push to `main`.
+In CI the same suite runs from the runner against the rented machine on every push to `main`, unless a
+run of this repository proved the same tree within a day; then the Build takes those legs instead.
 A run that produces no scenarios fails rather than passing quietly.

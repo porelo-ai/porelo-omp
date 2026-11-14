@@ -10,7 +10,8 @@ with your credential kept on the machine and its work waiting for your review. I
 [Pi](https://github.com/earendil-works/pi), which [porelo-pi](https://github.com/porelo-ai/porelo-pi)
 adapts.
 It is an adapter, not Porelo: it describes the agent and shapes in Java only what the agent cannot
-express as data, and it depends on Porelo's published agent API alone, never on Porelo's implementation.
+express as data, and it depends on Porelo's published agent API and wire artifacts alone,
+never on Porelo's implementation.
 
 Its documentation: **<https://porelo-ai.github.io/omp/>**.
 

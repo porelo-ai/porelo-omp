@@ -45,6 +45,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
+| <a id="om62"></a>[OM62](OM62-The-Docs-Say-What-The-Code-Does.md) | S | - | every sentence of the user-facing documentation checked against the code on main, and each one the code does not bear out fixed | - |
 | <a id="om51"></a>[OM51](OM51-The-Adapter-Reports-Each-Tool-Call-With-Its-Time.md) | M | - | the adapter reads each tool call from its agent's output and hands Porelo its tool, kind, start, end, a shell call's command line, whether it ran in the background, and a sub-agent's name and the calls made under it, in Porelo's common entry | 0 |
 | <a id="om53"></a>[OM53](OM53-An-Attended-Session-Takes-An-Opening-Text.md) | XS | - | an attended session of Oh My Pi opens on the person's opening text as its first turn and then waits for the person, the form (positional) declared in the agent definition and measured in a task | - |
 | <a id="om54"></a>[OM54](OM54-A-Finished-Run-Answers-Its-Last-Message.md) | S | - | a finished unattended Oh My Pi run answers the text of its last message, declared in session.waiting.last_message, so a reader's answer is not empty; the declaration adds no screen rule and so changes nothing in how Porelo wakes the agent | - |
