@@ -34,6 +34,7 @@ what it may do in a task, how it is built and updated, and the risks accepted on
 | The build | [NullAway comes from `porelo-parent`](#nullaway-comes-from-porelo-parent) - one compiler configuration for every repository; `.mvn/jvm.config` stays here |
 | The build | [The changelog is written by hand, and nothing enforces it](#the-changelog-is-written-by-hand-and-nothing-enforces-it) - requiring an entry belongs to Porelo's changelog check, on logchange |
 | Risk | [Accepted risk: the release binary and its digest share one trust root](#accepted-risk-the-release-binary-and-its-digest-share-one-trust-root) - nothing independent to verify the download against, and why that stays |
+| The task | [Accepted risk: a task's subagent bound is the agent's own](#accepted-risk-a-tasks-subagent-bound-is-the-agents-own) - the CLI holds it, and its shell can start another copy; a hard bound is Porelo's |
 
 ## Why the package is small and the download is not
 
@@ -259,7 +260,9 @@ and the first to renew may end the other's; Pi's import has the same exposure.
 
 **Only the binary shows the library loads.** SQLite comes as a JNI library the reader loads at run time, which the
 linkage check of the binary's `NEEDED` does not see. `NativeDatabaseCheck` starts the built binary as Porelo does and
-asks it what it finds and what an import takes, from such a database.
+asks it what it finds and what an import takes, from such a database. sqlite-jdbc unpacks the library to `/tmp` under
+a random name (`TMPDIR` does not move it) and removes it on exit, so on a `/tmp` mounted `noexec` a read fails;
+`org.sqlite.tmpdir` would move it, and nothing sets it.
 
 Read in the pinned package 18.12.1, not run. `PI_CODING_AGENT_DIR` moves `.omp/agent` in the home and `PI_CONFIG_DIR` moves
 `.omp` in the home, and `OMP_PROFILE` selects a profile elsewhere. The adapter reads no environment: a moved directory reaches it
@@ -514,3 +517,18 @@ artifact attestations for the release assets. Upstream changes its release workf
 **What reduces it meanwhile:** the version is pinned rather than floating; the digest is checked
 before installation in the image layer; the update job opens a pull request rather than publishing
 by itself; and the release tool refuses a malformed or duplicated digest before writing it anywhere.
+
+## Accepted risk: a task's subagent bound is the agent's own
+
+`OmpConfigFile` writes `task.maxRecursionDepth: 0` at 0, which also refuses `agent()` in the eval tool. Above 0 it
+writes `task.maxConcurrency` as the count and a depth of 1. `skills.enabled` is off at every number.
+
+**The exposure:** the agent has a shell and can start another copy of the CLI, and it can read a skill's file as any
+file. A model call from eval's `completion()`, `judge()` or `judge_batch()` is no subagent, and eval stays. At a
+count of 1 omp queues the next subagent rather than refusing it. That they ran one after another was seen only in the
+agent's report, and no scenario covers the count.
+
+**Why it stays:** the container, not the CLI, is the boundary of a task, and a bound the agent cannot leave is Porelo's own to set, outside this repository.
+
+**What would change it:** a scenario that sees the queue from outside the agent, or a bound Porelo enforces from
+outside it.
