@@ -32,13 +32,13 @@ Feature: An agent at rest is woken by a message for it
         # The model's answer, not the typed line, which has the word in it too.
         Then within 120 seconds this script exits zero:
             """
-            podman exec "$(porelo task status wake --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -t porelo | grep -v 'single word PONG' | grep -qw PONG
+            podman exec --user root "$(porelo task status wake --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -t porelo | grep -v 'single word PONG' | grep -qw PONG
             """
         # An answer is on the screen a moment before its turn ends. At rest is what omp.yaml's at_rest reads, so the
         # message below comes to an agent at rest, not to one still finishing its turn.
         Then within 60 seconds this script exits zero:
             """
-            screen=$(podman exec "$(porelo task status wake --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -t porelo)
+            screen=$(podman exec --user root "$(porelo task status wake --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -t porelo)
             printf '%s\n' "$screen" | grep -qF 'π > ' || exit 1
             printf '%s\n' "$screen" | grep -qF '📁 /workspace' || exit 1
             ! printf '%s\n' "$screen" | grep -qF '↑/↓ move · ⎋ cancel'
@@ -55,7 +55,7 @@ Feature: An agent at rest is woken by a message for it
             for id in $(printf '%s\n' "$held" | awk '$1 ~ /\.json$/ && $2 == "held" {print $1}'); do
               porelo talk read wake "$id" | grep -qE '5,?555' && exit 0
             done
-            screen=$(podman exec "$(porelo task status wake --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -S - -t porelo)
+            screen=$(podman exec --user root "$(porelo task status wake --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -S - -t porelo)
             printf '%s\n' "$screen" | grep -qE '5,?555' && exit 0
             printf 'held: %s\nscreen, last lines:\n' "$held"; printf '%s\n' "$screen" | grep -v '^ *$' | tail -15
             exit 1
@@ -90,7 +90,7 @@ Feature: An agent at rest is woken by a message for it
         Then within 120 seconds this script exits zero:
             """
             started=no; podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" test -e /tmp/porelo-busy-started && started=yes
-            screen=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -S - -t porelo)
+            screen=$(podman exec --user root "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -S - -t porelo)
             rest=no
             printf '%s\n' "$screen" | tail -n 20 | grep -qF 'π > ' && rest=yes
             backgrounded=no
@@ -108,7 +108,7 @@ Feature: An agent at rest is woken by a message for it
         Then within 10 seconds this script exits zero:
             """
             podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" test -e /tmp/porelo-busy-started || { printf 'the loop ended before the message came\n'; exit 1; }
-            screen=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -S - -t porelo)
+            screen=$(podman exec --user root "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -S - -t porelo)
             if printf '%s\n' "$screen" | tail -n 20 | grep -qF 'π > '; then
               printf '%s\n' "$screen" | grep -qF 'Backgrounded:' || { printf 'omp came to rest before the message came\n'; exit 1; }
               printf 'the loop runs in the background and omp is at rest; the message waits for its wake\n'
@@ -122,9 +122,9 @@ Feature: An agent at rest is woken by a message for it
         # waits at rest, only the wake passes.
         And within 240 seconds this script exits zero:
             """
-            screen=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -S - -t porelo)
+            screen=$(podman exec --user root "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -S - -t porelo)
             printf '%s\n' "$screen" | grep -qF 'A message for you waits' && exit 0
-            now=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -t porelo)
+            now=$(podman exec --user root "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -t porelo)
             waits=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" sh -c 'ls /run/porelo/mail/inbox/new/' | grep '\.json$')
             rest=no
             printf '%s\n' "$now" | grep -qF 'π > ' && printf '%s\n' "$now" | grep -qF '📁 /workspace' && rest=yes
@@ -144,7 +144,7 @@ Feature: An agent at rest is woken by a message for it
             for id in $(printf '%s\n' "$held" | awk '$1 ~ /\.json$/ && $2 == "held" {print $1}'); do
               porelo talk read busy "$id" | grep -qE '5,?555' && exit 0
             done
-            screen=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux capture-pane -p -S - -t porelo)
+            screen=$(podman exec --user root "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -S - -t porelo)
             printf '%s\n' "$screen" | grep -qE '5,?555' && exit 0
             printf 'held: %s\nscreen, last lines:\n' "$held"; printf '%s\n' "$screen" | grep -v '^ *$' | tail -15
             exit 1
