@@ -64,7 +64,7 @@ Feature: A task that comes back continues the conversation it was having
         # session at the end. Measured, the file came 6 s after the answer, and a stop between left none.
         Then within 60 seconds this script exits zero:
             """
-            podman exec "$(porelo task status back --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" sh -c 'ls /home/agent/.omp/agent/sessions/--workspace--/*.jsonl' >/dev/null 2>&1
+            podman exec --user agent "$(porelo task status back --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" sh -c 'ls /home/agent/.omp/agent/sessions/--workspace--/*.jsonl' >/dev/null 2>&1
             """
         When a script runs "sleep 3; porelo task stop back"
         Then porelo says task "back" of "back" has a session to continue
