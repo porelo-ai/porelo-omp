@@ -40,6 +40,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S | - | the Copilot path proven by hand before a release | - |
+| <a id="om67"></a>[OM67](OM67-The-Unattended-View-s-Remaining-Gaps.md) | S | - | what [OM66](README.md#om66) left open in the unattended view: an error carried by an event of a known silent type, line breaks in a tool name or a line that is not JSON, the event types of the pinned CLI, and a recorded-run test that guards nothing | - |
 | <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) | S | [OM35](README.md#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind | 0 |
 | <a id="om59"></a>[OM59](OM59-The-Word-Check-Skips-The-First-Turn.md) | XS | - | session.feature's check that the continued omp session knows the word leaves out the first turn's own line, so that line on the screen is never taken for the answer | - |
 
@@ -54,7 +55,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om60"></a>[OM60](OM60-Omp-Is-Installed-Root-Owned.md) | M | - | the omp binary a task starts is installed by root and owned by root, so the agent in a task cannot replace what Porelo starts as omp next time; its version stays pinned by the definition and moves only through the update job, and a self-update inside a task fails | - |
 | <a id="om61"></a>[OM61](OM61-A-Leg-Installs-What-Its-Run-Built.md) | S | - | every acceptance leg of a run that publishes nothing - a dispatch, a tag - installs the packages that run built, so its result speaks for its own commit; only a push to main, which publishes its snapshot first, installs from the package repository | - |
 | <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](README.md#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine | - |
-| <a id="om66"></a>[OM66](OM66-The-Unattended-View-Shows-No-Raw-Event-Lines.md) | S | - | the unattended view of an Oh My Pi task shows what the agent says and does, never a raw JSON event line: an unknown event dropped unless it names an error, read in the code beside the same finding for Claude Code | - |
 | <a id="om44"></a>[OM44](OM44-The-Update-Request-Test-Stands-Alone-In-A-Task.md) | S | - | `UpdateRequestTest` runs its scripts in an environment of its own, so a task's `GIT_CONFIG_*` variables are not taken for a leaked header | - |
 | <a id="om35"></a>[OM35](OM35-The-Build-Runs-On-The-Local-Forge-As-On-The-Central-One.md) | S | - | the workflows run 1:1 on the local Forgejo and the central forge: snapshots from `MAVEN_SNAPSHOTS_URL`, publishing switched by `PORELO_PUBLISH`, legs asked by kind, green on a local Forgejo | - |
 
@@ -62,6 +62,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Title | What was built |
 |---|---|---|
+| <a id="om66"></a>[OM66](README.md#om66) | The Unattended View Shows No Raw Event Lines | The unattended view shows no raw JSON: an event of a type the formatter does not know is left out, and one that reports an error or a warning - by its type, level, status, a flag, a success of false (retries that ran out) or an error it carries - is always shown as such on one line; a recorded 18.18.1 run shows no raw line. |
 | <a id="om63"></a>[OM63](README.md#om63) | The Local Sign-In Goes To A Host | The adapter describes each Oh My Pi sign-in in `agent.db` an import can take by its account, the access token's expiry for Anthropic's subscription and the row's last change, never a value, and a row a remote broker holds has no facts and is not offered. |
 | <a id="om62"></a>[OM62](README.md#om62) | The Docs Say What The Code Does | The user-facing documentation was read sentence by sentence against the code on main: of about 110 claims, the 9 it did not bear out were fixed in the README, `build.md` and the changelog, and none was a fault of the code. |
 | <a id="om41"></a>[OM41](README.md#om41) | Subagents Only As Many As The Task Allows | omp in a task starts no subagent unless the task allows it: at 0 its recursion depth is 0, which also refuses `agent()` in eval, above 0 its concurrency is the task's number with a depth of 1, and skills are off at every number. |
