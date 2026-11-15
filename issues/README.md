@@ -44,6 +44,12 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) | S | [OM35](README.md#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind | 0 |
 | <a id="om59"></a>[OM59](OM59-The-Word-Check-Skips-The-First-Turn.md) | XS | - | session.feature's check that the continued omp session knows the word leaves out the first turn's own line, so that line on the screen is never taken for the answer | - |
 
+## Implementing
+
+| # | Size | Blocked by | What it covers |
+|---|---|---|---|
+| <a id="om69"></a>[OM69](OM69-Start-Work-Offers-Oh-My-Pi-s-Efforts.md) | XS | - | the definition declares the reasoning efforts Oh My Pi takes and how one is passed (`--thinking {effort}`), so Start work offers them to pick instead of typing and an absent effort passes nothing |
+
 ## Review
 
 | # | Size | Blocked by | What it covers | Open questions |
