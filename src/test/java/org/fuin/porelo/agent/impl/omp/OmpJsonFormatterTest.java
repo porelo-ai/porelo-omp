@@ -2,7 +2,11 @@ package org.fuin.porelo.agent.impl.omp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -169,13 +173,59 @@ class OmpJsonFormatterTest {
     }
 
     @Test
-    void showsAnUnknownEventCut() {
+    void dropsAnUnknownEvent() {
 
-        final String small = "{\"type\":\"something_new\",\"value\":1}";
-        assertThat(formatter.format(small)).isEqualTo(small);
+        assertThat(formatter.format("{\"type\":\"something_new\",\"value\":1}"))
+                .as("an unknown event without an error is raw JSON to a person")
+                .isNull();
+    }
 
-        final String huge = "{\"type\":\"something_new\",\"value\":\"" + "x".repeat(1000) + "\"}";
-        assertThat(formatter.format(huge)).isEqualTo(huge.substring(0, 300) + "…");
+    @Test
+    void showsAnUnknownEventThatCarriesAnError() {
+
+        assertThat(formatter.format("{\"type\":\"something_new\",\"error\":\"disk full\"}"))
+                .as("an error string hidden")
+                .isEqualTo("[error] disk full");
+        assertThat(
+                        formatter.format(
+                                "{\"type\":\"something_new\",\"error\":{\"message\":\"quota gone\"}}"))
+                .as("an error object's message hidden")
+                .isEqualTo("[error] quota gone");
+        assertThat(
+                        formatter.format(
+                                "{\"type\":\"auto_retry_start\",\"attempt\":1,\"errorMessage\":\"429 slow down\"}"))
+                .as("an error message hidden")
+                .isEqualTo("[error] 429 slow down");
+        assertThat(
+                        formatter.format(
+                                "{\"type\":\"something_new\",\"isError\":true,\"message\":\"it broke\"}"))
+                .as("a flagged error's message hidden")
+                .isEqualTo("[error] it broke");
+        assertThat(formatter.format("{\"type\":\"something_new\",\"isError\":true}"))
+                .as("a flagged error without a message hidden")
+                .isEqualTo("[error] something_new");
+        assertThat(
+                        formatter.format(
+                                "{\"type\":\"something_new\",\"error\":\""
+                                        + "x".repeat(1000)
+                                        + "\"}"))
+                .as("a long error shown whole or as raw JSON")
+                .isEqualTo("[error] " + "x".repeat(300) + "…");
+    }
+
+    @Test
+    void showsNoRawEventLineOfARecordedRun() throws IOException {
+
+        // Recorded unattended with Oh My Pi 18.18.1; values replaced.
+        final List<String> lines =
+                Files.readAllLines(
+                        Path.of(
+                                "src/test/resources/streams/unattended-background-run-18.18.1.jsonl"));
+
+        assertThat(lines).as("the recorded run of Oh My Pi 18.18.1").isNotEmpty();
+        assertThat(lines.stream().map(formatter::format).filter(Objects::nonNull))
+                .as("lines of the Oh My Pi 18.18.1 run a person would read as raw JSON")
+                .noneMatch(shown -> shown.startsWith("{"));
     }
 
     @Test
@@ -209,7 +259,7 @@ class OmpJsonFormatterTest {
         final List<String> lines =
                 List.of(
                         "a" + escape + "b" + csi + "c\u0007d",
-                        "{\"type\":\"something_new\",\"value\":\"a\u001b]0;title\u0007b\"}",
+                        "{\"type\":\"something_new\",\"error\":\"a\u001b]0;title\u0007b\"}",
                         "{\"type\":\"message_end\",\"message\":{\"role\":\"assistant\",\"content\":["
                                 + "{\"type\":\"text\",\"text\":\"a\\u001b[2Jb\\u009b2Jc\"}]}}",
                         "{\"type\":\"tool_execution_start\",\"toolCallId\":\"t1\",\"toolName\":\"ba\\u001b[2Jsh\"}",
@@ -227,5 +277,39 @@ class OmpJsonFormatterTest {
 
     private static boolean control(final int codePoint) {
         return Character.isISOControl(codePoint) && codePoint != '\n' && codePoint != '\t';
+    }
+
+    @Test
+    void showsAnErrorByItsKindItsLevelOrItsStatus() {
+        assertThat(
+                        List.of(
+                                        "{\"type\":\"stream_failure\",\"message\":\"quota exceeded\"}",
+                                        "{\"type\":\"something_new\",\"status\":\"Error\",\"message\":\"quota exceeded\"}",
+                                        "{\"type\":\"something_new\",\"level\":\"FATAL\",\"message\":\"quota exceeded\"}",
+                                        "{\"type\":\"something_new\",\"error\":true,\"message\":\"quota exceeded\"}",
+                                        "{\"type\":\"something_new\",\"is_error\":\"true\",\"message\":\"quota exceeded\"}")
+                                .stream()
+                                .map(formatter::format)
+                                .toList())
+                .as(
+                        "an unknown event that reports an error by its type, a status or level in any case, or a flag")
+                .allSatisfy(
+                        shown ->
+                                assertThat(shown).startsWith("[error]").contains("quota exceeded"));
+        assertThat(
+                        formatter.format(
+                                "{\"type\":\"something_new\",\"level\":\"warning\",\"message\":\"slow\"}"))
+                .as("a warning")
+                .startsWith("[warning]")
+                .contains("slow");
+    }
+
+    @Test
+    void anErrorCannotOpenALineOfItsOwn() {
+        assertThat(
+                        formatter.format(
+                                "{\"type\":\"something_new\",\"error\":\"first\\n[error] forged\\u2028x\"}"))
+                .as("a line break or a Unicode separator in an error is folded away")
+                .doesNotContain("\n", "\u2028");
     }
 }
