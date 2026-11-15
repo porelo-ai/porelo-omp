@@ -5,12 +5,12 @@
   "$schema": "issue-1.json",
   "id": "OM69",
   "title": "Start Work Offers Oh My Pi's Efforts",
-  "state": "Implementing",
+  "state": "Review",
   "size": "XS",
   "priority": "High",
   "rank": 1,
   "blockedBy": [],
-  "covers": "the definition declares the reasoning efforts Oh My Pi takes and how one is passed (`--thinking {effort}`), so Start work offers them to pick instead of typing and an absent effort passes nothing"
+  "covers": "the definition declares the reasoning efforts Oh My Pi takes and how one is passed (`--thinking={effort}`), so Start work offers them to pick instead of typing and an absent effort passes nothing"
 }
 ```
 
@@ -40,3 +40,16 @@ declaration does not break an older Porelo.
 
 - The definition declares the effort levels and how they are passed, in the contract's shape, and today's reader
   still reads the definition.
+
+## What was built
+
+- **The definition** (`omp.yaml`) declares `effort` with `arguments: ["--thinking={effort}"]` and `values: ["off", minimal, low, medium, high, xhigh, max, auto]`, in the
+  contract's shape; an older Porelo's reader skips the section.
+- **Where the levels come from:** `omp --help` on the pinned 18.18.1, read offline on the test VM. "off" is quoted, since YAML reads a bare off as false; the test saw `false` until it was.
+- **Test** `EffortDeclarationTest` reads the section from the definition itself: the arguments and the levels, in
+  their order. Both seen red before the section stood; dropping the last level turned `offersTheLevelsTheCliTakes`
+  red, restored identical.
+- **The reading by another model** found no fault: the shape, the reader of porelo 5328c5df4, the substitution and
+  the placement hold. It noted that the help names `--thinking=<value>` while the two-argument form had not been run; the declaration now gives the one argument the help names, its test seen red first, suite 219 run again, 0 failures. Offering `off` or `auto` to a model that cannot reason waits for the models section. Left: the test reads the YAML with a plain loader, so a duplicated `effort` key would pass it and fail the reader.
+- **Level:** unit tests; suite 219 run, 0 failures, 0 skipped. Whether the pinned CLI accepts each level in a
+  run is the operator's test.

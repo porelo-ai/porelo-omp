@@ -44,12 +44,6 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) | S | [OM35](README.md#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind | 0 |
 | <a id="om59"></a>[OM59](OM59-The-Word-Check-Skips-The-First-Turn.md) | XS | - | session.feature's check that the continued omp session knows the word leaves out the first turn's own line, so that line on the screen is never taken for the answer | - |
 
-## Implementing
-
-| # | Size | Blocked by | What it covers |
-|---|---|---|---|
-| <a id="om69"></a>[OM69](OM69-Start-Work-Offers-Oh-My-Pi-s-Efforts.md) | XS | - | the definition declares the reasoning efforts Oh My Pi takes and how one is passed (`--thinking {effort}`), so Start work offers them to pick instead of typing and an absent effort passes nothing |
-
 ## Review
 
 | # | Size | Blocked by | What it covers | Open questions |
@@ -60,6 +54,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | <a id="om57"></a>[OM57](OM57-Omp-18-18-Starts-At-Its-Prompt-Again.md) | S | - | an attended omp task on the pinned 18.18.1 starts at its prompt, not at the setup wizard's update step | - |
 | <a id="om60"></a>[OM60](OM60-Omp-Is-Installed-Root-Owned.md) | M | - | the omp binary a task starts is installed by root and owned by root, so the agent in a task cannot replace what Porelo starts as omp next time; its version stays pinned by the definition and moves only through the update job, and a self-update inside a task fails | - |
 | <a id="om68"></a>[OM68](OM68-The-Running-View-Says-What-Each-Tool-Did.md) | S | - | the running view of an unattended Oh My Pi task says each tool call with its key input from `args` and each result by whether it failed and its first line or its size, instead of only the tool's name | - |
+| <a id="om69"></a>[OM69](OM69-Start-Work-Offers-Oh-My-Pi-s-Efforts.md) | XS | - | the definition declares the reasoning efforts Oh My Pi takes and how one is passed (`--thinking={effort}`), so Start work offers them to pick instead of typing and an absent effort passes nothing | - |
 | <a id="om61"></a>[OM61](OM61-A-Leg-Installs-What-Its-Run-Built.md) | S | - | every acceptance leg of a run that publishes nothing - a dispatch, a tag - installs the packages that run built, so its result speaks for its own commit; only a push to main, which publishes its snapshot first, installs from the package repository | - |
 | <a id="om36"></a>[OM36](OM36-The-Repository-s-Agent-Works-In-A-Porelo-Task.md) | S | [OM35](README.md#om35) | the repository's agent moves into its own Porelo task, after a dry run on this machine | - |
 | <a id="om44"></a>[OM44](OM44-The-Update-Request-Test-Stands-Alone-In-A-Task.md) | S | - | `UpdateRequestTest` runs its scripts in an environment of its own, so a task's `GIT_CONFIG_*` variables are not taken for a leaked header | - |

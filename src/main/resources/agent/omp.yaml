@@ -36,6 +36,16 @@ sandboxed:
 instructions:
     arguments: ["--append-system-prompt", "{file}"]
 
+# How omp takes a reasoning effort, for a Start that names one; none named passes nothing and omp
+# keeps its own default. 'omp --help' on the pinned 18.18.1, read offline on the test VM on
+# 2026-11-15, names --thinking=<value>, passed as that one argument, with off, minimal, low,
+# medium, high, xhigh, max and auto.
+# Read by a Porelo that knows the section, skipped by an older one. "off" is quoted: bare, YAML
+# reads it as false.
+effort:
+    arguments: ["--thinking={effort}"]
+    values: ["off", minimal, low, medium, high, xhigh, max, auto]
+
 git_identity:
     name: Oh My Pi
     email: noreply@omp.sh
