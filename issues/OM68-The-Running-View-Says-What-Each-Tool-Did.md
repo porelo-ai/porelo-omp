@@ -52,21 +52,32 @@ shown only when it failed, as `[<tool> failed]`, without its message; a result t
 ## What was built
 
 - **A tool call** (`tool_execution_start`) shows as `[<tool>] <input>`: the first non-blank line of `command`,
-  else `pattern`, `path`, `file_path` or `filePath`, else the first text in `args`, else the event's `intent`
+  else `pattern`, `path`, `file_path`, `filePath`, `url`, `query` or `description`, else the event's `intent`
   (as Oh My Pi's `wait` gives it), else the name alone; folded to one line and cut.
 - **A result** (`tool_execution_end`) shows as `[<tool> done]` or `[<tool> failed]` with the first non-blank line
   of `result.content`'s text parts, cut; without one, its size in lines (blank text) or in parts (no text), and
   nothing more when it is empty. A result that worked is now shown too.
 - **A tool's name** is folded to one line as well, in a call and in a result; the rest of [OM67](README.md#om67)'s
   line-break point (a line that is not JSON) stays with it.
-- **Alike with Pi.** The new code is the same as in porelo-pi's `PiJsonFormatter`, line for line.
-- **Seen in the recorded run.** Its failed `bash` shows `[bash failed] BG-DONE`: the first line of its output,
-  as planned, though the cause (`fatal: not a git repository`) is on the next line.
+- **Alike with Pi.** The new rules are the same as in porelo-pi's `PiJsonFormatter`; the classes differ only in
+  names and comments, as before.
+- **Seen in the recorded run.** Its failed `bash` printed `BG-DONE` before its cause; it now shows
+  `[bash failed] BG-DONE | fatal: not a git repository... | Command exited with code 128`.
 - **Tests** in `OmpJsonFormatterTest`, each seen red first: `showsAToolCallWithItsKeyInput`,
   `aFailedResultSaysSoWithItsFirstLine`, `showsTheSizeOfAResultWithoutATextLine`, `neverShowsAWholeOutput`,
   `aToolCannotOpenALineOfItsOwn`, and `showsNoRawEventLineOfARecordedRun`, which now also reads the recorded run's
   calls by their input or intent and its results, the failed one included, by their first line. The old test that
   a result which worked shows nothing is gone with that rule. Breaking the failure mark, the key input, the first
   line, the size, the cut and the fold each turned a named test red.
-- **Level:** unit tests of the formatter ran; the reading by another model and the operator's test are the
-  coordinator's and still open.
+- **The reading by another model** found a failed tool's cause hidden behind the first line its output printed,
+  a tool name with a bracket that could read as another mark (`error] quota` gives `[error] quota`), any text
+  argument shown as the fallback (a secret or a file's content among them), and text parts run together. All fixed:
+  a failure shows its first 3 non-blank lines joined by ` | `, or its result's `error` where it has no text; a name
+  loses its brackets; only the arguments that name the work are shown (`url`, `query` and `description` added),
+  else the `intent`; parts are joined by a line break. Tests `aFailedToolShowsItsCause`,
+  `aResultsPartsAreNotRunTogether`, `aToolNameCannotPassForAnotherMark` and
+  `showsNoArgumentButTheOnesThatNameTheWork` seen red first, and `aToolsLineCarriesNoControlOrDirectionMark`
+  guarding the fold; the cause, the name and the join each broken on purpose and seen red. Unit suite 217 run,
+  0 failures, 0 skipped. Left as before: a command's first line, a URL or a query is shown whole up to the cut,
+  so a token typed into one reaches the log.
+- **Level:** unit tests of the formatter; the operator's test is the coordinator's and still open.
