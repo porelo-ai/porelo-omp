@@ -28,6 +28,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Changed
 
+- An unattended task's log shows each tool call with its key input - a command's first line, a file's path, a search's pattern, else what the call says it intends - and each result by whether it failed, with its first line or its size, never the whole output.
 - An unattended task's log shows what Oh My Pi says and does and no event as raw JSON: an event it does not know is left out, and one that reports an error or a warning - by its type, level, status or a flag, or an error it carries - is always shown as such, on one line.
 - omp is installed by root at `/usr/local/bin/omp`, so the agent in a task cannot replace what the next start runs, and `omp update` fails to write over it.
 - The acceptance legs run on every forge, the host's lending each a machine of its kind from its pool through `PORELO_POOL_SSH`, and a leg takes the packages its run built from the Actions cache, keyed by the run; GitHub's artifact stays for the release job.
