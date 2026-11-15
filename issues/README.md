@@ -40,6 +40,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S | - | the Copilot path proven by hand before a release | - |
+| <a id="om66"></a>[OM66](OM66-The-Unattended-View-Shows-No-Raw-Event-Lines.md) | S | - | the unattended view of an Oh My Pi task shows what the agent says and does, never a raw JSON event line: an unknown event dropped unless it names an error, read in the code beside the same finding for Claude Code | - |
 | <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) | S | [OM35](README.md#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind | 0 |
 | <a id="om59"></a>[OM59](OM59-The-Word-Check-Skips-The-First-Turn.md) | XS | - | session.feature's check that the continued omp session knows the word leaves out the first turn's own line, so that line on the screen is never taken for the answer | - |
 
