@@ -10,6 +10,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 |---|---|---|---|
 | <a id="om55"></a>[OM55](OM55-The-Agent-s-Own-Telemetry-Goes-To-Porelo.md) | - | - | the adapter declares Oh My Pi's own OpenTelemetry export pointed at Porelo's local receiver in the task, with every switch that would carry content - prompts, tool arguments and output, responses - set explicitly off |
 | <a id="om56"></a>[OM56](OM56-The-Update-Job-Keeps-Its-First-Stop.md) | S | - | the weekly update job's major-version step no longer overwrites an earlier gate's STOP, the verified tree is named only after both legs passed, and a week that pins nothing still checks the pinned digest |
+| <a id="om64"></a>[OM64](OM64-The-Sign-In-Facts-Smaller-Findings.md) | - | - | the smaller gaps left in how the adapter finds and describes a local Oh My Pi sign-in for carrying to a host, each fixed or measured |
 | <a id="om46"></a>[OM46](OM46-The-Acceptance-Legs-Run-Side-By-Side.md) | - | - | a Build's acceptance legs run at the same time, two machines held at once instead of one, the Build done about one leg sooner |
 | <a id="om34"></a>[OM34](OM34-The-Shared-Workflow-Tests-See-Every-Refusal-Red.md) | - | - | the shared workflow tests see every publishing and channel refusal red, and the refused-key scenario runs in CI |
 
