@@ -39,6 +39,7 @@ Within a group, the order is the priority. The number is identity, not sequence.
 
 | # | Size | Blocked by | What it covers | Open questions |
 |---|---|---|---|---|
+| <a id="om70"></a>[OM70](OM70-The-Maven-Cache-Follows-What-The-Build-Resolves.md) | S | - | the Build's Maven cache is saved again when the versions it resolves move, so a Build after a cache hit fetches nothing from Maven Central | - |
 | <a id="om18"></a>[OM18](OM18-Prove-GitHub-Copilot-By-Hand-Before-A-Release.md) | S | - | the Copilot path proven by hand before a release | - |
 | <a id="om67"></a>[OM67](OM67-The-Unattended-View-s-Remaining-Gaps.md) | S | - | what [OM66](README.md#om66) left open in the unattended view: an error carried by an event of a known silent type, line breaks in a tool name or a line that is not JSON, the event types of the pinned CLI, and a recorded-run test that guards nothing | - |
 | <a id="om37"></a>[OM37](OM37-The-Acceptance-Legs-Run-On-The-Host-s-Forge.md) | S | [OM35](README.md#om35) | the acceptance legs on the host's pool again, once it lends a forge job a machine by kind | 0 |
