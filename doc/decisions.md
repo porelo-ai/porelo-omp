@@ -23,7 +23,7 @@ what it may do in a task, how it is built and updated, and the risks accepted on
 | The task | [No host of its own, and six refused](#no-host-of-its-own-and-six-refused) - what 18.1.13 resolved and did not need |
 | The task | [omp starts at its prompt: the setup wizard is marked done](#omp-starts-at-its-prompt-the-setup-wizard-is-marked-done) - a wizard opens even with a credential; setupVersion: 3 answers it on 18.18.1 |
 | The task | [Reaching work is checked on the rendered screen, because omp draws its prompt first](#reaching-work-is-checked-on-the-rendered-screen-because-omp-draws-its-prompt-first) - a declared marker, three seconds on screen; the byte stream passes wrongly |
-| The task | [Waiting for a person is read from the question's own last line](#waiting-for-a-person-is-read-from-the-questions-own-last-line) - `↑/↓ move · ⎋ cancel` in the last 5 lines, attended only |
+| The task | [Waiting for a person is read from the question's own last line](#waiting-for-a-person-is-read-from-the-questions-own-last-line) - `next field · ⎋ cancel` in the last 5 lines, attended only |
 | The task | [A task that comes back continues its conversation](#a-task-that-comes-back-continues-its-conversation) - `--resume` with the id from the session record |
 | Updates | [Its release cadence is unlike the other two](#its-release-cadence-is-unlike-the-other-two) - many releases to Pi's few, so no rule follows from a shared origin |
 | Updates | [What an update takes, and when](#what-an-update-takes-and-when) - three days old and still the newest, a patch bump, a real model call |
@@ -280,8 +280,10 @@ rule is the same as the other two's, and it is what answers the cadence - see be
 ## Waiting for a person is read from the question's own last line
 
 Porelo tells a person the agent is waiting for them from `session.waiting` in the agent's YAML: literal
-lines on the attached screen that only a question draws. Measured on 18.4.1 at a terminal, a
-question Oh My Pi puts ends with `⏎ select · n note · ↑/↓ move · ⎋ cancel` - symbols, not the words "Enter" and "Esc". The rule is `↑/↓ move · ⎋ cancel` in the last 5 lines. Its working line starts with `⎋` too, which is why the rule is not the symbol alone. The window title's `π !` says the same, but Porelo reads the screen; like the title, the box is drawn for its ask tool and approval prompts, not the model picker or /login - it under-reports, the safe direction.
+lines on the attached screen that only a question draws. On 18.20.2 a question Oh My Pi puts is a form whose
+footer ends `⏎ choose · n note · ↑/↓ move · ⇥ next field · ⎋ cancel` - symbols, not the words "Enter" and "Esc";
+the box earlier releases drew ended `↑/↓ move · ⎋ cancel`, which this one no longer shows. The rule is
+`next field · ⎋ cancel` in the last 5 lines: no key symbol but the escape one. Its working line starts with `⎋` too, which is why the rule is not the symbol alone. The window title's `π !` says the same, but Porelo reads the screen; like the title, the box is drawn for its ask tool and approval prompts, not the model picker or /login - it under-reports, the safe direction.
 
 **Proven three ways.** `WaitingDeclarationTest` reads the declaration against the measured screens, and
 fails without it. By hand on the VM, Porelo read the agent as not waiting at rest and as waiting once it

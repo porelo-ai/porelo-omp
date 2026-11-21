@@ -8,23 +8,33 @@ import org.junit.jupiter.api.Test;
 /**
  * The waiting declaration read against the screens it was written from.
  *
- * <p>Each screen is what the attached agent drew on 18.4.1, captured at a terminal - so a change to
- * the declaration that stops fitting what was measured fails here. Whether the agent still draws
- * these at the version it pins is the acceptance suite's question, not this one's.
+ * <p>Each screen is what the attached agent drew, captured at a terminal - so a change to the
+ * declaration that stops fitting what was measured fails here. Whether the agent still draws these
+ * at the version it pins is the acceptance suite's question, not this one's.
  */
 class WaitingDeclarationTest {
 
-    /** Asked to put a question, it opened its ask box; above it, the line it works under. */
+    /**
+     * Asked to put a question, 18.20.2 opens its ask form; above it, the line it works under. Its
+     * footer puts the field keys between moving and cancelling.
+     */
     private static final String ASKING =
             """
               ⎋ Asking color preference                                  Ask Preference Between Red or Blue
-            ╭─ Ask ──────────────────────────────────────────────────────────────────────╮
+            ╭─── Ask ────────────────────────────────────────────────────────────────────╮
             │ Which color do you prefer?                                                 │
             ├────────────────────────────────────────────────────────────────────────────┤
             │ ❯ ○ Red                                                                    │
             │   ○ Blue                                                                   │
             │   ○ Other (type your own)                                                  │
-            │                                                                            │
+            ├────────────────────────────────────────────────────────────────────────────┤
+            │ ⏎ choose · n note · ↑/↓ move · ⇥ next field · ⎋ cancel                     │
+            ╰────────────────────────────────────────────────────────────────────────────╯
+            """;
+
+    /** The ask box releases before 18.20 drew, whose footer this release no longer has. */
+    private static final String OLD_ASK_BOX =
+            """
             ├────────────────────────────────────────────────────────────────────────────┤
             │ ⏎ select · n note · ↑/↓ move · ⎋ cancel                                    │
             ╰────────────────────────────────────────────────────────────────────────────╯
@@ -67,6 +77,13 @@ class WaitingDeclarationTest {
 
         // The other half: a rule that matched everything would pass the test above.
         assertThat(waiting().read(AT_REST).seen()).isEqualTo(Waiting.Seen.NOT_WAITING);
+    }
+
+    @Test
+    void readsOnlyTheFormOfThePinnedRelease() {
+
+        // One form is kept: the rule follows the release the package pins.
+        assertThat(waiting().read(OLD_ASK_BOX).seen()).isEqualTo(Waiting.Seen.NOT_WAITING);
     }
 
     @Test

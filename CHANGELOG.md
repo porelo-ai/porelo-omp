@@ -46,6 +46,8 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Fixed
 
+- With Oh My Pi 18.20.2 an open question is read as waiting for a person again, and never as at rest, so no wake
+  line is typed into it: the rule follows the footer of its new question form, `next field · ⎋ cancel`.
 - An attended task on Oh My Pi 18.18.1 starts at its prompt again: the adapter marks the setup wizard done at version 3, which 18.18.1 asks for with a step about updates.
 - A task on Oh My Pi 18.11 is seen at work: the adapter reads the start of the status line under omp's prompt, since 18.11 no longer draws the welcome box it read before, and the setup wizard still hides it.
 - A log line cut to its readable length is cut between characters, never inside one that takes two UTF-16 units, such as an emoji.

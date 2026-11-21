@@ -41,7 +41,7 @@ Feature: An agent at rest is woken by a message for it
             screen=$(podman exec --user root "$(porelo task status wake --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -t porelo)
             printf '%s\n' "$screen" | grep -qF 'π > ' || exit 1
             printf '%s\n' "$screen" | grep -qF '📁 /workspace' || exit 1
-            ! printf '%s\n' "$screen" | grep -qF '↑/↓ move · ⎋ cancel'
+            ! printf '%s\n' "$screen" | grep -qF 'next field · ⎋ cancel'
             """
         When a script runs "echo 'What is 1234 plus 4321? Reply with the digits only.' | porelo talk tell wake"
         Then it exits zero
@@ -128,7 +128,7 @@ Feature: An agent at rest is woken by a message for it
             waits=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" sh -c 'ls /run/porelo/mail/inbox/new/' | grep '\.json$')
             rest=no
             printf '%s\n' "$now" | grep -qF 'π > ' && printf '%s\n' "$now" | grep -qF '📁 /workspace' && rest=yes
-            printf '%s\n' "$now" | grep -qF '↑/↓ move · ⎋ cancel' && rest=no
+            printf '%s\n' "$now" | grep -qF 'next field · ⎋ cancel' && rest=no
             [ "$rest" = yes ] && [ -z "$waits" ] && { printf 'read while it worked, so no wake is due\n'; exit 0; }
             printf 'at rest: %s, waiting: %s\n' "$rest" "${waits:-none}"
             printf 'status:\n'; porelo task status busy | grep -E '^(state|activity|screen)'

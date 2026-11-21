@@ -88,20 +88,21 @@ session:
     # on the VM at a terminal: at rest its status line starts "π > ", and while it works a spinner and the
     # turn's time stand there instead ("⠋ 59s > ◉ …"); "📁 /workspace" is in it either way, so the shell left when omp
     # exits never matches. Not a bare "⎋": a start tip can stay on the screen ending "— ⎋ cancels" (measured, it kept
-    # a wake from ever being typed). Its question box ends "↑/↓ move · ⎋ cancel".
+    # a wake from ever being typed). Its question form ends "next field · ⎋ cancel".
     at_rest:
         shows: ["π > ", "📁 /workspace"]
-        lacks: ["↑/↓ move · ⎋ cancel"]
-    # What waiting for a person looks like on the attached screen, for Porelo to read. Measured on
-    # 18.4.1 at a terminal: its ask box ends with "⏎ select · n note · ↑/↓ move ·
-    # ⎋ cancel" - symbols where earlier releases wrote "Enter" and "Esc". A bare "⎋" is not enough:
+        lacks: ["next field · ⎋ cancel"]
+    # What waiting for a person looks like on the attached screen, for Porelo to read. 18.20.2's ask
+    # tool draws a form whose footer ends "⏎ choose · n note · ↑/↓ move · ⇥ next field · ⎋ cancel";
+    # the box releases before it drew ended "↑/↓ move · ⎋ cancel", which it no longer shows. The rule
+    # holds no key symbol but the escape one, which earlier releases wrote "Esc". A bare "⎋" is not enough:
     # its working line starts with one too. The window title's "π !" says the same, but Porelo reads
     # the screen. Like the title, this is armed for its ask tool and approval prompts, not for the
     # model picker or /login: it under-reports, which is the safe direction. Unattended its ask tool
     # refuses to run without a terminal, so a run that wanted to ask ends with an error.
     waiting:
         screen:
-            - contains: "↑/↓ move · ⎋ cancel"
+            - contains: "next field · ⎋ cancel"
               in_last_lines: 5
               for: "an answer to its question"
         # 18.18.1 ends each message with a message_end record whose message.content is a list of

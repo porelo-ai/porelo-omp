@@ -245,7 +245,7 @@ class OmpAgentTest {
         final var atRest = agent.definition().atRest();
         assertThat(atRest).isNotNull();
         assertThat(atRest.shows()).containsExactly("π > ", "📁 /workspace");
-        assertThat(atRest.lacks()).containsExactly("↑/↓ move · ⎋ cancel");
+        assertThat(atRest.lacks()).containsExactly("next field · ⎋ cancel");
         assertThat(
                         atRest.matches(
                                 "Reply with Single Word PONG\nπ > ◉ GLM 5.3 Flash > 📁 /workspace > ⑂ master > $0.00 ▶─0.8%─"))
@@ -263,7 +263,7 @@ class OmpAgentTest {
         // A question open: Enter would answer it, so never at rest.
         assertThat(
                         atRest.matches(
-                                "⏎ select · n note · ↑/↓ move · ⎋ cancel\nπ > ◉ GLM 5.3 Flash > 📁 /workspace > ⑂ master"))
+                                "⏎ choose · n note · ↑/↓ move · ⇥ next field · ⎋ cancel\nπ > ◉ GLM 5.3 Flash > 📁 /workspace > ⑂ master"))
                 .isFalse();
     }
 

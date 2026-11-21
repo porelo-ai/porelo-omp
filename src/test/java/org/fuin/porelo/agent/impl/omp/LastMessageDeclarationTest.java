@@ -126,7 +126,7 @@ class LastMessageDeclarationTest {
         // which screens read as waiting.
         assertThat(new OmpAgent().definition().waiting().screen())
                 .containsExactly(
-                        new Waiting.Rule("↑/↓ move · ⎋ cancel", 5, "an answer to its question"));
+                        new Waiting.Rule("next field · ⎋ cancel", 5, "an answer to its question"));
     }
 
     private static Object firstAssistantEnd(final List<Object> records) {
