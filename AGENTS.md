@@ -85,8 +85,9 @@ like the shared block, and so is the skill `adapter-building`; what is one adapt
 
 ## Work in this repository
 
-- **Issues here are `OMnn-Short-Title.md`, with the prefix `OM`.** `porelo-release check-citations`,
-  run by the `shared-rules` workflow, refuses a citation that breaks once an issue is deleted.
+- **Issues here are in the repository's GitHub Issues**, each named by its reference there
+  (`porelo-ai/porelo-omp#<number>`); one carried over from the Markdown files keeps its old id (`OM`) as a
+  fixed alias.
 - **The tests tagged `documents` run alone with `./mvnw -o -B -s settings.xml -Pdocuments test`**, and
   `DocumentTestsTaggedTest` fails when a test reads a document without the tag.
 - **Never set `PI_CONFIG_DIR` or `PI_PROFILE` in a task image or the adapter.** Either moves omp's
