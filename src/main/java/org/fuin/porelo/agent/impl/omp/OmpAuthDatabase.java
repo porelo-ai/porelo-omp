@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import org.fuin.porelo.wire.Json;
 import org.fuin.porelo.wire.JsonException;
+import org.fuin.porelo.wire.LimitFactors;
 import org.jspecify.annotations.Nullable;
 import org.sqlite.SQLiteConfig;
 
@@ -31,8 +33,8 @@ import org.sqlite.SQLiteConfig;
  *
  * <p><strong>Never in Oh My Pi's way.</strong> The database is open while Oh My Pi runs, with its
  * journal in WAL, where its rows may be all there is. So the file is opened read-only, never
- * immutable (which would skip the WAL), with a short busy timeout, one query per table, and closed
- * at once. A WAL reader blocks no writer; at worst it holds a checkpoint back for one query.
+ * immutable (which would skip the WAL), with a busy timeout, one query per table, and closed at
+ * once. A WAL reader blocks no writer; at worst it holds a checkpoint back for one query.
  *
  * @param path The database.
  * @param state What could be read of it.
@@ -46,8 +48,8 @@ record OmpAuthDatabase(Path path, State state, List<Row> rows) {
     /** The versions of {@code auth_schema_version} read in the pinned package: 18.18.1's. */
     static final Set<Integer> KNOWN_VERSIONS = Set.of(8);
 
-    /** How long a read waits for a lock, in milliseconds; a reader of WAL rarely needs one. */
-    private static final int BUSY_TIMEOUT_MS = 1000;
+    /** How long a read waits for a lock on a machine of ordinary speed; WAL rarely needs one. */
+    private static final Duration BUSY_TIMEOUT = Duration.ofSeconds(1);
 
     /** What could be read of the database. */
     enum State {
@@ -85,9 +87,10 @@ record OmpAuthDatabase(Path path, State state, List<Row> rows) {
      * Reads the database in a config directory.
      *
      * @param configDirectory Oh My Pi's config directory, {@code .omp/agent} in a home.
+     * @param limits The factors; the wait for a lock follows {@code machines}.
      * @return What it holds.
      */
-    static OmpAuthDatabase read(final Path configDirectory) {
+    static OmpAuthDatabase read(final Path configDirectory, final LimitFactors limits) {
         final Path file = configDirectory.toAbsolutePath().normalize().resolve(FILE);
         if (Files.notExists(file)) {
             return new OmpAuthDatabase(file, State.ABSENT, List.of());
@@ -97,7 +100,7 @@ record OmpAuthDatabase(Path path, State state, List<Row> rows) {
         }
         final SQLiteConfig config = new SQLiteConfig();
         config.setReadOnly(true);
-        config.setBusyTimeout(BUSY_TIMEOUT_MS);
+        config.setBusyTimeout(Math.toIntExact(limits.machines(BUSY_TIMEOUT).toMillis()));
         try (Connection connection = config.createConnection(url(file))) {
             if (!KNOWN_VERSIONS.contains(version(connection))) {
                 return new OmpAuthDatabase(file, State.UNKNOWN_SCHEMA, List.of());

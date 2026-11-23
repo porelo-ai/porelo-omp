@@ -9,6 +9,7 @@ import org.fuin.porelo.agent.api.Finding.Kind;
 import org.fuin.porelo.agent.api.Finding.SignedIn;
 import org.fuin.porelo.agent.api.Finding.What;
 import org.fuin.porelo.agent.impl.omp.OmpAuthDatabase.Row;
+import org.fuin.porelo.wire.LimitFactors;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -46,10 +47,12 @@ record OmpSignInFacts(
      *
      * @param findings What {@link OmpFindings} found in the directory.
      * @param configDirectory Oh My Pi's config directory.
+     * @param limits The factors; the wait for the database's lock follows {@code machines}.
      * @return The facts, one per sign-in that can be carried.
      */
-    static List<OmpSignInFacts> of(final List<Finding> findings, final Path configDirectory) {
-        final OmpAuthDatabase auth = OmpAuthDatabase.read(configDirectory);
+    static List<OmpSignInFacts> of(
+            final List<Finding> findings, final Path configDirectory, final LimitFactors limits) {
+        final OmpAuthDatabase auth = OmpAuthDatabase.read(configDirectory, limits);
         if (auth.state() != OmpAuthDatabase.State.READ) {
             return List.of();
         }

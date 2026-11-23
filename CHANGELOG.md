@@ -27,6 +27,7 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 
 ### Changed
 
+- Reading Oh My Pi's sign-in database waits for a lock its running Oh My Pi holds one second times the `machines` factor of the limits Porelo passes with `--limits`, when finding sign-ins and when taking one, so a slow machine does not hide a sign-in.
 - The definition says how Oh My Pi takes a reasoning effort - `--thinking={effort}` with off, minimal, low, medium, high, xhigh, max, auto - for a Porelo that offers it at a start; an older Porelo skips it.
 - An unattended task's log shows each tool call with its key input - a command's first line, a file's path, a search's pattern, else what the call says it intends - and each result by whether it failed, with its first line or its size - a failure with its first three lines, so its cause shows - never the whole output; no other argument, which may be a file's content or a secret, is shown.
 - An unattended task's log shows what Oh My Pi says and does and no event as raw JSON: an event it does not know is left out, and one that reports an error or a warning - by its type, level, status or a flag, or an error it carries - is always shown as such, on one line.

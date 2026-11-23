@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import org.fuin.porelo.agent.api.Finding.Kind;
+import org.fuin.porelo.wire.LimitFactors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -24,7 +25,7 @@ class OmpSignInFactsTest {
     }
 
     private List<OmpSignInFacts> facts() {
-        return OmpSignInFacts.of(new OmpFindings().find(home), home);
+        return OmpSignInFacts.of(new OmpFindings().find(home), home, LimitFactors.DEFAULT);
     }
 
     private static String anthropic(final String refresh, final long expires, final String email) {

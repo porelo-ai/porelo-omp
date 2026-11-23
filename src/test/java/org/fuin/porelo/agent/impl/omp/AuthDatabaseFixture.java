@@ -130,6 +130,32 @@ final class AuthDatabaseFixture implements AutoCloseable {
         return this;
     }
 
+    /**
+     * Opens a database written before, as a second Oh My Pi process would.
+     *
+     * @param file The database.
+     * @return The open database.
+     * @throws SQLException If it cannot be opened.
+     */
+    static AuthDatabaseFixture reopen(final Path file) throws SQLException {
+        return new AuthDatabaseFixture(DriverManager.getConnection(OmpAuthDatabase.url(file)));
+    }
+
+    /**
+     * Holds the database so no other connection reads it until this one is closed, as a writer in
+     * exclusive locking mode does.
+     *
+     * @return This.
+     * @throws SQLException If the lock cannot be taken.
+     */
+    AuthDatabaseFixture holdExclusively() throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("PRAGMA locking_mode=EXCLUSIVE");
+            statement.execute("UPDATE auth_schema_version SET version = version");
+        }
+        return this;
+    }
+
     @Override
     public void close() throws SQLException {
         connection.close();

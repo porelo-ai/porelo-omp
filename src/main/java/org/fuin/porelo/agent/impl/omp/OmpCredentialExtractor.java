@@ -10,6 +10,7 @@ import org.fuin.porelo.agent.api.CredentialExtractor;
 import org.fuin.porelo.agent.api.Finding;
 import org.fuin.porelo.agent.api.Finding.Kind;
 import org.fuin.porelo.agent.impl.omp.OmpAuthDatabase.Row;
+import org.fuin.porelo.wire.LimitFactors;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -35,6 +36,22 @@ class OmpCredentialExtractor implements CredentialExtractor {
     /** The client 18.18.1 signs in to Anthropic as, kept there in base64. */
     private static final String ANTHROPIC_CLIENT_ID = "9d1c250a-e61b-44d9-88ed-5944d1962f5e";
 
+    private final LimitFactors limits;
+
+    /** Creates an extractor with every time limit at its default. */
+    OmpCredentialExtractor() {
+        this(LimitFactors.DEFAULT);
+    }
+
+    /**
+     * Creates an extractor whose waits follow the factors Porelo gave.
+     *
+     * @param limits The factors; the wait for the database's lock follows {@code machines}.
+     */
+    OmpCredentialExtractor(final LimitFactors limits) {
+        this.limits = limits;
+    }
+
     @Override
     public Optional<Credential> extract(final Path configDirectory) {
         return extract(configDirectory, null);
@@ -45,7 +62,7 @@ class OmpCredentialExtractor implements CredentialExtractor {
             final Path configDirectory, final @Nullable String provider) {
 
         final Path directory = configDirectory.toAbsolutePath().normalize();
-        final OmpAuthDatabase auth = OmpAuthDatabase.read(directory);
+        final OmpAuthDatabase auth = OmpAuthDatabase.read(directory, limits);
         if (auth.state() == OmpAuthDatabase.State.ABSENT) {
             return Optional.empty();
         }
@@ -54,7 +71,7 @@ class OmpCredentialExtractor implements CredentialExtractor {
                     auth.path() + " cannot be read, or is of a schema this adapter does not know");
         }
         final Map<String, Row> rows = OmpFindings.firstByProvider(auth.rows());
-        return new OmpFindings()
+        return new OmpFindings(limits)
                 .find(directory).stream()
                         .filter(finding -> Boolean.TRUE.equals(finding.importable()))
                         .filter(finding -> provider == null || provider.equals(finding.provider()))

@@ -14,6 +14,7 @@ import org.fuin.porelo.agent.api.Finding.Kind;
 import org.fuin.porelo.agent.api.Finding.SignedIn;
 import org.fuin.porelo.agent.api.Finding.What;
 import org.fuin.porelo.agent.impl.omp.OmpAuthDatabase.Row;
+import org.fuin.porelo.wire.LimitFactors;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -52,6 +53,22 @@ final class OmpFindings implements Finder {
     /** The ones of them whose sign-in, not only key, Porelo can take. */
     private static final Set<String> SIGN_IN_PROVIDERS = Set.of(ANTHROPIC, COPILOT, OPENROUTER);
 
+    private final LimitFactors limits;
+
+    /** Creates a finder with every time limit at its default. */
+    OmpFindings() {
+        this(LimitFactors.DEFAULT);
+    }
+
+    /**
+     * Creates a finder whose waits follow the factors Porelo gave.
+     *
+     * @param limits The factors; the wait for the database's lock follows {@code machines}.
+     */
+    OmpFindings(final LimitFactors limits) {
+        this.limits = limits;
+    }
+
     @Override
     public List<Finding> find(final Path configDirectory) {
 
@@ -66,7 +83,7 @@ final class OmpFindings implements Finder {
         }
         final List<Finding> findings = new ArrayList<>();
         findings.add(new Finding(What.CONFIGURATION, database.toString(), null, null, null, null));
-        final OmpAuthDatabase auth = OmpAuthDatabase.read(directory);
+        final OmpAuthDatabase auth = OmpAuthDatabase.read(directory, limits);
         if (auth.state() != OmpAuthDatabase.State.READ) {
             findings.add(cannotSay(database));
             return List.copyOf(findings);

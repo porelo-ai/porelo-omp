@@ -7,12 +7,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import org.fuin.porelo.agent.api.Agent;
 import org.fuin.porelo.agent.api.Finding;
 import org.fuin.porelo.agent.api.Finding.Kind;
 import org.fuin.porelo.agent.api.Finding.SignedIn;
 import org.fuin.porelo.agent.api.Finding.What;
+import org.fuin.porelo.wire.LimitFactors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -22,6 +26,58 @@ class OmpFindingsTest {
 
     private List<Finding> find(final Path directory) throws IOException {
         return new OmpFindings().find(directory);
+    }
+
+    @Test
+    void aLockedDatabaseIsWaitedForItsSecondTimesTheMachinesFactor() throws Exception {
+
+        // Prevents a slow machine's running Oh My Pi, holding its database a moment longer, from
+        // hiding a sign-in the person wants to carry. Released after three seconds: the default
+        // second gives up first, ten times it waits; each side has two seconds and more to spare.
+        final Path database = home.resolve("agent.db");
+        final List<Finding> free;
+        try (AuthDatabaseFixture db = AuthDatabaseFixture.create(database, 8)) {
+            db.add("openrouter", "api_key", "{\"key\":\"sk-or-test\"}");
+            free = find(home);
+        }
+        assertThat(free).as("read while nothing holds it").doesNotContain(cannotSay(database));
+
+        assertThat(findWhileHeld(new OmpAgent()))
+                .as("the default second gives up before the lock is released")
+                .contains(cannotSay(database));
+        assertThat(findWhileHeld(new OmpAgent().withLimits(LimitFactors.parse("machines=10"))))
+                .as("ten seconds outlast the lock")
+                .isEqualTo(free);
+    }
+
+    /** Finds while another connection holds the database, letting go after three seconds. */
+    private List<Finding> findWhileHeld(final Agent agent) throws Exception {
+        try (AuthDatabaseFixture db = AuthDatabaseFixture.reopen(home.resolve("agent.db"))) {
+            db.holdExclusively();
+            final AtomicReference<SQLException> failed = new AtomicReference<>();
+            final Thread release =
+                    Thread.ofVirtual()
+                            .start(
+                                    () -> {
+                                        try {
+                                            Thread.sleep(3000);
+                                            db.close();
+                                        } catch (InterruptedException exception) {
+                                            // The read ended first; the lock goes when db closes.
+                                        } catch (SQLException exception) {
+                                            failed.set(exception);
+                                        }
+                                    });
+            try {
+                return agent.finder().find(home);
+            } finally {
+                release.interrupt();
+                release.join();
+                if (failed.get() != null) {
+                    throw failed.get();
+                }
+            }
+        }
     }
 
     private static Finding cannotSay(final Path database) {

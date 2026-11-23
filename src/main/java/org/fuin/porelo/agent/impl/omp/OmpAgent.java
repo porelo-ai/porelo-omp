@@ -9,6 +9,7 @@ import org.fuin.porelo.agent.api.Finder;
 import org.fuin.porelo.agent.api.LogFormatter;
 import org.fuin.porelo.agent.api.ToolEvent;
 import org.fuin.porelo.agent.api.YamlAgent;
+import org.fuin.porelo.wire.LimitFactors;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -21,9 +22,22 @@ import org.jspecify.annotations.Nullable;
  */
 public final class OmpAgent extends YamlAgent {
 
-    /** Constructor. */
+    private final LimitFactors limits;
+
+    /** Loads the packaged Oh My Pi definition, every time limit at its default. */
     public OmpAgent() {
+        this(LimitFactors.DEFAULT);
+    }
+
+    private OmpAgent(LimitFactors limits) {
         super("omp");
+        this.limits = limits;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OmpAgent withLimits(LimitFactors limits) {
+        return new OmpAgent(limits);
     }
 
     /**
@@ -34,7 +48,7 @@ public final class OmpAgent extends YamlAgent {
      */
     @Override
     public Finder finder() {
-        return new OmpFindings();
+        return new OmpFindings(limits);
     }
 
     /**
@@ -44,7 +58,7 @@ public final class OmpAgent extends YamlAgent {
      */
     @Override
     public CredentialExtractor credentialExtractor() {
-        return new OmpCredentialExtractor();
+        return new OmpCredentialExtractor(limits);
     }
 
     @Override
