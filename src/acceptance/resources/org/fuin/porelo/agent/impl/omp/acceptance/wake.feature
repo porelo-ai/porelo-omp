@@ -119,13 +119,14 @@ Feature: An agent at rest is woken by a message for it
         # A wake is owed only to a message still in inbox/new when the agent comes to rest, which is what Porelo's wake
         # reads. An eager model may read its mailbox while it works and answer there, as DeepSeek V4.1 Flash did once
         # in ten; then nothing waits at rest, no wake is due, and the answer below is still required. While the message
-        # waits at rest, only the wake passes.
+        # waits at rest, only the wake passes. Only the person's message, named --person-, counts as waiting: the host's
+        # receipt for the agent's own answer lands in inbox/new too and wakes nobody, so it once failed a run that owed none.
         And within 240 seconds this script exits zero:
             """
             screen=$(podman exec --user root "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -S - -t porelo)
             printf '%s\n' "$screen" | grep -qF 'A message for you waits' && exit 0
             now=$(podman exec --user root "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" tmux -S /run/porelo-tmux/tmux capture-pane -p -t porelo)
-            waits=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" sh -c 'ls /run/porelo/mail/inbox/new/' | grep '\.json$')
+            waits=$(podman exec "$(porelo task status busy --json | grep -o '"name": *"[^"]*"' | head -n 1 | cut -d'"' -f4)" sh -c 'ls /run/porelo/mail/inbox/new/' | grep -e '--person-.*\.json$')
             rest=no
             printf '%s\n' "$now" | grep -qF 'π > ' && printf '%s\n' "$now" | grep -qF '📁 /workspace' && rest=yes
             printf '%s\n' "$now" | grep -qF 'next field · ⎋ cancel' && rest=no
