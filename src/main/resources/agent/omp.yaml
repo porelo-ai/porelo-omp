@@ -171,7 +171,7 @@ install:
     version: "${agent.cli.version}"
     artifacts:
         - url: https://github.com/can1357/oh-my-pi/releases/download/v${agent.cli.version}/omp-linux-x64
-          sha256: "f34cfa57311ed67a45f01bb1a21519cad4d74875d181316f00fa0cd6a4abcaaa"
+          sha256: "be2b45c437b623e15c29b1f8c98aacb842f92118196454b5e9eed884359e9a01"
           license: "MIT"
           # Root's, outside the home: what the agent in a task writes never picks what the next start
           # runs, and 'omp update' fails to write over it.
