@@ -15,7 +15,7 @@
 
     <groupId>org.fuin.porelo</groupId>
     <artifactId>porelo-agent-omp</artifactId>
-    <version>0.5.6-SNAPSHOT</version>
+    <version>0.5.7-SNAPSHOT</version>
     <name>Porelo Agent Oh My Pi</name>
     <description>Porelo agent for Oh My Pi</description>
 
@@ -47,7 +47,7 @@
         <!-- The Oh My Pi version this package installs. Filtered into omp.yaml and carried in
              the package description, so 'dpkg -s' and 'rpm -qi' answer it. Bumping it means the
              new digest from that release's SHA256SUMS.txt. Not part of the package version. -->
-        <agent.cli.version>18.20.2</agent.cli.version>
+        <agent.cli.version>19.1.0</agent.cli.version>
         <!-- The reader of Oh My Pi's sign-in database; Apache-2.0, SQLite itself public domain. -->
         <sqlite-jdbc.version>3.49.1.0</sqlite-jdbc.version>
 
