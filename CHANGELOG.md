@@ -25,6 +25,10 @@ appears as an entry rather than a heading. One sentence per change - `git log` h
 - `porelo vault authorize github-copilot` grants GitHub Copilot on github.com through the OAuth app Oh My Pi itself signs in with there, and the weekly update stops when a new pin signs in with another.
 - The package carries the full license texts of what its executable compiles in from outside Porelo - SnakeYAML, JSpecify, sqlite-jdbc and the GraalVM runtime - in `THIRD-PARTY-NOTICES`, in its doc directory and as an RPM license file, and its Debian copyright names them.
 
+### Security
+
+- `porelo-agent-omp` is built by GraalVM CE 25.6, whose Base64 decoder no longer lets a malformed string from outside run code (CVE-2026-114938), and its build refuses a JDK below 25.0.5.1; a task's image on this repository installs the same GraalVM by its digest.
+
 ### Changed
 
 - Both packages depend, beside `porelo`, on a Porelo whose lowest agent protocol this adapter speaks, `porelo-agent-protocol` 6, the protocol in which Porelo starts an agent with `--limits` before its mode, so the package manager refuses a pairing Porelo would refuse at the first task.
